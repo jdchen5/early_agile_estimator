@@ -1,0 +1,14 @@
+
+#pip install -r requirements.txt
+
+# Core libraries
+numpy
+pandas
+
+# Streamlit for frontend
+streamlit
+
+# Scikit-learn for ML models
+scikit-learn
+
+

@@ -1,1 +1,19 @@
-"__pycache__/\n*.pyc\n.env\n.vscode\nmodels/*.pkl" 
+#"__pycache__/\n*.pyc\n.env\n.vscode\nmodels/*.pkl" 
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment
+venv/
+
+# Ignore model files if they are generated
+models/*.pkl
+
+# Ignore VS Code settings (optional)
+.vscode/
+
+# Ignore Streamlit temporary files
+.streamlit/
+

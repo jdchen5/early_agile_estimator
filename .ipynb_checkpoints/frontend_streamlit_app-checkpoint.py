@@ -8,8 +8,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 
-
-# Set the page layout and title.
 # Set page title and configure layout
 st.set_page_config(page_title="Agile Project Estimator", layout="wide")
 
@@ -46,9 +44,7 @@ def create_sample_models():
         with open('models/scaler.pkl', 'wb') as f:
             pickle.dump(scaler, f)
 
-# Model loader function to load models, 
-# .pkl files (pre-trained models and scaler) 
-# from the /models directory
+# Function to load models
 def load_model(model_name):
     with open(f'models/{model_name}.pkl', 'rb') as f:
         return pickle.load(f)
@@ -62,13 +58,13 @@ def predict_man_months(features, model_name):
     model = load_model(model_name)
     scaler = load_model('scaler')
     
-    # Scale the input features
+    # Scale the features
     features_scaled = scaler.transform(features.reshape(1, -1))
     
     # Make prediction
     prediction = model.predict(features_scaled)[0]
     
-    # Ensure prediction is not negative for man-months
+    # Ensure prediction is not negative
     return max(0, prediction)
 
 # Sidebar for project information input
