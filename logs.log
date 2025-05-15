@@ -26055,3 +26055,1741 @@ dtype: int64}]))),
 'explainerdashboard' is a soft dependency and not included in the pycaret installation. Please run: `pip install explainerdashboard` to install.
 Alternately, you can install this by running `pip install pycaret[analysis]`
 NoneType: None
+2025-05-15 12:39:45,846:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 12:39:45,846:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 12:39:45,846:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 12:39:45,846:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 12:47:00,299:INFO:PyCaret ClassificationExperiment
+2025-05-15 12:47:00,299:INFO:Logging name: clf-default-name
+2025-05-15 12:47:00,299:INFO:ML Usecase: MLUsecase.CLASSIFICATION
+2025-05-15 12:47:00,299:INFO:version 3.3.2
+2025-05-15 12:47:00,299:INFO:Initializing setup()
+2025-05-15 12:47:00,299:INFO:self.USI: 3a0c
+2025-05-15 12:47:00,299:INFO:self._variable_keys: {'_ml_usecase', 'logging_param', 'n_jobs_param', 'html_param', 'seed', '_available_plots', 'USI', 'fold_shuffle_param', 'exp_id', 'target_param', 'y_test', 'fix_imbalance', 'memory', 'pipeline', 'y', 'exp_name_log', 'X_test', 'log_plots_param', 'gpu_n_jobs_param', 'fold_generator', 'data', 'X', 'fold_groups_param', 'X_train', 'gpu_param', 'y_train', 'is_multiclass', 'idx'}
+2025-05-15 12:47:00,299:INFO:Checking environment
+2025-05-15 12:47:00,300:INFO:python_version: 3.11.11
+2025-05-15 12:47:00,300:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 12:47:00,300:INFO:machine: AMD64
+2025-05-15 12:47:00,300:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 12:47:00,300:INFO:Memory: svmem(total=17065795584, available=7869140992, percent=53.9, used=9196654592, free=7869140992)
+2025-05-15 12:47:00,300:INFO:Physical Core: 4
+2025-05-15 12:47:00,300:INFO:Logical Core: 8
+2025-05-15 12:47:00,300:INFO:Checking libraries
+2025-05-15 12:47:00,300:INFO:System:
+2025-05-15 12:47:00,301:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 12:47:00,301:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 12:47:00,301:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 12:47:00,301:INFO:PyCaret required dependencies:
+2025-05-15 12:47:00,785:INFO:                 pip: 25.0
+2025-05-15 12:47:00,785:INFO:          setuptools: 75.8.0
+2025-05-15 12:47:00,785:INFO:             pycaret: 3.3.2
+2025-05-15 12:47:00,785:INFO:             IPython: 9.2.0
+2025-05-15 12:47:00,785:INFO:          ipywidgets: 8.1.6
+2025-05-15 12:47:00,785:INFO:                tqdm: 4.67.1
+2025-05-15 12:47:00,785:INFO:               numpy: 1.26.4
+2025-05-15 12:47:00,785:INFO:              pandas: 2.1.4
+2025-05-15 12:47:00,785:INFO:              jinja2: 3.1.6
+2025-05-15 12:47:00,785:INFO:               scipy: 1.11.4
+2025-05-15 12:47:00,785:INFO:              joblib: 1.3.2
+2025-05-15 12:47:00,785:INFO:             sklearn: 1.4.2
+2025-05-15 12:47:00,785:INFO:                pyod: 2.0.5
+2025-05-15 12:47:00,785:INFO:            imblearn: 0.13.0
+2025-05-15 12:47:00,785:INFO:   category_encoders: 2.7.0
+2025-05-15 12:47:00,785:INFO:            lightgbm: 4.6.0
+2025-05-15 12:47:00,785:INFO:               numba: 0.61.2
+2025-05-15 12:47:00,785:INFO:            requests: 2.32.3
+2025-05-15 12:47:00,785:INFO:          matplotlib: 3.7.5
+2025-05-15 12:47:00,785:INFO:          scikitplot: 0.3.7
+2025-05-15 12:47:00,785:INFO:         yellowbrick: 1.5
+2025-05-15 12:47:00,785:INFO:              plotly: 5.19.0
+2025-05-15 12:47:00,785:INFO:    plotly-resampler: Not installed
+2025-05-15 12:47:00,785:INFO:             kaleido: 0.2.1
+2025-05-15 12:47:00,785:INFO:           schemdraw: 0.15
+2025-05-15 12:47:00,785:INFO:         statsmodels: 0.14.4
+2025-05-15 12:47:00,785:INFO:              sktime: 0.26.0
+2025-05-15 12:47:00,785:INFO:               tbats: 1.1.3
+2025-05-15 12:47:00,785:INFO:            pmdarima: 2.0.4
+2025-05-15 12:47:00,785:INFO:              psutil: 7.0.0
+2025-05-15 12:47:00,785:INFO:          markupsafe: 3.0.2
+2025-05-15 12:47:00,785:INFO:             pickle5: Not installed
+2025-05-15 12:47:00,785:INFO:         cloudpickle: 3.1.1
+2025-05-15 12:47:00,785:INFO:         deprecation: 2.1.0
+2025-05-15 12:47:00,785:INFO:              xxhash: 3.5.0
+2025-05-15 12:47:00,785:INFO:           wurlitzer: Not installed
+2025-05-15 12:47:00,785:INFO:PyCaret optional dependencies:
+2025-05-15 12:47:00,989:INFO:                shap: 0.47.2
+2025-05-15 12:47:00,989:INFO:           interpret: Not installed
+2025-05-15 12:47:00,989:INFO:                umap: Not installed
+2025-05-15 12:47:00,989:INFO:     ydata_profiling: Not installed
+2025-05-15 12:47:00,989:INFO:  explainerdashboard: Not installed
+2025-05-15 12:47:00,989:INFO:             autoviz: Not installed
+2025-05-15 12:47:00,989:INFO:           fairlearn: Not installed
+2025-05-15 12:47:00,989:INFO:          deepchecks: Not installed
+2025-05-15 12:47:00,989:INFO:             xgboost: 3.0.0
+2025-05-15 12:47:00,989:INFO:            catboost: 1.2.8
+2025-05-15 12:47:00,989:INFO:              kmodes: Not installed
+2025-05-15 12:47:00,989:INFO:             mlxtend: Not installed
+2025-05-15 12:47:00,989:INFO:       statsforecast: Not installed
+2025-05-15 12:47:00,989:INFO:        tune_sklearn: Not installed
+2025-05-15 12:47:00,989:INFO:                 ray: Not installed
+2025-05-15 12:47:00,989:INFO:            hyperopt: Not installed
+2025-05-15 12:47:00,989:INFO:              optuna: 4.3.0
+2025-05-15 12:47:00,989:INFO:               skopt: Not installed
+2025-05-15 12:47:00,989:INFO:              mlflow: Not installed
+2025-05-15 12:47:00,989:INFO:              gradio: Not installed
+2025-05-15 12:47:00,989:INFO:             fastapi: Not installed
+2025-05-15 12:47:00,989:INFO:             uvicorn: Not installed
+2025-05-15 12:47:00,989:INFO:              m2cgen: Not installed
+2025-05-15 12:47:00,989:INFO:           evidently: Not installed
+2025-05-15 12:47:00,989:INFO:               fugue: Not installed
+2025-05-15 12:47:00,989:INFO:           streamlit: 1.44.1
+2025-05-15 12:47:00,989:INFO:             prophet: Not installed
+2025-05-15 12:47:00,989:INFO:None
+2025-05-15 12:47:00,989:INFO:Set up data.
+2025-05-15 12:47:01,048:INFO:Set up folding strategy.
+2025-05-15 12:47:01,050:INFO:Set up train/test split.
+2025-05-15 12:48:52,701:INFO:PyCaret RegressionExperiment
+2025-05-15 12:48:52,701:INFO:Logging name: reg-default-name
+2025-05-15 12:48:52,701:INFO:ML Usecase: MLUsecase.REGRESSION
+2025-05-15 12:48:52,701:INFO:version 3.3.2
+2025-05-15 12:48:52,701:INFO:Initializing setup()
+2025-05-15 12:48:52,701:INFO:self.USI: 40f1
+2025-05-15 12:48:52,701:INFO:self._variable_keys: {'_ml_usecase', 'logging_param', 'n_jobs_param', 'html_param', 'transform_target_param', 'seed', '_available_plots', 'USI', 'fold_shuffle_param', 'exp_id', 'target_param', 'y_test', 'memory', 'pipeline', 'y', 'exp_name_log', 'X_test', 'log_plots_param', 'gpu_n_jobs_param', 'fold_generator', 'data', 'X', 'fold_groups_param', 'X_train', 'gpu_param', 'y_train', 'idx'}
+2025-05-15 12:48:52,701:INFO:Checking environment
+2025-05-15 12:48:52,701:INFO:python_version: 3.11.11
+2025-05-15 12:48:52,701:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 12:48:52,701:INFO:machine: AMD64
+2025-05-15 12:48:52,703:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 12:48:52,703:INFO:Memory: svmem(total=17065795584, available=7839059968, percent=54.1, used=9226735616, free=7839059968)
+2025-05-15 12:48:52,703:INFO:Physical Core: 4
+2025-05-15 12:48:52,703:INFO:Logical Core: 8
+2025-05-15 12:48:52,703:INFO:Checking libraries
+2025-05-15 12:48:52,703:INFO:System:
+2025-05-15 12:48:52,703:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 12:48:52,703:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 12:48:52,703:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 12:48:52,703:INFO:PyCaret required dependencies:
+2025-05-15 12:48:52,703:INFO:                 pip: 25.0
+2025-05-15 12:48:52,703:INFO:          setuptools: 75.8.0
+2025-05-15 12:48:52,703:INFO:             pycaret: 3.3.2
+2025-05-15 12:48:52,703:INFO:             IPython: 9.2.0
+2025-05-15 12:48:52,703:INFO:          ipywidgets: 8.1.6
+2025-05-15 12:48:52,703:INFO:                tqdm: 4.67.1
+2025-05-15 12:48:52,703:INFO:               numpy: 1.26.4
+2025-05-15 12:48:52,703:INFO:              pandas: 2.1.4
+2025-05-15 12:48:52,703:INFO:              jinja2: 3.1.6
+2025-05-15 12:48:52,703:INFO:               scipy: 1.11.4
+2025-05-15 12:48:52,703:INFO:              joblib: 1.3.2
+2025-05-15 12:48:52,703:INFO:             sklearn: 1.4.2
+2025-05-15 12:48:52,703:INFO:                pyod: 2.0.5
+2025-05-15 12:48:52,703:INFO:            imblearn: 0.13.0
+2025-05-15 12:48:52,703:INFO:   category_encoders: 2.7.0
+2025-05-15 12:48:52,703:INFO:            lightgbm: 4.6.0
+2025-05-15 12:48:52,704:INFO:               numba: 0.61.2
+2025-05-15 12:48:52,704:INFO:            requests: 2.32.3
+2025-05-15 12:48:52,704:INFO:          matplotlib: 3.7.5
+2025-05-15 12:48:52,704:INFO:          scikitplot: 0.3.7
+2025-05-15 12:48:52,704:INFO:         yellowbrick: 1.5
+2025-05-15 12:48:52,704:INFO:              plotly: 5.19.0
+2025-05-15 12:48:52,704:INFO:    plotly-resampler: Not installed
+2025-05-15 12:48:52,704:INFO:             kaleido: 0.2.1
+2025-05-15 12:48:52,704:INFO:           schemdraw: 0.15
+2025-05-15 12:48:52,704:INFO:         statsmodels: 0.14.4
+2025-05-15 12:48:52,704:INFO:              sktime: 0.26.0
+2025-05-15 12:48:52,704:INFO:               tbats: 1.1.3
+2025-05-15 12:48:52,704:INFO:            pmdarima: 2.0.4
+2025-05-15 12:48:52,704:INFO:              psutil: 7.0.0
+2025-05-15 12:48:52,704:INFO:          markupsafe: 3.0.2
+2025-05-15 12:48:52,704:INFO:             pickle5: Not installed
+2025-05-15 12:48:52,704:INFO:         cloudpickle: 3.1.1
+2025-05-15 12:48:52,704:INFO:         deprecation: 2.1.0
+2025-05-15 12:48:52,704:INFO:              xxhash: 3.5.0
+2025-05-15 12:48:52,704:INFO:           wurlitzer: Not installed
+2025-05-15 12:48:52,704:INFO:PyCaret optional dependencies:
+2025-05-15 12:48:52,704:INFO:                shap: 0.47.2
+2025-05-15 12:48:52,704:INFO:           interpret: Not installed
+2025-05-15 12:48:52,704:INFO:                umap: Not installed
+2025-05-15 12:48:52,704:INFO:     ydata_profiling: Not installed
+2025-05-15 12:48:52,704:INFO:  explainerdashboard: Not installed
+2025-05-15 12:48:52,704:INFO:             autoviz: Not installed
+2025-05-15 12:48:52,704:INFO:           fairlearn: Not installed
+2025-05-15 12:48:52,704:INFO:          deepchecks: Not installed
+2025-05-15 12:48:52,706:INFO:             xgboost: 3.0.0
+2025-05-15 12:48:52,706:INFO:            catboost: 1.2.8
+2025-05-15 12:48:52,706:INFO:              kmodes: Not installed
+2025-05-15 12:48:52,706:INFO:             mlxtend: Not installed
+2025-05-15 12:48:52,706:INFO:       statsforecast: Not installed
+2025-05-15 12:48:52,706:INFO:        tune_sklearn: Not installed
+2025-05-15 12:48:52,706:INFO:                 ray: Not installed
+2025-05-15 12:48:52,706:INFO:            hyperopt: Not installed
+2025-05-15 12:48:52,706:INFO:              optuna: 4.3.0
+2025-05-15 12:48:52,706:INFO:               skopt: Not installed
+2025-05-15 12:48:52,706:INFO:              mlflow: Not installed
+2025-05-15 12:48:52,706:INFO:              gradio: Not installed
+2025-05-15 12:48:52,706:INFO:             fastapi: Not installed
+2025-05-15 12:48:52,706:INFO:             uvicorn: Not installed
+2025-05-15 12:48:52,706:INFO:              m2cgen: Not installed
+2025-05-15 12:48:52,706:INFO:           evidently: Not installed
+2025-05-15 12:48:52,706:INFO:               fugue: Not installed
+2025-05-15 12:48:52,706:INFO:           streamlit: 1.44.1
+2025-05-15 12:48:52,706:INFO:             prophet: Not installed
+2025-05-15 12:48:52,706:INFO:None
+2025-05-15 12:48:52,706:INFO:Set up data.
+2025-05-15 12:48:52,751:INFO:Set up folding strategy.
+2025-05-15 12:48:52,751:INFO:Set up train/test split.
+2025-05-15 12:48:52,831:INFO:Set up index.
+2025-05-15 12:48:52,831:INFO:Assigning column types.
+2025-05-15 12:48:52,863:INFO:Engine successfully changes for model 'lr' to 'sklearn'.
+2025-05-15 12:48:52,863:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 12:48:52,867:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 12:48:52,871:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:52,941:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:53,020:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:53,021:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:53,023:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:55,912:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 12:48:55,927:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 12:48:55,927:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:55,991:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,055:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,055:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:56,065:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:56,065:INFO:Engine successfully changes for model 'lasso' to 'sklearn'.
+2025-05-15 12:48:56,071:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,071:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,151:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,283:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,294:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:56,294:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:56,315:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,325:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,515:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,642:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,642:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:56,642:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:56,642:INFO:Engine successfully changes for model 'ridge' to 'sklearn'.
+2025-05-15 12:48:56,659:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,735:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,784:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,784:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:56,784:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:56,800:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,863:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,911:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:56,911:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:56,911:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:56,911:INFO:Engine successfully changes for model 'en' to 'sklearn'.
+2025-05-15 12:48:56,990:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,072:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,072:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,072:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,149:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,197:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,197:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,197:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,197:INFO:Engine successfully changes for model 'knn' to 'sklearn'.
+2025-05-15 12:48:57,276:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,315:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,324:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,390:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 12:48:57,487:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,489:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,489:INFO:Engine successfully changes for model 'svm' to 'sklearn'.
+2025-05-15 12:48:57,650:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,652:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,861:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:48:57,861:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:48:57,893:INFO:Preparing preprocessing pipeline...
+2025-05-15 12:48:57,893:INFO:Set up simple imputation.
+2025-05-15 12:48:57,909:INFO:Set up encoding of ordinal features.
+2025-05-15 12:48:57,924:INFO:Set up encoding of categorical features.
+2025-05-15 12:48:57,940:INFO:Set up column name cleaning.
+2025-05-15 12:48:59,133:INFO:Finished creating preprocessing pipeline.
+2025-05-15 12:48:59,181:INFO:Pipeline: Pipeline(memory=FastMemory(location=C:\Users\jdche\AppData\Local\Temp\joblib),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['ISBSG Project ID',
+                                             'Project (PRF) - Year of Project',
+                                             'Project (PRF) - Functional Size',
+                                             'Project (PRF) - Normalised Work '
+                                             'Effort Level 1',
+                                             'Project (PRF) - Normalised Level '
+                                             '1 PDR (ufp)',
+                                             'Project (PRF) - Normalised PDR '
+                                             '(ufp)',
+                                             'Proj...
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Roles',
+                                                                    'Tech (TF) '
+                                                                    '- Server '
+                                                                    'Roles'],
+                                                              drop_invariant=False,
+                                                              handle_missing='return_nan',
+                                                              handle_unknown='value',
+                                                              hierarchy=None,
+                                                              min_samples_leaf=20,
+                                                              return_df=True,
+                                                              smoothing=10,
+                                                              verbose=0))),
+                ('clean_column_names',
+                 TransformerWrapper(exclude=None, include=None,
+                                    transformer=CleanColumnNames(match='[\\]\\[\\,\\{\\}\\"\\:]+')))],
+         verbose=False)
+2025-05-15 12:48:59,181:INFO:Creating final display dataframe.
+2025-05-15 12:49:01,086:INFO:Setup _display_container:                     Description                                   Value
+0                    Session id                                     123
+1                        Target  Project (PRF) - Normalised Work Effort
+2                   Target type                              Regression
+3           Original data shape                              (7058, 52)
+4        Transformed data shape                             (7058, 160)
+5   Transformed train set shape                             (4940, 160)
+6    Transformed test set shape                             (2118, 160)
+7              Numeric features                                      26
+8          Categorical features                                      25
+9      Rows with missing values                                  100.0%
+10                   Preprocess                                    True
+11              Imputation type                                  simple
+12           Numeric imputation                                    mean
+13       Categorical imputation                                    mode
+14     Maximum one-hot encoding                                      25
+15              Encoding method                                    None
+16               Fold Generator                                   KFold
+17                  Fold Number                                      10
+18                     CPU Jobs                                      -1
+19                      Use GPU                                   False
+20               Log Experiment                                   False
+21              Experiment Name                        reg-default-name
+22                          USI                                    40f1
+2025-05-15 12:49:01,275:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:49:01,280:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:49:01,440:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 12:49:01,440:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 12:49:01,440:INFO:setup() successfully completed in 8.74s...............
+2025-05-15 13:40:17,111:INFO:PyCaret RegressionExperiment
+2025-05-15 13:40:17,111:INFO:Logging name: reg-default-name
+2025-05-15 13:40:17,111:INFO:ML Usecase: MLUsecase.REGRESSION
+2025-05-15 13:40:17,111:INFO:version 3.3.2
+2025-05-15 13:40:17,112:INFO:Initializing setup()
+2025-05-15 13:40:17,112:INFO:self.USI: 0380
+2025-05-15 13:40:17,112:INFO:self._variable_keys: {'_ml_usecase', 'logging_param', 'n_jobs_param', 'html_param', 'transform_target_param', 'seed', '_available_plots', 'USI', 'fold_shuffle_param', 'exp_id', 'target_param', 'y_test', 'memory', 'pipeline', 'y', 'exp_name_log', 'X_test', 'log_plots_param', 'gpu_n_jobs_param', 'fold_generator', 'data', 'X', 'fold_groups_param', 'X_train', 'gpu_param', 'y_train', 'idx'}
+2025-05-15 13:40:17,112:INFO:Checking environment
+2025-05-15 13:40:17,112:INFO:python_version: 3.11.11
+2025-05-15 13:40:17,112:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 13:40:17,112:INFO:machine: AMD64
+2025-05-15 13:40:17,112:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 13:40:17,112:INFO:Memory: svmem(total=17065795584, available=8448008192, percent=50.5, used=8617787392, free=8448008192)
+2025-05-15 13:40:17,112:INFO:Physical Core: 4
+2025-05-15 13:40:17,113:INFO:Logical Core: 8
+2025-05-15 13:40:17,113:INFO:Checking libraries
+2025-05-15 13:40:17,113:INFO:System:
+2025-05-15 13:40:17,113:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 13:40:17,113:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 13:40:17,113:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 13:40:17,113:INFO:PyCaret required dependencies:
+2025-05-15 13:40:17,113:INFO:                 pip: 25.0
+2025-05-15 13:40:17,114:INFO:          setuptools: 75.8.0
+2025-05-15 13:40:17,114:INFO:             pycaret: 3.3.2
+2025-05-15 13:40:17,114:INFO:             IPython: 9.2.0
+2025-05-15 13:40:17,114:INFO:          ipywidgets: 8.1.6
+2025-05-15 13:40:17,114:INFO:                tqdm: 4.67.1
+2025-05-15 13:40:17,114:INFO:               numpy: 1.26.4
+2025-05-15 13:40:17,114:INFO:              pandas: 2.1.4
+2025-05-15 13:40:17,114:INFO:              jinja2: 3.1.6
+2025-05-15 13:40:17,114:INFO:               scipy: 1.11.4
+2025-05-15 13:40:17,115:INFO:              joblib: 1.3.2
+2025-05-15 13:40:17,115:INFO:             sklearn: 1.4.2
+2025-05-15 13:40:17,115:INFO:                pyod: 2.0.5
+2025-05-15 13:40:17,115:INFO:            imblearn: 0.13.0
+2025-05-15 13:40:17,115:INFO:   category_encoders: 2.7.0
+2025-05-15 13:40:17,115:INFO:            lightgbm: 4.6.0
+2025-05-15 13:40:17,115:INFO:               numba: 0.61.2
+2025-05-15 13:40:17,115:INFO:            requests: 2.32.3
+2025-05-15 13:40:17,115:INFO:          matplotlib: 3.7.5
+2025-05-15 13:40:17,115:INFO:          scikitplot: 0.3.7
+2025-05-15 13:40:17,116:INFO:         yellowbrick: 1.5
+2025-05-15 13:40:17,116:INFO:              plotly: 5.19.0
+2025-05-15 13:40:17,116:INFO:    plotly-resampler: Not installed
+2025-05-15 13:40:17,116:INFO:             kaleido: 0.2.1
+2025-05-15 13:40:17,116:INFO:           schemdraw: 0.15
+2025-05-15 13:40:17,116:INFO:         statsmodels: 0.14.4
+2025-05-15 13:40:17,116:INFO:              sktime: 0.26.0
+2025-05-15 13:40:17,116:INFO:               tbats: 1.1.3
+2025-05-15 13:40:17,116:INFO:            pmdarima: 2.0.4
+2025-05-15 13:40:17,116:INFO:              psutil: 7.0.0
+2025-05-15 13:40:17,116:INFO:          markupsafe: 3.0.2
+2025-05-15 13:40:17,116:INFO:             pickle5: Not installed
+2025-05-15 13:40:17,116:INFO:         cloudpickle: 3.1.1
+2025-05-15 13:40:17,116:INFO:         deprecation: 2.1.0
+2025-05-15 13:40:17,116:INFO:              xxhash: 3.5.0
+2025-05-15 13:40:17,116:INFO:           wurlitzer: Not installed
+2025-05-15 13:40:17,116:INFO:PyCaret optional dependencies:
+2025-05-15 13:40:17,116:INFO:                shap: 0.47.2
+2025-05-15 13:40:17,116:INFO:           interpret: Not installed
+2025-05-15 13:40:17,116:INFO:                umap: Not installed
+2025-05-15 13:40:17,116:INFO:     ydata_profiling: Not installed
+2025-05-15 13:40:17,116:INFO:  explainerdashboard: Not installed
+2025-05-15 13:40:17,116:INFO:             autoviz: Not installed
+2025-05-15 13:40:17,116:INFO:           fairlearn: Not installed
+2025-05-15 13:40:17,116:INFO:          deepchecks: Not installed
+2025-05-15 13:40:17,119:INFO:             xgboost: 3.0.0
+2025-05-15 13:40:17,119:INFO:            catboost: 1.2.8
+2025-05-15 13:40:17,119:INFO:              kmodes: Not installed
+2025-05-15 13:40:17,119:INFO:             mlxtend: Not installed
+2025-05-15 13:40:17,119:INFO:       statsforecast: Not installed
+2025-05-15 13:40:17,119:INFO:        tune_sklearn: Not installed
+2025-05-15 13:40:17,119:INFO:                 ray: Not installed
+2025-05-15 13:40:17,119:INFO:            hyperopt: Not installed
+2025-05-15 13:40:17,119:INFO:              optuna: 4.3.0
+2025-05-15 13:40:17,119:INFO:               skopt: Not installed
+2025-05-15 13:40:17,119:INFO:              mlflow: Not installed
+2025-05-15 13:40:17,119:INFO:              gradio: Not installed
+2025-05-15 13:40:17,119:INFO:             fastapi: Not installed
+2025-05-15 13:40:17,119:INFO:             uvicorn: Not installed
+2025-05-15 13:40:17,119:INFO:              m2cgen: Not installed
+2025-05-15 13:40:17,119:INFO:           evidently: Not installed
+2025-05-15 13:40:17,121:INFO:               fugue: Not installed
+2025-05-15 13:40:17,121:INFO:           streamlit: 1.44.1
+2025-05-15 13:40:17,121:INFO:             prophet: Not installed
+2025-05-15 13:40:17,121:INFO:None
+2025-05-15 13:40:17,121:INFO:Set up data.
+2025-05-15 13:40:17,183:INFO:Set up folding strategy.
+2025-05-15 13:40:17,183:INFO:Set up train/test split.
+2025-05-15 13:40:17,216:INFO:Set up index.
+2025-05-15 13:40:17,217:INFO:Assigning column types.
+2025-05-15 13:40:17,233:INFO:Engine successfully changes for model 'lr' to 'sklearn'.
+2025-05-15 13:40:17,234:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,238:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,243:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,346:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,443:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,445:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:17,447:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:17,447:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,453:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,457:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,601:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,728:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,730:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:17,732:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:17,732:INFO:Engine successfully changes for model 'lasso' to 'sklearn'.
+2025-05-15 13:40:17,752:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,760:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,933:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,980:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,980:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:17,984:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:17,988:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:40:17,993:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,050:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,175:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,175:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:18,175:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:18,175:INFO:Engine successfully changes for model 'ridge' to 'sklearn'.
+2025-05-15 13:40:18,205:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,328:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,430:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,431:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:18,438:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:18,450:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,526:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,565:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,565:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:18,565:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:18,565:INFO:Engine successfully changes for model 'en' to 'sklearn'.
+2025-05-15 13:40:18,688:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,732:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,732:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:18,739:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:18,877:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,925:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:40:18,925:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:18,925:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:18,925:INFO:Engine successfully changes for model 'knn' to 'sklearn'.
+2025-05-15 13:40:19,001:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:19,044:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:19,044:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:19,189:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:40:19,308:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:19,311:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:19,311:INFO:Engine successfully changes for model 'svm' to 'sklearn'.
+2025-05-15 13:40:19,486:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:19,494:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:19,816:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:19,816:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:19,816:INFO:Preparing preprocessing pipeline...
+2025-05-15 13:40:19,816:INFO:Set up simple imputation.
+2025-05-15 13:40:19,816:INFO:Set up encoding of ordinal features.
+2025-05-15 13:40:19,831:INFO:Set up encoding of categorical features.
+2025-05-15 13:40:19,831:INFO:Set up column name cleaning.
+2025-05-15 13:40:20,659:INFO:Finished creating preprocessing pipeline.
+2025-05-15 13:40:20,693:INFO:Pipeline: Pipeline(memory=FastMemory(location=C:\Users\jdche\AppData\Local\Temp\joblib),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['ISBSG Project ID',
+                                             'Project (PRF) - Year of Project',
+                                             'Project (PRF) - Functional Size',
+                                             'Project (PRF) - Normalised Work '
+                                             'Effort Level 1',
+                                             'Project (PRF) - Normalised Level '
+                                             '1 PDR (ufp)',
+                                             'Project (PRF) - Normalised PDR '
+                                             '(ufp)',
+                                             'Proj...
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Roles',
+                                                                    'Tech (TF) '
+                                                                    '- Server '
+                                                                    'Roles'],
+                                                              drop_invariant=False,
+                                                              handle_missing='return_nan',
+                                                              handle_unknown='value',
+                                                              hierarchy=None,
+                                                              min_samples_leaf=20,
+                                                              return_df=True,
+                                                              smoothing=10,
+                                                              verbose=0))),
+                ('clean_column_names',
+                 TransformerWrapper(exclude=None, include=None,
+                                    transformer=CleanColumnNames(match='[\\]\\[\\,\\{\\}\\"\\:]+')))],
+         verbose=False)
+2025-05-15 13:40:20,693:INFO:Creating final display dataframe.
+2025-05-15 13:40:22,504:INFO:Setup _display_container:                     Description                                   Value
+0                    Session id                                     123
+1                        Target  Project (PRF) - Normalised Work Effort
+2                   Target type                              Regression
+3           Original data shape                              (7058, 52)
+4        Transformed data shape                             (7058, 160)
+5   Transformed train set shape                             (4940, 160)
+6    Transformed test set shape                             (2118, 160)
+7              Numeric features                                      26
+8          Categorical features                                      25
+9      Rows with missing values                                  100.0%
+10                   Preprocess                                    True
+11              Imputation type                                  simple
+12           Numeric imputation                                    mean
+13       Categorical imputation                                    mode
+14     Maximum one-hot encoding                                      25
+15              Encoding method                                    None
+16               Fold Generator                                   KFold
+17                  Fold Number                                      10
+18                     CPU Jobs                                      -1
+19                      Use GPU                                   False
+20               Log Experiment                                   False
+21              Experiment Name                        reg-default-name
+22                          USI                                    0380
+2025-05-15 13:40:22,615:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:22,627:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:22,757:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:40:22,775:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:40:22,777:INFO:setup() successfully completed in 5.68s...............
+2025-05-15 13:44:02,476:INFO:PyCaret RegressionExperiment
+2025-05-15 13:44:02,476:INFO:Logging name: reg-default-name
+2025-05-15 13:44:02,476:INFO:ML Usecase: MLUsecase.REGRESSION
+2025-05-15 13:44:02,476:INFO:version 3.3.2
+2025-05-15 13:44:02,477:INFO:Initializing setup()
+2025-05-15 13:44:02,477:INFO:self.USI: 661c
+2025-05-15 13:44:02,477:INFO:self._variable_keys: {'_ml_usecase', 'logging_param', 'n_jobs_param', 'html_param', 'transform_target_param', 'seed', '_available_plots', 'USI', 'fold_shuffle_param', 'exp_id', 'target_param', 'y_test', 'memory', 'pipeline', 'y', 'exp_name_log', 'X_test', 'log_plots_param', 'gpu_n_jobs_param', 'fold_generator', 'data', 'X', 'fold_groups_param', 'X_train', 'gpu_param', 'y_train', 'idx'}
+2025-05-15 13:44:02,477:INFO:Checking environment
+2025-05-15 13:44:02,477:INFO:python_version: 3.11.11
+2025-05-15 13:44:02,477:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 13:44:02,477:INFO:machine: AMD64
+2025-05-15 13:44:02,478:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 13:44:02,478:INFO:Memory: svmem(total=17065795584, available=8452444160, percent=50.5, used=8613351424, free=8452444160)
+2025-05-15 13:44:02,478:INFO:Physical Core: 4
+2025-05-15 13:44:02,478:INFO:Logical Core: 8
+2025-05-15 13:44:02,479:INFO:Checking libraries
+2025-05-15 13:44:02,479:INFO:System:
+2025-05-15 13:44:02,479:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 13:44:02,479:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 13:44:02,479:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 13:44:02,479:INFO:PyCaret required dependencies:
+2025-05-15 13:44:02,479:INFO:                 pip: 25.0
+2025-05-15 13:44:02,479:INFO:          setuptools: 75.8.0
+2025-05-15 13:44:02,480:INFO:             pycaret: 3.3.2
+2025-05-15 13:44:02,480:INFO:             IPython: 9.2.0
+2025-05-15 13:44:02,480:INFO:          ipywidgets: 8.1.6
+2025-05-15 13:44:02,480:INFO:                tqdm: 4.67.1
+2025-05-15 13:44:02,480:INFO:               numpy: 1.26.4
+2025-05-15 13:44:02,480:INFO:              pandas: 2.1.4
+2025-05-15 13:44:02,480:INFO:              jinja2: 3.1.6
+2025-05-15 13:44:02,480:INFO:               scipy: 1.11.4
+2025-05-15 13:44:02,480:INFO:              joblib: 1.3.2
+2025-05-15 13:44:02,480:INFO:             sklearn: 1.4.2
+2025-05-15 13:44:02,480:INFO:                pyod: 2.0.5
+2025-05-15 13:44:02,480:INFO:            imblearn: 0.13.0
+2025-05-15 13:44:02,480:INFO:   category_encoders: 2.7.0
+2025-05-15 13:44:02,481:INFO:            lightgbm: 4.6.0
+2025-05-15 13:44:02,481:INFO:               numba: 0.61.2
+2025-05-15 13:44:02,481:INFO:            requests: 2.32.3
+2025-05-15 13:44:02,481:INFO:          matplotlib: 3.7.5
+2025-05-15 13:44:02,481:INFO:          scikitplot: 0.3.7
+2025-05-15 13:44:02,481:INFO:         yellowbrick: 1.5
+2025-05-15 13:44:02,481:INFO:              plotly: 5.19.0
+2025-05-15 13:44:02,481:INFO:    plotly-resampler: Not installed
+2025-05-15 13:44:02,481:INFO:             kaleido: 0.2.1
+2025-05-15 13:44:02,481:INFO:           schemdraw: 0.15
+2025-05-15 13:44:02,481:INFO:         statsmodels: 0.14.4
+2025-05-15 13:44:02,481:INFO:              sktime: 0.26.0
+2025-05-15 13:44:02,481:INFO:               tbats: 1.1.3
+2025-05-15 13:44:02,481:INFO:            pmdarima: 2.0.4
+2025-05-15 13:44:02,481:INFO:              psutil: 7.0.0
+2025-05-15 13:44:02,481:INFO:          markupsafe: 3.0.2
+2025-05-15 13:44:02,482:INFO:             pickle5: Not installed
+2025-05-15 13:44:02,482:INFO:         cloudpickle: 3.1.1
+2025-05-15 13:44:02,482:INFO:         deprecation: 2.1.0
+2025-05-15 13:44:02,482:INFO:              xxhash: 3.5.0
+2025-05-15 13:44:02,482:INFO:           wurlitzer: Not installed
+2025-05-15 13:44:02,482:INFO:PyCaret optional dependencies:
+2025-05-15 13:44:02,482:INFO:                shap: 0.47.2
+2025-05-15 13:44:02,482:INFO:           interpret: Not installed
+2025-05-15 13:44:02,482:INFO:                umap: Not installed
+2025-05-15 13:44:02,482:INFO:     ydata_profiling: Not installed
+2025-05-15 13:44:02,482:INFO:  explainerdashboard: Not installed
+2025-05-15 13:44:02,483:INFO:             autoviz: Not installed
+2025-05-15 13:44:02,483:INFO:           fairlearn: Not installed
+2025-05-15 13:44:02,483:INFO:          deepchecks: Not installed
+2025-05-15 13:44:02,483:INFO:             xgboost: 3.0.0
+2025-05-15 13:44:02,483:INFO:            catboost: 1.2.8
+2025-05-15 13:44:02,483:INFO:              kmodes: Not installed
+2025-05-15 13:44:02,483:INFO:             mlxtend: Not installed
+2025-05-15 13:44:02,483:INFO:       statsforecast: Not installed
+2025-05-15 13:44:02,483:INFO:        tune_sklearn: Not installed
+2025-05-15 13:44:02,483:INFO:                 ray: Not installed
+2025-05-15 13:44:02,483:INFO:            hyperopt: Not installed
+2025-05-15 13:44:02,483:INFO:              optuna: 4.3.0
+2025-05-15 13:44:02,483:INFO:               skopt: Not installed
+2025-05-15 13:44:02,483:INFO:              mlflow: Not installed
+2025-05-15 13:44:02,483:INFO:              gradio: Not installed
+2025-05-15 13:44:02,483:INFO:             fastapi: Not installed
+2025-05-15 13:44:02,483:INFO:             uvicorn: Not installed
+2025-05-15 13:44:02,484:INFO:              m2cgen: Not installed
+2025-05-15 13:44:02,484:INFO:           evidently: Not installed
+2025-05-15 13:44:02,484:INFO:               fugue: Not installed
+2025-05-15 13:44:02,484:INFO:           streamlit: 1.44.1
+2025-05-15 13:44:02,484:INFO:             prophet: Not installed
+2025-05-15 13:44:02,484:INFO:None
+2025-05-15 13:44:02,484:INFO:Set up data.
+2025-05-15 13:44:02,551:INFO:Set up folding strategy.
+2025-05-15 13:44:02,551:INFO:Set up train/test split.
+2025-05-15 13:44:02,581:INFO:Set up index.
+2025-05-15 13:44:02,581:INFO:Assigning column types.
+2025-05-15 13:44:02,602:INFO:Engine successfully changes for model 'lr' to 'sklearn'.
+2025-05-15 13:44:02,602:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,606:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,612:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,690:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,747:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,748:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:02,750:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:02,751:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,756:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,761:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,826:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,910:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,910:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:02,910:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:02,910:INFO:Engine successfully changes for model 'lasso' to 'sklearn'.
+2025-05-15 13:44:02,910:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,926:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:02,989:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,068:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,068:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:03,068:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:03,096:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,100:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,236:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,377:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,377:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:03,384:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:03,384:INFO:Engine successfully changes for model 'ridge' to 'sklearn'.
+2025-05-15 13:44:03,416:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,550:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,597:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,597:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:03,597:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:03,613:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,676:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,707:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:03,721:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:03,723:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:03,723:INFO:Engine successfully changes for model 'en' to 'sklearn'.
+2025-05-15 13:44:03,909:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,024:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,024:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,034:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,252:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,362:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,362:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,362:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,362:INFO:Engine successfully changes for model 'knn' to 'sklearn'.
+2025-05-15 13:44:04,457:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,507:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,514:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,623:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:44:04,665:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,669:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,669:INFO:Engine successfully changes for model 'svm' to 'sklearn'.
+2025-05-15 13:44:04,846:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,849:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,963:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:04,971:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:04,971:INFO:Preparing preprocessing pipeline...
+2025-05-15 13:44:04,971:INFO:Set up simple imputation.
+2025-05-15 13:44:04,976:INFO:Set up encoding of ordinal features.
+2025-05-15 13:44:04,992:INFO:Set up encoding of categorical features.
+2025-05-15 13:44:04,992:INFO:Set up column name cleaning.
+2025-05-15 13:44:05,498:INFO:Finished creating preprocessing pipeline.
+2025-05-15 13:44:05,568:INFO:Pipeline: Pipeline(memory=FastMemory(location=C:\Users\jdche\AppData\Local\Temp\joblib),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['ISBSG Project ID',
+                                             'Project (PRF) - Year of Project',
+                                             'Project (PRF) - Functional Size',
+                                             'Project (PRF) - Normalised Work '
+                                             'Effort Level 1',
+                                             'Project (PRF) - Normalised Level '
+                                             '1 PDR (ufp)',
+                                             'Project (PRF) - Normalised PDR '
+                                             '(ufp)',
+                                             'Proj...
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Roles',
+                                                                    'Tech (TF) '
+                                                                    '- Server '
+                                                                    'Roles'],
+                                                              drop_invariant=False,
+                                                              handle_missing='return_nan',
+                                                              handle_unknown='value',
+                                                              hierarchy=None,
+                                                              min_samples_leaf=20,
+                                                              return_df=True,
+                                                              smoothing=10,
+                                                              verbose=0))),
+                ('clean_column_names',
+                 TransformerWrapper(exclude=None, include=None,
+                                    transformer=CleanColumnNames(match='[\\]\\[\\,\\{\\}\\"\\:]+')))],
+         verbose=False)
+2025-05-15 13:44:05,568:INFO:Creating final display dataframe.
+2025-05-15 13:44:06,231:INFO:Setup _display_container:                     Description                                   Value
+0                    Session id                                     123
+1                        Target  Project (PRF) - Normalised Work Effort
+2                   Target type                              Regression
+3           Original data shape                              (7058, 52)
+4        Transformed data shape                             (7058, 160)
+5   Transformed train set shape                             (4940, 160)
+6    Transformed test set shape                             (2118, 160)
+7              Numeric features                                      26
+8          Categorical features                                      25
+9      Rows with missing values                                  100.0%
+10                   Preprocess                                    True
+11              Imputation type                                  simple
+12           Numeric imputation                                    mean
+13       Categorical imputation                                    mode
+14     Maximum one-hot encoding                                      25
+15              Encoding method                                    None
+16               Fold Generator                                   KFold
+17                  Fold Number                                      10
+18                     CPU Jobs                                      -1
+19                      Use GPU                                   False
+20               Log Experiment                                   False
+21              Experiment Name                        reg-default-name
+22                          USI                                    661c
+2025-05-15 13:44:06,367:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:06,375:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:06,557:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:44:06,559:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:44:06,560:INFO:setup() successfully completed in 4.09s...............
+2025-05-15 13:44:12,711:INFO:Initializing get_config()
+2025-05-15 13:44:12,711:INFO:get_config(self=<pycaret.classification.oop.ClassificationExperiment object at 0x000002B2AAC6B050>, variable=dataset)
+2025-05-15 13:44:12,711:INFO:Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+2025-05-15 13:44:12,711:WARNING:C:\Users\jdche\.conda\envs\streamlit-env-agile\Lib\site-packages\pycaret\internal\pycaret_experiment\pycaret_experiment.py:321: UserWarning: Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+  warnings.warn(msg)  # print on screen
+
+2025-05-15 13:44:12,739:INFO:Variable:  returned as       ISBSG Project ID External (EEF) - Data Quality Rating  \
+0                10003                                    B   
+1                10011                                    B   
+2                10012                                    B   
+3                10014                                    B   
+4                10015                                    B   
+...                ...                                  ...   
+7053             32757                                    B   
+7054             32758                                    B   
+7055             32762                                    B   
+7056             32766                                    A   
+7057             32767                                    B   
+
+      Project (PRF) - Year of Project External (EEF) - Industry Sector  \
+0                                2015                    Communication   
+1                                1996                     Construction   
+2                                2002               Wholesale & Retail   
+3                                2004                              NaN   
+4                                2000               Wholesale & Retail   
+...                               ...                              ...   
+7053                             1998                              NaN   
+7054                             1995                       Government   
+7055                             2014                    Communication   
+7056                             2000                       Government   
+7057                             2009                    Manufacturing   
+
+     External (EEF) - Organisation Type Project (PRF) - Application Group  \
+0                   Telecommunications;              Business Application   
+1                         Construction;              Business Application   
+2                              Billing;              Business Application   
+3                                   NaN                               NaN   
+4             Wholesale & Retail Trade;              Business Application   
+...                                 ...                               ...   
+7053                                NaN                               NaN   
+7054                        Government;              Business Application   
+7055                Telecommunications;              Business Application   
+7056             Public Administration;              Business Application   
+7057                     Manufacturing;              Business Application   
+
+       Project (PRF) - Application Type Project (PRF) - Development Type  \
+0                       Online. eSales;                      Enhancement   
+1     Stock control & order processing;                  New Development   
+2                              Billing;                      Enhancement   
+3                                   NaN                      Enhancement   
+4        Management Information System;                      Enhancement   
+...                                 ...                              ...   
+7053                                NaN                  New Development   
+7054     Management Information System;                      Enhancement   
+7055  Customer relationship management;                      Enhancement   
+7056       Electronic Data Interchange;                  New Development   
+7057                      Cars selling;                      Enhancement   
+
+     Tech (TF) - Development Platform Tech (TF) - Language Type  ...  \
+0                               Multi                       NaN  ...   
+1                               Multi                       4GL  ...   
+2                                 NaN                       3GL  ...   
+3                                 NaN                       NaN  ...   
+4                                  MF                       3GL  ...   
+...                               ...                       ...  ...   
+7053                              NaN                       NaN  ...   
+7054                               MF                       3GL  ...   
+7055                            Multi                       3GL  ...   
+7056                               PC                       3GL  ...   
+7057                            Multi                       3GL  ...   
+
+     People (PRF) - IT experience <3 yr  \
+0                                   NaN   
+1                                   NaN   
+2                                   NaN   
+3                                   NaN   
+4                                   NaN   
+...                                 ...   
+7053                                NaN   
+7054                                NaN   
+7055                                NaN   
+7056                                NaN   
+7057                                NaN   
+
+      People (PRF) - IT experience 3 to 9 yr  \
+0                                        NaN   
+1                                        NaN   
+2                                        NaN   
+3                                        NaN   
+4                                        NaN   
+...                                      ...   
+7053                                     NaN   
+7054                                     NaN   
+7055                                     NaN   
+7056                                     NaN   
+7057                                     NaN   
+
+     People (PRF) - IT experience >9 yr  \
+0                                   NaN   
+1                                   NaN   
+2                                   NaN   
+3                                   NaN   
+4                                   NaN   
+...                                 ...   
+7053                                NaN   
+7054                                NaN   
+7055                                NaN   
+7056                                NaN   
+7057                                NaN   
+
+      People (PRF) - Project manage experience  \
+0                                          NaN   
+1                                          NaN   
+2                                          NaN   
+3                                          NaN   
+4                                          NaN   
+...                                        ...   
+7053                                       NaN   
+7054                                       NaN   
+7055                                       NaN   
+7056                                      17.0   
+7057                                       NaN   
+
+      People (PRF) - Project manage changes  People (PRF) - Personnel changes  \
+0                                       NaN                               NaN   
+1                                       NaN                               NaN   
+2                                       NaN                               NaN   
+3                                       NaN                               NaN   
+4                                       NaN                               NaN   
+...                                     ...                               ...   
+7053                                    NaN                               NaN   
+7054                                    NaN                               NaN   
+7055                                    NaN                               NaN   
+7056                                    0.0                               0.0   
+7057                                    NaN                               NaN   
+
+      Project (PRF) - Total project cost  Project (PRF) - Cost currency  \
+0                                    NaN                            NaN   
+1                                    NaN                            NaN   
+2                                    NaN                            NaN   
+3                                    NaN                            NaN   
+4                                    NaN                            NaN   
+...                                  ...                            ...   
+7053                                 NaN                            NaN   
+7054                                 NaN                            NaN   
+7055                                 NaN                            NaN   
+7056                              3975.0                 Canada, dollar   
+7057                                 NaN                            NaN   
+
+      Project (PRF) - Currency multiple  \
+0                                   NaN   
+1                                   NaN   
+2                                   NaN   
+3                                   NaN   
+4                                   NaN   
+...                                 ...   
+7053                                NaN   
+7054                                NaN   
+7055                                NaN   
+7056                                NaN   
+7057                                NaN   
+
+      Project (PRF) - Normalised Work Effort  
+0                                        741  
+1                                        856  
+2                                       1100  
+3                                         28  
+4                                      23913  
+...                                      ...  
+7053                                     960  
+7054                                    2312  
+7055                                     556  
+7056                                      80  
+7057                                    1449  
+
+[7058 rows x 52 columns]
+2025-05-15 13:44:12,739:INFO:get_config() successfully completed......................................
+2025-05-15 13:52:59,065:INFO:PyCaret RegressionExperiment
+2025-05-15 13:52:59,065:INFO:Logging name: reg-default-name
+2025-05-15 13:52:59,065:INFO:ML Usecase: MLUsecase.REGRESSION
+2025-05-15 13:52:59,065:INFO:version 3.3.2
+2025-05-15 13:52:59,065:INFO:Initializing setup()
+2025-05-15 13:52:59,065:INFO:self.USI: 4bdd
+2025-05-15 13:52:59,067:INFO:self._variable_keys: {'_ml_usecase', 'logging_param', 'n_jobs_param', 'html_param', 'transform_target_param', 'seed', '_available_plots', 'USI', 'fold_shuffle_param', 'exp_id', 'target_param', 'y_test', 'memory', 'pipeline', 'y', 'exp_name_log', 'X_test', 'log_plots_param', 'gpu_n_jobs_param', 'fold_generator', 'data', 'X', 'fold_groups_param', 'X_train', 'gpu_param', 'y_train', 'idx'}
+2025-05-15 13:52:59,067:INFO:Checking environment
+2025-05-15 13:52:59,067:INFO:python_version: 3.11.11
+2025-05-15 13:52:59,067:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 13:52:59,067:INFO:machine: AMD64
+2025-05-15 13:52:59,067:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 13:52:59,067:INFO:Memory: svmem(total=17065795584, available=8748339200, percent=48.7, used=8317456384, free=8748339200)
+2025-05-15 13:52:59,067:INFO:Physical Core: 4
+2025-05-15 13:52:59,067:INFO:Logical Core: 8
+2025-05-15 13:52:59,067:INFO:Checking libraries
+2025-05-15 13:52:59,067:INFO:System:
+2025-05-15 13:52:59,067:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 13:52:59,067:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 13:52:59,067:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 13:52:59,068:INFO:PyCaret required dependencies:
+2025-05-15 13:52:59,068:INFO:                 pip: 25.0
+2025-05-15 13:52:59,068:INFO:          setuptools: 75.8.0
+2025-05-15 13:52:59,068:INFO:             pycaret: 3.3.2
+2025-05-15 13:52:59,068:INFO:             IPython: 9.2.0
+2025-05-15 13:52:59,068:INFO:          ipywidgets: 8.1.6
+2025-05-15 13:52:59,068:INFO:                tqdm: 4.67.1
+2025-05-15 13:52:59,068:INFO:               numpy: 1.26.4
+2025-05-15 13:52:59,069:INFO:              pandas: 2.1.4
+2025-05-15 13:52:59,069:INFO:              jinja2: 3.1.6
+2025-05-15 13:52:59,069:INFO:               scipy: 1.11.4
+2025-05-15 13:52:59,069:INFO:              joblib: 1.3.2
+2025-05-15 13:52:59,069:INFO:             sklearn: 1.4.2
+2025-05-15 13:52:59,069:INFO:                pyod: 2.0.5
+2025-05-15 13:52:59,069:INFO:            imblearn: 0.13.0
+2025-05-15 13:52:59,069:INFO:   category_encoders: 2.7.0
+2025-05-15 13:52:59,069:INFO:            lightgbm: 4.6.0
+2025-05-15 13:52:59,069:INFO:               numba: 0.61.2
+2025-05-15 13:52:59,070:INFO:            requests: 2.32.3
+2025-05-15 13:52:59,070:INFO:          matplotlib: 3.7.5
+2025-05-15 13:52:59,070:INFO:          scikitplot: 0.3.7
+2025-05-15 13:52:59,070:INFO:         yellowbrick: 1.5
+2025-05-15 13:52:59,070:INFO:              plotly: 5.19.0
+2025-05-15 13:52:59,070:INFO:    plotly-resampler: Not installed
+2025-05-15 13:52:59,070:INFO:             kaleido: 0.2.1
+2025-05-15 13:52:59,070:INFO:           schemdraw: 0.15
+2025-05-15 13:52:59,071:INFO:         statsmodels: 0.14.4
+2025-05-15 13:52:59,071:INFO:              sktime: 0.26.0
+2025-05-15 13:52:59,071:INFO:               tbats: 1.1.3
+2025-05-15 13:52:59,071:INFO:            pmdarima: 2.0.4
+2025-05-15 13:52:59,071:INFO:              psutil: 7.0.0
+2025-05-15 13:52:59,071:INFO:          markupsafe: 3.0.2
+2025-05-15 13:52:59,071:INFO:             pickle5: Not installed
+2025-05-15 13:52:59,071:INFO:         cloudpickle: 3.1.1
+2025-05-15 13:52:59,072:INFO:         deprecation: 2.1.0
+2025-05-15 13:52:59,072:INFO:              xxhash: 3.5.0
+2025-05-15 13:52:59,072:INFO:           wurlitzer: Not installed
+2025-05-15 13:52:59,072:INFO:PyCaret optional dependencies:
+2025-05-15 13:52:59,072:INFO:                shap: 0.47.2
+2025-05-15 13:52:59,072:INFO:           interpret: Not installed
+2025-05-15 13:52:59,072:INFO:                umap: Not installed
+2025-05-15 13:52:59,072:INFO:     ydata_profiling: Not installed
+2025-05-15 13:52:59,072:INFO:  explainerdashboard: Not installed
+2025-05-15 13:52:59,073:INFO:             autoviz: Not installed
+2025-05-15 13:52:59,073:INFO:           fairlearn: Not installed
+2025-05-15 13:52:59,073:INFO:          deepchecks: Not installed
+2025-05-15 13:52:59,073:INFO:             xgboost: 3.0.0
+2025-05-15 13:52:59,073:INFO:            catboost: 1.2.8
+2025-05-15 13:52:59,073:INFO:              kmodes: Not installed
+2025-05-15 13:52:59,073:INFO:             mlxtend: Not installed
+2025-05-15 13:52:59,073:INFO:       statsforecast: Not installed
+2025-05-15 13:52:59,073:INFO:        tune_sklearn: Not installed
+2025-05-15 13:52:59,073:INFO:                 ray: Not installed
+2025-05-15 13:52:59,074:INFO:            hyperopt: Not installed
+2025-05-15 13:52:59,074:INFO:              optuna: 4.3.0
+2025-05-15 13:52:59,074:INFO:               skopt: Not installed
+2025-05-15 13:52:59,074:INFO:              mlflow: Not installed
+2025-05-15 13:52:59,074:INFO:              gradio: Not installed
+2025-05-15 13:52:59,074:INFO:             fastapi: Not installed
+2025-05-15 13:52:59,074:INFO:             uvicorn: Not installed
+2025-05-15 13:52:59,074:INFO:              m2cgen: Not installed
+2025-05-15 13:52:59,074:INFO:           evidently: Not installed
+2025-05-15 13:52:59,075:INFO:               fugue: Not installed
+2025-05-15 13:52:59,075:INFO:           streamlit: 1.44.1
+2025-05-15 13:52:59,075:INFO:             prophet: Not installed
+2025-05-15 13:52:59,075:INFO:None
+2025-05-15 13:52:59,075:INFO:Set up data.
+2025-05-15 13:52:59,135:INFO:Set up folding strategy.
+2025-05-15 13:52:59,135:INFO:Set up train/test split.
+2025-05-15 13:52:59,153:INFO:Set up index.
+2025-05-15 13:52:59,153:INFO:Assigning column types.
+2025-05-15 13:52:59,159:INFO:Engine successfully changes for model 'lr' to 'sklearn'.
+2025-05-15 13:52:59,159:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,159:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,175:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,268:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,327:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,327:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:52:59,330:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:52:59,331:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,336:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,348:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,425:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,472:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,472:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:52:59,472:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:52:59,472:INFO:Engine successfully changes for model 'lasso' to 'sklearn'.
+2025-05-15 13:52:59,472:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,472:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,635:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,678:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,678:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:52:59,680:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:52:59,686:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,690:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,800:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,911:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:52:59,911:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:52:59,911:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:52:59,911:INFO:Engine successfully changes for model 'ridge' to 'sklearn'.
+2025-05-15 13:52:59,927:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,051:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,117:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,118:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:00,126:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:00,143:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,206:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,254:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,254:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:00,268:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:00,268:INFO:Engine successfully changes for model 'en' to 'sklearn'.
+2025-05-15 13:53:00,440:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,551:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,551:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:00,551:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:00,627:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,671:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,671:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:00,671:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:00,671:INFO:Engine successfully changes for model 'knn' to 'sklearn'.
+2025-05-15 13:53:00,851:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:00,940:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:00,941:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:01,010:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:53:01,057:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:01,057:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:01,057:INFO:Engine successfully changes for model 'svm' to 'sklearn'.
+2025-05-15 13:53:01,176:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:01,176:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:01,350:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:01,350:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:01,350:INFO:Preparing preprocessing pipeline...
+2025-05-15 13:53:01,350:INFO:Set up simple imputation.
+2025-05-15 13:53:01,366:INFO:Set up encoding of ordinal features.
+2025-05-15 13:53:01,377:INFO:Set up encoding of categorical features.
+2025-05-15 13:53:01,382:INFO:Set up column name cleaning.
+2025-05-15 13:53:02,082:INFO:Finished creating preprocessing pipeline.
+2025-05-15 13:53:02,129:INFO:Pipeline: Pipeline(memory=FastMemory(location=C:\Users\jdche\AppData\Local\Temp\joblib),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['ISBSG Project ID',
+                                             'Project (PRF) - Year of Project',
+                                             'Project (PRF) - Functional Size',
+                                             'Project (PRF) - Normalised Work '
+                                             'Effort Level 1',
+                                             'Project (PRF) - Normalised Level '
+                                             '1 PDR (ufp)',
+                                             'Project (PRF) - Normalised PDR '
+                                             '(ufp)',
+                                             'Proj...
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Roles',
+                                                                    'Tech (TF) '
+                                                                    '- Server '
+                                                                    'Roles'],
+                                                              drop_invariant=False,
+                                                              handle_missing='return_nan',
+                                                              handle_unknown='value',
+                                                              hierarchy=None,
+                                                              min_samples_leaf=20,
+                                                              return_df=True,
+                                                              smoothing=10,
+                                                              verbose=0))),
+                ('clean_column_names',
+                 TransformerWrapper(exclude=None, include=None,
+                                    transformer=CleanColumnNames(match='[\\]\\[\\,\\{\\}\\"\\:]+')))],
+         verbose=False)
+2025-05-15 13:53:02,129:INFO:Creating final display dataframe.
+2025-05-15 13:53:02,639:INFO:Setup _display_container:                     Description                                   Value
+0                    Session id                                     123
+1                        Target  Project (PRF) - Normalised Work Effort
+2                   Target type                              Regression
+3           Original data shape                              (7058, 52)
+4        Transformed data shape                             (7058, 160)
+5   Transformed train set shape                             (4940, 160)
+6    Transformed test set shape                             (2118, 160)
+7              Numeric features                                      26
+8          Categorical features                                      25
+9      Rows with missing values                                  100.0%
+10                   Preprocess                                    True
+11              Imputation type                                  simple
+12           Numeric imputation                                    mean
+13       Categorical imputation                                    mode
+14     Maximum one-hot encoding                                      25
+15              Encoding method                                    None
+16               Fold Generator                                   KFold
+17                  Fold Number                                      10
+18                     CPU Jobs                                      -1
+19                      Use GPU                                   False
+20               Log Experiment                                   False
+21              Experiment Name                        reg-default-name
+22                          USI                                    4bdd
+2025-05-15 13:53:02,658:ERROR:Data Failed with exception:
+ No module named 'ydata_profiling'
+No output to show, continue with modeling.
+2025-05-15 13:53:02,900:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:02,916:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:03,186:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:53:03,188:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:53:03,188:INFO:setup() successfully completed in 4.13s...............
+2025-05-15 13:53:03,196:INFO:Initializing get_config()
+2025-05-15 13:53:03,196:INFO:get_config(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002B2C8381ED0>, variable=dataset)
+2025-05-15 13:53:03,196:INFO:Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+2025-05-15 13:53:03,196:WARNING:C:\Users\jdche\.conda\envs\streamlit-env-agile\Lib\site-packages\pycaret\internal\pycaret_experiment\pycaret_experiment.py:321: UserWarning: Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+  warnings.warn(msg)  # print on screen
+
+2025-05-15 13:53:03,205:INFO:Variable:  returned as       ISBSG Project ID External (EEF) - Data Quality Rating  \
+6995             32577                                    A   
+5294             26924                                    B   
+2673             18663                                    B   
+463              11468                                    B   
+3520             21338                                    B   
+...                ...                                  ...   
+3856             22336                                    B   
+6658             31525                                    B   
+5526             27628                                    B   
+1479             14731                                    B   
+4711             25119                                    B   
+
+      Project (PRF) - Year of Project External (EEF) - Industry Sector  \
+6995                             2000                    Communication   
+5294                             2006                        Insurance   
+2673                             1998                              NaN   
+463                              2002                          Banking   
+3520                             1998                    Communication   
+...                               ...                              ...   
+3856                             2013                    Communication   
+6658                             2000            Professional Services   
+5526                             2001                    Communication   
+1479                             2006                     Construction   
+4711                             2000                    Communication   
+
+     External (EEF) - Organisation Type Project (PRF) - Application Group  \
+6995                    Communications;              Business Application   
+5294                         Insurance;                               NaN   
+2673                                NaN                               NaN   
+463                            Banking;                               NaN   
+3520                    Communications;              Business Application   
+...                                 ...                               ...   
+3856                Telecommunications;              Business Application   
+6658             Professional Services;              Business Application   
+5526                 Telecommunication;             Real-Time Application   
+1479                      Construction;           Infrastructure Software   
+4711                    Communications;              Business Application   
+
+           Project (PRF) - Application Type Project (PRF) - Development Type  \
+6995            Interactive Voice Response;                  New Development   
+5294                                    NaN                  New Development   
+2673                                    NaN                      Enhancement   
+463                                     NaN                  New Development   
+3520         Transaction/Production System;                      Enhancement   
+...                                     ...                              ...   
+3856      Customer relationship management;                      Enhancement   
+6658             Office Information System;                  New Development   
+5526                                    NaN                  New Development   
+1479  Operating system or software utility;                  New Development   
+4711         Transaction/Production System;                  New Development   
+
+     Tech (TF) - Development Platform Tech (TF) - Language Type  ...  \
+6995                               MR                       3GL  ...   
+5294                               MF                       3GL  ...   
+2673                              NaN                       NaN  ...   
+463                                MF                       4GL  ...   
+3520                               PC                       ApG  ...   
+...                               ...                       ...  ...   
+3856                            Multi                       3GL  ...   
+6658                               PC                       4GL  ...   
+5526                               PC                       3GL  ...   
+1479                               PC                       3GL  ...   
+4711                               MF                       4GL  ...   
+
+     People (PRF) - IT experience <3 yr  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      People (PRF) - IT experience 3 to 9 yr  \
+6995                                     NaN   
+5294                                     NaN   
+2673                                     NaN   
+463                                      NaN   
+3520                                     NaN   
+...                                      ...   
+3856                                     NaN   
+6658                                     NaN   
+5526                                     NaN   
+1479                                     NaN   
+4711                                     NaN   
+
+     People (PRF) - IT experience >9 yr  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      People (PRF) - Project manage experience  \
+6995                                       NaN   
+5294                                       NaN   
+2673                                       NaN   
+463                                        NaN   
+3520                                       NaN   
+...                                        ...   
+3856                                       NaN   
+6658                                       NaN   
+5526                                       NaN   
+1479                                       NaN   
+4711                                       NaN   
+
+      People (PRF) - Project manage changes  People (PRF) - Personnel changes  \
+6995                                    NaN                               NaN   
+5294                                    NaN                               NaN   
+2673                                    NaN                               NaN   
+463                                     NaN                               NaN   
+3520                                    NaN                               NaN   
+...                                     ...                               ...   
+3856                                    NaN                               NaN   
+6658                                    NaN                               NaN   
+5526                                    NaN                               NaN   
+1479                                    NaN                               NaN   
+4711                                    NaN                               NaN   
+
+      Project (PRF) - Total project cost  Project (PRF) - Cost currency  \
+6995                                 NaN                            NaN   
+5294                                 NaN                            NaN   
+2673                                 NaN                            NaN   
+463                                  NaN                            NaN   
+3520                                 NaN                            NaN   
+...                                  ...                            ...   
+3856                                 NaN                            NaN   
+6658                                 NaN          United States, dollar   
+5526                                 NaN                            NaN   
+1479                                 NaN                            NaN   
+4711                            530000.0            Netherlands, florin   
+
+      Project (PRF) - Currency multiple  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      Project (PRF) - Normalised Work Effort  
+6995                                     634  
+5294                                     948  
+2673                                     315  
+463                                     2373  
+3520                                    2947  
+...                                      ...  
+3856                                    3173  
+6658                                    4105  
+5526                                    1177  
+1479                                    1300  
+4711                                    3925  
+
+[7058 rows x 52 columns]
+2025-05-15 13:53:03,205:INFO:get_config() successfully completed......................................
+2025-05-15 13:59:17,088:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 13:59:17,096:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 13:59:17,096:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 13:59:17,096:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-15 13:59:20,867:INFO:PyCaret RegressionExperiment
+2025-05-15 13:59:20,867:INFO:Logging name: reg-default-name
+2025-05-15 13:59:20,867:INFO:ML Usecase: MLUsecase.REGRESSION
+2025-05-15 13:59:20,867:INFO:version 3.3.2
+2025-05-15 13:59:20,867:INFO:Initializing setup()
+2025-05-15 13:59:20,867:INFO:self.USI: 9372
+2025-05-15 13:59:20,867:INFO:self._variable_keys: {'y_test', 'exp_name_log', 'y', 'y_train', 'seed', 'memory', 'pipeline', '_available_plots', 'USI', 'log_plots_param', 'logging_param', 'exp_id', 'X_test', 'fold_groups_param', 'idx', 'X_train', 'gpu_n_jobs_param', 'transform_target_param', 'gpu_param', 'n_jobs_param', 'X', 'data', 'target_param', 'fold_generator', 'fold_shuffle_param', 'html_param', '_ml_usecase'}
+2025-05-15 13:59:20,867:INFO:Checking environment
+2025-05-15 13:59:20,867:INFO:python_version: 3.11.11
+2025-05-15 13:59:20,867:INFO:python_build: ('main', 'Dec 11 2024 16:34:19')
+2025-05-15 13:59:20,867:INFO:machine: AMD64
+2025-05-15 13:59:20,867:INFO:platform: Windows-10-10.0.26100-SP0
+2025-05-15 13:59:20,867:INFO:Memory: svmem(total=17065795584, available=8686600192, percent=49.1, used=8379195392, free=8686600192)
+2025-05-15 13:59:20,867:INFO:Physical Core: 4
+2025-05-15 13:59:20,867:INFO:Logical Core: 8
+2025-05-15 13:59:20,867:INFO:Checking libraries
+2025-05-15 13:59:20,867:INFO:System:
+2025-05-15 13:59:20,867:INFO:    python: 3.11.11 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:34:19) [MSC v.1929 64 bit (AMD64)]
+2025-05-15 13:59:20,867:INFO:executable: C:\Users\jdche\.conda\envs\streamlit-env-agile\python.exe
+2025-05-15 13:59:20,867:INFO:   machine: Windows-10-10.0.26100-SP0
+2025-05-15 13:59:20,867:INFO:PyCaret required dependencies:
+2025-05-15 13:59:21,173:INFO:                 pip: 25.0
+2025-05-15 13:59:21,173:INFO:          setuptools: 75.8.0
+2025-05-15 13:59:21,173:INFO:             pycaret: 3.3.2
+2025-05-15 13:59:21,173:INFO:             IPython: 9.2.0
+2025-05-15 13:59:21,173:INFO:          ipywidgets: 8.1.6
+2025-05-15 13:59:21,173:INFO:                tqdm: 4.67.1
+2025-05-15 13:59:21,173:INFO:               numpy: 1.26.4
+2025-05-15 13:59:21,173:INFO:              pandas: 2.1.4
+2025-05-15 13:59:21,173:INFO:              jinja2: 3.1.6
+2025-05-15 13:59:21,173:INFO:               scipy: 1.11.4
+2025-05-15 13:59:21,173:INFO:              joblib: 1.3.2
+2025-05-15 13:59:21,173:INFO:             sklearn: 1.4.2
+2025-05-15 13:59:21,173:INFO:                pyod: 2.0.5
+2025-05-15 13:59:21,173:INFO:            imblearn: 0.13.0
+2025-05-15 13:59:21,173:INFO:   category_encoders: 2.7.0
+2025-05-15 13:59:21,173:INFO:            lightgbm: 4.6.0
+2025-05-15 13:59:21,173:INFO:               numba: 0.61.0
+2025-05-15 13:59:21,173:INFO:            requests: 2.32.3
+2025-05-15 13:59:21,173:INFO:          matplotlib: 3.7.5
+2025-05-15 13:59:21,173:INFO:          scikitplot: 0.3.7
+2025-05-15 13:59:21,173:INFO:         yellowbrick: 1.5
+2025-05-15 13:59:21,173:INFO:              plotly: 5.19.0
+2025-05-15 13:59:21,173:INFO:    plotly-resampler: Not installed
+2025-05-15 13:59:21,173:INFO:             kaleido: 0.2.1
+2025-05-15 13:59:21,173:INFO:           schemdraw: 0.15
+2025-05-15 13:59:21,173:INFO:         statsmodels: 0.14.4
+2025-05-15 13:59:21,173:INFO:              sktime: 0.26.0
+2025-05-15 13:59:21,173:INFO:               tbats: 1.1.3
+2025-05-15 13:59:21,173:INFO:            pmdarima: 2.0.4
+2025-05-15 13:59:21,177:INFO:              psutil: 7.0.0
+2025-05-15 13:59:21,177:INFO:          markupsafe: 3.0.2
+2025-05-15 13:59:21,177:INFO:             pickle5: Not installed
+2025-05-15 13:59:21,177:INFO:         cloudpickle: 3.1.1
+2025-05-15 13:59:21,177:INFO:         deprecation: 2.1.0
+2025-05-15 13:59:21,177:INFO:              xxhash: 3.5.0
+2025-05-15 13:59:21,178:INFO:           wurlitzer: Not installed
+2025-05-15 13:59:21,178:INFO:PyCaret optional dependencies:
+2025-05-15 13:59:21,569:INFO:                shap: 0.47.2
+2025-05-15 13:59:21,569:INFO:           interpret: Not installed
+2025-05-15 13:59:21,569:INFO:                umap: Not installed
+2025-05-15 13:59:21,570:INFO:     ydata_profiling: 4.16.1
+2025-05-15 13:59:21,570:INFO:  explainerdashboard: Not installed
+2025-05-15 13:59:21,570:INFO:             autoviz: Not installed
+2025-05-15 13:59:21,570:INFO:           fairlearn: Not installed
+2025-05-15 13:59:21,570:INFO:          deepchecks: Not installed
+2025-05-15 13:59:21,570:INFO:             xgboost: 3.0.0
+2025-05-15 13:59:21,570:INFO:            catboost: 1.2.8
+2025-05-15 13:59:21,570:INFO:              kmodes: Not installed
+2025-05-15 13:59:21,570:INFO:             mlxtend: Not installed
+2025-05-15 13:59:21,570:INFO:       statsforecast: Not installed
+2025-05-15 13:59:21,570:INFO:        tune_sklearn: Not installed
+2025-05-15 13:59:21,570:INFO:                 ray: Not installed
+2025-05-15 13:59:21,570:INFO:            hyperopt: Not installed
+2025-05-15 13:59:21,570:INFO:              optuna: 4.3.0
+2025-05-15 13:59:21,570:INFO:               skopt: Not installed
+2025-05-15 13:59:21,570:INFO:              mlflow: Not installed
+2025-05-15 13:59:21,570:INFO:              gradio: Not installed
+2025-05-15 13:59:21,570:INFO:             fastapi: Not installed
+2025-05-15 13:59:21,570:INFO:             uvicorn: Not installed
+2025-05-15 13:59:21,570:INFO:              m2cgen: Not installed
+2025-05-15 13:59:21,570:INFO:           evidently: Not installed
+2025-05-15 13:59:21,570:INFO:               fugue: Not installed
+2025-05-15 13:59:21,570:INFO:           streamlit: 1.44.1
+2025-05-15 13:59:21,570:INFO:             prophet: Not installed
+2025-05-15 13:59:21,570:INFO:None
+2025-05-15 13:59:21,570:INFO:Set up data.
+2025-05-15 13:59:21,625:INFO:Set up folding strategy.
+2025-05-15 13:59:21,625:INFO:Set up train/test split.
+2025-05-15 13:59:21,674:INFO:Set up index.
+2025-05-15 13:59:21,674:INFO:Assigning column types.
+2025-05-15 13:59:21,694:INFO:Engine successfully changes for model 'lr' to 'sklearn'.
+2025-05-15 13:59:21,694:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:59:21,706:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:59:21,706:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:21,785:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:21,911:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:21,911:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:21,911:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:24,956:INFO:Engine for model 'lasso' has not been set explicitly, hence returning None.
+2025-05-15 13:59:24,972:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:59:24,972:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,101:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,221:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,221:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,221:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,221:INFO:Engine successfully changes for model 'lasso' to 'sklearn'.
+2025-05-15 13:59:25,221:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,221:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,300:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,332:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,332:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,348:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,360:INFO:Engine for model 'ridge' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,374:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,440:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,471:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,471:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,487:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,487:INFO:Engine successfully changes for model 'ridge' to 'sklearn'.
+2025-05-15 13:59:25,487:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,565:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,615:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,616:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,618:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,627:INFO:Engine for model 'en' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,690:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,721:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,721:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,737:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,737:INFO:Engine successfully changes for model 'en' to 'sklearn'.
+2025-05-15 13:59:25,827:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,873:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:25,873:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:25,877:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:25,980:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:26,034:INFO:Engine for model 'knn' has not been set explicitly, hence returning None.
+2025-05-15 13:59:26,035:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:26,037:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:26,038:INFO:Engine successfully changes for model 'knn' to 'sklearn'.
+2025-05-15 13:59:26,108:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:26,169:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:26,171:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:26,295:INFO:Engine for model 'svm' has not been set explicitly, hence returning None.
+2025-05-15 13:59:26,357:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:26,357:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:26,357:INFO:Engine successfully changes for model 'svm' to 'sklearn'.
+2025-05-15 13:59:26,536:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:26,539:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:26,694:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:26,697:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:26,699:INFO:Preparing preprocessing pipeline...
+2025-05-15 13:59:26,699:INFO:Set up simple imputation.
+2025-05-15 13:59:26,702:INFO:Set up encoding of ordinal features.
+2025-05-15 13:59:26,726:INFO:Set up encoding of categorical features.
+2025-05-15 13:59:26,731:INFO:Set up column name cleaning.
+2025-05-15 13:59:27,246:INFO:Finished creating preprocessing pipeline.
+2025-05-15 13:59:27,338:INFO:Pipeline: Pipeline(memory=FastMemory(location=C:\Users\jdche\AppData\Local\Temp\joblib),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['ISBSG Project ID',
+                                             'Project (PRF) - Year of Project',
+                                             'Project (PRF) - Functional Size',
+                                             'Project (PRF) - Normalised Work '
+                                             'Effort Level 1',
+                                             'Project (PRF) - Normalised Level '
+                                             '1 PDR (ufp)',
+                                             'Project (PRF) - Normalised PDR '
+                                             '(ufp)',
+                                             'Project (PRF) - Defe...
+                                    transformer=TargetEncoder(cols=['External '
+                                                                    '(EEF) - '
+                                                                    'Organisation '
+                                                                    'Type',
+                                                                    'Project '
+                                                                    '(PRF) - '
+                                                                    'Application '
+                                                                    'Type',
+                                                                    'Tech (TF) '
+                                                                    '- Primary '
+                                                                    'Programming '
+                                                                    'Language',
+                                                                    'Process '
+                                                                    '(PMF) - '
+                                                                    'Development '
+                                                                    'Methodologies',
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Server?',
+                                                                    'Tech (TF) '
+                                                                    '- Client '
+                                                                    'Roles',
+                                                                    'Tech (TF) '
+                                                                    '- Server '
+                                                                    'Roles'],
+                                                              handle_missing='return_nan'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames()))])
+2025-05-15 13:59:27,338:INFO:Creating final display dataframe.
+2025-05-15 13:59:29,203:INFO:Setup _display_container:                     Description                                   Value
+0                    Session id                                     123
+1                        Target  Project (PRF) - Normalised Work Effort
+2                   Target type                              Regression
+3           Original data shape                              (7058, 52)
+4        Transformed data shape                             (7058, 160)
+5   Transformed train set shape                             (4940, 160)
+6    Transformed test set shape                             (2118, 160)
+7              Numeric features                                      26
+8          Categorical features                                      25
+9      Rows with missing values                                  100.0%
+10                   Preprocess                                    True
+11              Imputation type                                  simple
+12           Numeric imputation                                    mean
+13       Categorical imputation                                    mode
+14     Maximum one-hot encoding                                      25
+15              Encoding method                                    None
+16               Fold Generator                                   KFold
+17                  Fold Number                                      10
+18                     CPU Jobs                                      -1
+19                      Use GPU                                   False
+20               Log Experiment                                   False
+21              Experiment Name                        reg-default-name
+22                          USI                                    9372
+2025-05-15 13:59:34,660:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:34,660:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:34,798:INFO:Soft dependency imported: xgboost: 3.0.0
+2025-05-15 13:59:34,809:INFO:Soft dependency imported: catboost: 1.2.8
+2025-05-15 13:59:34,814:INFO:setup() successfully completed in 13.95s...............
+2025-05-15 13:59:34,814:INFO:Initializing get_config()
+2025-05-15 13:59:34,814:INFO:get_config(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001692019C410>, variable=dataset)
+2025-05-15 13:59:34,814:INFO:Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+2025-05-15 13:59:34,832:WARNING:C:\Users\jdche\.conda\envs\streamlit-env-agile\Lib\site-packages\pycaret\internal\pycaret_experiment\pycaret_experiment.py:321: UserWarning: Variable: 'dataset' used to return the transformed values in PyCaret 2.x. From PyCaret 3.x, this will return the raw values. If you need the transformed values, call get_config with 'dataset_transformed' instead.
+  warnings.warn(msg)  # print on screen
+
+2025-05-15 13:59:34,849:INFO:Variable:  returned as       ISBSG Project ID External (EEF) - Data Quality Rating  \
+6995             32577                                    A   
+5294             26924                                    B   
+2673             18663                                    B   
+463              11468                                    B   
+3520             21338                                    B   
+...                ...                                  ...   
+3856             22336                                    B   
+6658             31525                                    B   
+5526             27628                                    B   
+1479             14731                                    B   
+4711             25119                                    B   
+
+      Project (PRF) - Year of Project External (EEF) - Industry Sector  \
+6995                             2000                    Communication   
+5294                             2006                        Insurance   
+2673                             1998                              NaN   
+463                              2002                          Banking   
+3520                             1998                    Communication   
+...                               ...                              ...   
+3856                             2013                    Communication   
+6658                             2000            Professional Services   
+5526                             2001                    Communication   
+1479                             2006                     Construction   
+4711                             2000                    Communication   
+
+     External (EEF) - Organisation Type Project (PRF) - Application Group  \
+6995                    Communications;              Business Application   
+5294                         Insurance;                               NaN   
+2673                                NaN                               NaN   
+463                            Banking;                               NaN   
+3520                    Communications;              Business Application   
+...                                 ...                               ...   
+3856                Telecommunications;              Business Application   
+6658             Professional Services;              Business Application   
+5526                 Telecommunication;             Real-Time Application   
+1479                      Construction;           Infrastructure Software   
+4711                    Communications;              Business Application   
+
+           Project (PRF) - Application Type Project (PRF) - Development Type  \
+6995            Interactive Voice Response;                  New Development   
+5294                                    NaN                  New Development   
+2673                                    NaN                      Enhancement   
+463                                     NaN                  New Development   
+3520         Transaction/Production System;                      Enhancement   
+...                                     ...                              ...   
+3856      Customer relationship management;                      Enhancement   
+6658             Office Information System;                  New Development   
+5526                                    NaN                  New Development   
+1479  Operating system or software utility;                  New Development   
+4711         Transaction/Production System;                  New Development   
+
+     Tech (TF) - Development Platform Tech (TF) - Language Type  ...  \
+6995                               MR                       3GL  ...   
+5294                               MF                       3GL  ...   
+2673                              NaN                       NaN  ...   
+463                                MF                       4GL  ...   
+3520                               PC                       ApG  ...   
+...                               ...                       ...  ...   
+3856                            Multi                       3GL  ...   
+6658                               PC                       4GL  ...   
+5526                               PC                       3GL  ...   
+1479                               PC                       3GL  ...   
+4711                               MF                       4GL  ...   
+
+     People (PRF) - IT experience <3 yr  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      People (PRF) - IT experience 3 to 9 yr  \
+6995                                     NaN   
+5294                                     NaN   
+2673                                     NaN   
+463                                      NaN   
+3520                                     NaN   
+...                                      ...   
+3856                                     NaN   
+6658                                     NaN   
+5526                                     NaN   
+1479                                     NaN   
+4711                                     NaN   
+
+     People (PRF) - IT experience >9 yr  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      People (PRF) - Project manage experience  \
+6995                                       NaN   
+5294                                       NaN   
+2673                                       NaN   
+463                                        NaN   
+3520                                       NaN   
+...                                        ...   
+3856                                       NaN   
+6658                                       NaN   
+5526                                       NaN   
+1479                                       NaN   
+4711                                       NaN   
+
+      People (PRF) - Project manage changes  People (PRF) - Personnel changes  \
+6995                                    NaN                               NaN   
+5294                                    NaN                               NaN   
+2673                                    NaN                               NaN   
+463                                     NaN                               NaN   
+3520                                    NaN                               NaN   
+...                                     ...                               ...   
+3856                                    NaN                               NaN   
+6658                                    NaN                               NaN   
+5526                                    NaN                               NaN   
+1479                                    NaN                               NaN   
+4711                                    NaN                               NaN   
+
+      Project (PRF) - Total project cost  Project (PRF) - Cost currency  \
+6995                                 NaN                            NaN   
+5294                                 NaN                            NaN   
+2673                                 NaN                            NaN   
+463                                  NaN                            NaN   
+3520                                 NaN                            NaN   
+...                                  ...                            ...   
+3856                                 NaN                            NaN   
+6658                                 NaN          United States, dollar   
+5526                                 NaN                            NaN   
+1479                                 NaN                            NaN   
+4711                            530000.0            Netherlands, florin   
+
+      Project (PRF) - Currency multiple  \
+6995                                NaN   
+5294                                NaN   
+2673                                NaN   
+463                                 NaN   
+3520                                NaN   
+...                                 ...   
+3856                                NaN   
+6658                                NaN   
+5526                                NaN   
+1479                                NaN   
+4711                                NaN   
+
+      Project (PRF) - Normalised Work Effort  
+6995                                     634  
+5294                                     948  
+2673                                     315  
+463                                     2373  
+3520                                    2947  
+...                                      ...  
+3856                                    3173  
+6658                                    4105  
+5526                                    1177  
+1479                                    1300  
+4711                                    3925  
+
+[7058 rows x 52 columns]
+2025-05-15 13:59:34,850:INFO:get_config() successfully completed......................................
