@@ -1,14 +1,7 @@
-
-#pip install -r requirements.txt
-
-# Core libraries
-numpy
-pandas
-
-# Streamlit for frontend
-streamlit
-
-# Scikit-learn for ML models
-scikit-learn
-
-
+streamlit>=1.30.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+pycaret==3.2.0
+seaborn>=0.11.2
+matplotlib>=3.4.3
