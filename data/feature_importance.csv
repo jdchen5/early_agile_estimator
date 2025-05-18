@@ -1,0 +1,124 @@
+feature,importance
+tech_tf_architecture_client_server,0.08881296928127605
+project_prf_functional_size,0.08648898447497148
+project_prf_max_team_size,0.07092472120451032
+tech_tf_development_platform_multi,0.05865321370072106
+project_prf_application_type_surveillance and security,0.054599364150034004
+people_prf_personnel_changes,0.054558378131220546
+external_eef_organisation_type_banking; communications; education institution; government; medical and health care; transport & storage; wholesale & retail trade,0.043036930679580296
+tech_tf_architecture_stand_alone,0.038834154459539895
+external_eef_industry_sector_banking,0.03778010629357102
+tech_tf_client_server_yes,0.03694497913892242
+tech_tf_development_platform_pc,0.03684760035112216
+project_prf_application_group_business_application,0.03549543286962988
+tech_tf_primary_programming_language_c_,0.03384940423930548
+project_prf_year_of_project,0.0325566300327217
+project_prf_relative_size_m2,0.030075285605935736
+external_eef_data_quality_rating_b,0.02694787511286141
+tech_tf_server_roles_Missing,0.023907559155876466
+project_prf_development_type_new_development,0.0201327460068727
+process_pmf_docs,0.019616296615311335
+tech_tf_language_type_4GL,0.015125089373132294
+tech_tf_architecture_multi_tier_with_web_public_interface,0.015123481281678584
+project_prf_relative_size_xs,0.01306316167054628
+project_prf_application_type_business application,0.012563096659266826
+tech_tf_dbms_used_yes,0.010896082077226239
+external_eef_industry_sector_government,0.009445408142119957
+tech_tf_tools_used,0.00884218894008895
+project_prf_team_size_group_Missing,0.00879423120550322
+tech_tf_web_development_web,0.008719483162687896
+external_eef_industry_sector_service industry,0.008417225754888711
+project_prf_relative_size_m1,0.007858434995185093
+tech_tf_primary_programming_language_java,0.007791548575011009
+project_prf_cost_currency_european__euro,0.006614838027796756
+project_prf_cost_currency_canada__dollar,0.006318673008749443
+project_prf_team_size_group_5_8,0.005557200508475427
+external_eef_industry_sector_education,0.005471785559875032
+process_pmf_development_methodologies_agile_development,0.004610432925497281
+tech_tf_language_type_5GL,0.004013877471218482
+tech_tf_primary_programming_language_oracle,0.0030271157833758077
+tech_tf_development_platform_proprietary,0.002943413498665626
+project_prf_relative_size_s,0.001590462879755474
+external_eef_organisation_type_government,0.0015212960290066125
+tech_tf_primary_programming_language_proprietary_agile_platform,0.0009841555972722887
+project_prf_team_size_group_3_4,0.0006446853689927371
+"project_prf_application_type_customer billing; document management; financial transaction process/accounting; online analysis and reporting; reservation system (eg. airline, hotel); stock control & order processing; workflow support & management",0.0
+project_prf_relative_size_l,0.0
+external_eef_industry_sector_medical & health care,0.0
+"external_eef_organisation_type_art , events , ticketing",0.0
+"external_eef_organisation_type_education institution; electricity, gas, water; ieee",0.0
+tech_tf_primary_programming_language_javascript,0.0
+tech_tf_primary_programming_language_pl_i,0.0
+project_prf_team_size_group_2,0.0
+tech_tf_primary_programming_language_c__,0.0
+"external_eef_organisation_type_education institution; electricity, gas, water; university",0.0
+tech_tf_primary_programming_language_abap,0.0
+external_eef_organisation_type_community services; government,0.0
+external_eef_organisation_type_banking,0.0
+project_prf_relative_size_xxs,0.0
+project_prf_team_size_group_41_50,0.0
+project_prf_team_size_group_21_30,0.0
+process_pmf_development_methodologies_personal_software_process__psp___unified_process,0.0
+external_eef_industry_sector_manufacturing,0.0
+external_eef_industry_sector_Missing,0.0
+tech_tf_client_server_no,0.0
+external_eef_industry_sector_utilities,0.0
+external_eef_industry_sector_communication,0.0
+tech_tf_architecture_multi_tier,0.0
+external_eef_industry_sector_electronics & computers,0.0
+process_pmf_development_methodologies_agile_development__unified_process,0.0
+tech_tf_development_platform_mr,0.0
+process_pmf_development_methodologies_agile_development__scrum,0.0
+process_pmf_development_methodologies_agile_development__personal_software_process__psp___unified_process,0.0
+process_pmf_development_methodologies_agile_development__joint_application_development__jad___multifunctional_teams,0.0
+process_pmf_development_methodologies_agile_development__iterative,0.0
+external_eef_industry_sector_financial,0.0
+project_prf_team_size_group_9_14,0.0
+project_prf_team_size_group_61_70,0.0
+external_eef_organisation_type_aerospace / automotive,0.0
+project_prf_development_type_re_development,0.0
+project_prf_application_type_content management system; dynamic website,0.0
+project_prf_application_type_project management,0.0
+project_prf_application_type_automated data acquisition,0.0
+project_prf_application_type_web-based application,0.0
+project_prf_application_type_customer billing/relationship management,0.0
+project_prf_application_type_airport management,0.0
+project_prf_application_type_security controls,0.0
+project_prf_application_type_idm,0.0
+project_prf_application_type_course management,0.0
+project_prf_application_type_complex process control; workflow support & management,0.0
+project_prf_application_type_embedded software - simple device control; online analysis and reporting; telecom & network management,0.0
+project_prf_application_type_customer relationship management,0.0
+project_prf_application_type_data warehouse system; financial transaction process/accounting; management or performance reporting,0.0
+project_prf_application_type_online analysis and reporting,0.0
+project_prf_application_type_security/authentication,0.0
+project_prf_application_type_mathematical modelling (finance or eng.); software development tool,0.0
+project_prf_application_type_auditing management,0.0
+project_prf_application_type_catalogue/register of things or events,0.0
+project_prf_application_type_course management system; dynamic website,0.0
+external_eef_organisation_type_medical and health care,0.0
+external_eef_organisation_type_public sector,0.0
+project_prf_application_type_clinical archive,0.0
+external_eef_organisation_type_information technology,0.0
+external_eef_organisation_type_all industry organization types,0.0
+"external_eef_organisation_type_financial, property & business services",0.0
+project_prf_application_group_real_time_application,0.0
+project_prf_application_group_mathematically_intensive_application,0.0
+project_prf_application_group_infrastructure_software,0.0
+external_eef_organisation_type_community services; institutions eg. kindergartens,0.0
+external_eef_organisation_type_community services; government; public administration,0.0
+external_eef_organisation_type_transport & storage,0.0
+external_eef_organisation_type_energy,0.0
+tech_tf_server_roles_data acquisation,0.0
+tech_tf_server_roles_multi-user legacy application,0.0
+tech_tf_server_roles_database server; file &/or print server; html/web server; mail server; security/authentication,0.0
+tech_tf_server_roles_html/web server; multi-user legacy application,0.0
+tech_tf_server_roles_database server,0.0
+tech_tf_server_roles_database server; file &/or print server; html/web server; multi-user legacy application,0.0
+tech_tf_server_roles_html/web server; security/authentication,0.0
+external_eef_organisation_type_telecommunications,0.0
+tech_tf_server_roles_database server; html/web server; security/authentication,0.0
+tech_tf_server_roles_security/authentication,0.0
+external_eef_organisation_type_community services,0.0
+external_eef_organisation_type_high tech,0.0
+tech_tf_server_roles_database server; html/web server; mail server; security/authentication,0.0
