@@ -1,0 +1,4 @@
+Model,MAE,RMSE,R2
+RandomForestRegressor,,,
+GradientBoostingRegressor,,,
+LinearRegression,,,
