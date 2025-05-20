@@ -1,5 +1,6 @@
 iter	RMSE
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 0	8701.834133
 1	8639.974578
 2	8581.38883
@@ -1004,6 +1005,8 @@ iter	RMSE
 20087
 3417
 =======
+=======
+>>>>>>> Stashed changes
 0	10639.82313
 1	10542.43195
 2	10437.2598
@@ -1935,4 +1938,7 @@ iter	RMSE
 998	29.32098246
 999	29.2336518
 410682
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
