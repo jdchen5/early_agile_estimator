@@ -3,11 +3,28 @@ import os
 import pickle
 import numpy as np
 import logging
+import re
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 
 logging.basicConfig(level=logging.INFO)
+
+def list_models_with_names(models_folder='models'):
+    # Only show .pkl files, skip scaler if you wish
+    model_files = [
+        f for f in os.listdir(models_folder)
+        if f.endswith('.pkl') and 'scaler' not in f.lower()
+    ]
+
+    def prettify(filename):
+        name = os.path.splitext(filename)[0]
+        name = re.sub(r'^top_model_\d+_', '', name)
+        name = re.sub(r'(?<!^)(?=[A-Z])', ' ', name)
+        return name.strip()
+
+    pretty_names = [prettify(f) for f in model_files]
+    return model_files, pretty_names
 
 def create_sample_models():
     if not os.path.exists('models'):
