@@ -17,6 +17,8 @@ logging.basicConfig(
     ]
 )
 
+logger = logging.getLogger(__name__)
+
 # Set page configuration
 st.set_page_config(
     page_title="Agile Project Estimator", 

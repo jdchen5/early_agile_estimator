@@ -8,25 +8,34 @@ import os
 from datetime import datetime
 from models import list_available_models, get_feature_importance
 
-# Dictionary mapping model keys to display names
-model_options = {
+# Dictionary to store display names for default models
+DEFAULT_MODEL_OPTIONS = {
     "linear_regression": "Linear Regression",
     "random_forest": "Random Forest Regressor"
 }
 
-# Update model options based on available models
-def update_model_options():
+def get_model_options():
+    """Get all available models and their display names"""
+    model_options = DEFAULT_MODEL_OPTIONS.copy()
+    
+    # Get available models from the models directory
     available_models = list_available_models()
+    
+    # Add any models found that aren't in the default options
     for model in available_models:
         if model not in model_options:
-            # Add any newly discovered models with a sensible display name
+            # Create a nice display name by capitalizing words
             display_name = ' '.join(word.capitalize() for word in model.split('_'))
             model_options[model] = display_name
-
+    
+    return model_options
 
 def sidebar_inputs():
     """Create input form in the sidebar."""
-    update_model_options()
+    model_options = get_model_options()
+    
+    # Check if we have any models available
+    model_status = check_required_models()
     
     with st.sidebar:
         st.title("Project Estimator")
@@ -79,18 +88,29 @@ def sidebar_inputs():
                 )
 
                 st.header("Model Selection")
-                selected_model = st.selectbox(
-                    "Select Prediction Model", 
-                    list(model_options.keys()), 
-                    format_func=lambda x: model_options[x],
-                    help="Choose which trained model to use for estimation"
-                )
-
+                
+                # Check if we have any models available
+                if model_status["models_available"]:
+                    available_model_options = {k: v for k, v in model_options.items() 
+                                              if k in model_status["found_models"]}
+                    
+                    # Select only from available models
+                    selected_model = st.selectbox(
+                        "Select Prediction Model", 
+                        options=list(available_model_options.keys()),
+                        format_func=lambda x: available_model_options[x],
+                        help="Choose which trained model to use for estimation"
+                    )
+                else:
+                    st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
+                    selected_model = None
+                
                 create_models = st.checkbox(
                     "Create sample models (for testing)",
                     help="Generate sample models if none exist"
                 )
                 
+                # Buttons
                 col1, col2 = st.columns(2)
                 submit = col1.form_submit_button("Predict Man-Months")
                 save_config = col2.form_submit_button("Save Config")
@@ -112,6 +132,22 @@ def sidebar_inputs():
                     st.rerun()
             else:
                 st.info("No saved configurations found. You can save configurations in the Basic tab.")
+                
+            # Add model information
+            st.header("Model Information")
+            if model_status["models_available"]:
+                st.success(f"Found {len(model_status['found_models'])} trained models: {', '.join(model_status['found_models'])}")
+                if model_status["scaler_available"]:
+                    st.info("Feature scaler is available for normalization.")
+                else:
+                    st.warning("No feature scaler found. Models will use raw feature values.")
+            else:
+                st.error("No trained models found. Please create sample models or add trained models to the 'models' directory.")
+                
+            # Option to view models folder
+            if st.button("Check for Required Models"):
+                st.session_state.check_models = True
+                st.rerun()
     
     # Handle loading saved configuration
     if hasattr(st.session_state, 'config_to_load'):
@@ -123,13 +159,37 @@ def sidebar_inputs():
             num_requirements = loaded_config.get('num_requirements', 20)
             team_size = loaded_config.get('team_size', 5)
             tech_complexity = loaded_config.get('tech_complexity', 3)
-            selected_model = loaded_config.get('selected_model', list(model_options.keys())[0])
+            selected_model = loaded_config.get('selected_model')
+            
+            # Make sure the selected model is available
+            if selected_model not in model_status["found_models"] and model_status["models_available"]:
+                selected_model = model_status["found_models"][0]
+                st.warning(f"The model specified in the configuration is not available. Using {selected_model} instead.")
             
             # Clear the session state to prevent reloading
             del st.session_state.config_to_load
             
             # Show success message
             st.success(f"Configuration '{config_name}' loaded successfully!")
+    
+    # Check if models should be displayed
+    if hasattr(st.session_state, 'check_models'):
+        st.subheader("Available Models")
+        if model_status["models_available"]:
+            for model_name in model_status["found_models"]:
+                display_name = model_options.get(model_name, model_name)
+                st.write(f"✅ {display_name} ({model_name})")
+        else:
+            st.error("No models found in the 'models' directory.")
+        
+        # Display scaler information
+        if model_status["scaler_available"]:
+            st.write("✅ Feature scaler available")
+        else:
+            st.write("❌ No feature scaler found")
+        
+        # Remove flag from session state
+        del st.session_state.check_models
     
     # Handle saving configuration
     if save_config:

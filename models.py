@@ -1,3 +1,12 @@
+#models.py
+"""
+- Train Your Models in Jupyter Notebook and Save the trained models 
+   to the models folder with its own names ad pkl as file extension. 
+   Hence the model file names can be different.
+- Make Predictions: Input your project parameters, Select your 
+  preferred model and Click "Predict Man-Months"
+"""
+
 import os
 import pickle
 import numpy as np
