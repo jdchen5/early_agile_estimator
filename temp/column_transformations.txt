@@ -1,0 +1,50 @@
+Column name transformations:
+--------------------------
+isbsg_project_id -> isbsg_project_id
+project_prf_year_of_project -> project_prf_year_of_project
+external_eef_industry_sector -> external_eef_industry_sector
+external_eef_organisation_type -> external_eef_organisation_type
+project_prf_application_type -> project_prf_application_type
+tech_tf_primary_programming_language -> tech_tf_primary_programming_language
+project_prf_functional_size -> project_prf_functional_size
+project_prf_relative_size -> project_prf_relative_size
+project_prf_normalised_work_effort_level_1 -> project_prf_normalised_work_effort_level_1
+project_prf_normalised_work_effort -> project_prf_normalised_work_effort
+project_prf_normalised_level_1_pdr_ufp -> project_prf_normalised_level_1_pdr_ufp
+project_prf_normalised_pdr_ufp -> project_prf_normalised_pdr_ufp
+project_prf_speed_of_delivery -> project_prf_speed_of_delivery
+project_prf_project_elapsed_time -> project_prf_project_elapsed_time
+project_prf_team_size_group -> project_prf_team_size_group
+project_prf_max_team_size -> project_prf_max_team_size
+process_pmf_development_methodologies -> process_pmf_development_methodologies
+process_pmf_docs -> process_pmf_docs
+tech_tf_tools_used -> tech_tf_tools_used
+external_eef_data_quality_rating_b -> external_eef_data_quality_rating_b
+project_prf_application_group_business application -> project_prf_application_group_business_application
+project_prf_application_group_business application; infrastructure software -> project_prf_application_group_business_application__infrastructure_software
+project_prf_application_group_infrastructure software -> project_prf_application_group_infrastructure_software
+project_prf_application_group_mathematically intensive application -> project_prf_application_group_mathematically_intensive_application
+project_prf_application_group_mathematically-intensive application -> project_prf_application_group_mathematically_intensive_application_1
+project_prf_application_group_real-time application -> project_prf_application_group_real_time_application
+project_prf_development_type_new development -> project_prf_development_type_new_development
+project_prf_development_type_re-development -> project_prf_development_type_re_development
+tech_tf_development_platform_hand held -> tech_tf_development_platform_hand_held
+tech_tf_development_platform_mf -> tech_tf_development_platform_mf
+tech_tf_development_platform_mr -> tech_tf_development_platform_mr
+tech_tf_development_platform_multi -> tech_tf_development_platform_multi
+tech_tf_development_platform_pc -> tech_tf_development_platform_pc
+tech_tf_development_platform_proprietary -> tech_tf_development_platform_proprietary
+tech_tf_language_type_3GL -> tech_tf_language_type_3GL
+tech_tf_language_type_4GL -> tech_tf_language_type_4GL
+tech_tf_language_type_5GL -> tech_tf_language_type_5GL
+tech_tf_language_type_APG -> tech_tf_language_type_APG
+tech_tf_language_type_Missing -> tech_tf_language_type_Missing
+_case_tool_used_don't know -> _case_tool_used_don_t_know
+_case_tool_used_no -> _case_tool_used_no
+_case_tool_used_yes -> _case_tool_used_yes
+tech_tf_architecture_don't know -> tech_tf_architecture_don_t_know
+tech_tf_architecture_no -> tech_tf_architecture_no
+tech_tf_architecture_not applicable -> tech_tf_architecture_not_applicable
+tech_tf_architecture_yes -> tech_tf_architecture_yes
+tech_tf_dbms_used_no -> tech_tf_dbms_used_no
+tech_tf_dbms_used_yes -> tech_tf_dbms_used_yes

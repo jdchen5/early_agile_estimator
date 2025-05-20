@@ -1,0 +1,223 @@
+{
+    "columns": [
+        "project_prf_year_of_project",
+        "external_eef_industry_sector",
+        "external_eef_organisation_type",
+        "project_prf_application_type",
+        "tech_tf_primary_programming_language",
+        "project_prf_functional_size",
+        "project_prf_relative_size",
+        "project_prf_normalised_work_effort_level_1",
+        "project_prf_team_size_group",
+        "project_prf_max_team_size",
+        "process_pmf_development_methodologies",
+        "process_pmf_docs",
+        "tech_tf_tools_used",
+        "external_eef_data_quality_rating_b",
+        "project_prf_application_group_business_application",
+        "project_prf_application_group_business_application__infrastructure_software",
+        "project_prf_application_group_infrastructure_software",
+        "project_prf_application_group_mathematically_intensive_application",
+        "project_prf_application_group_mathematically_intensive_application_1",
+        "project_prf_application_group_real_time_application",
+        "project_prf_development_type_new_development",
+        "project_prf_development_type_re_development",
+        "tech_tf_development_platform_hand_held",
+        "tech_tf_development_platform_mf",
+        "tech_tf_development_platform_mr",
+        "tech_tf_development_platform_multi",
+        "tech_tf_development_platform_pc",
+        "tech_tf_development_platform_proprietary",
+        "tech_tf_language_type_3GL",
+        "tech_tf_language_type_4GL",
+        "tech_tf_language_type_5GL",
+        "tech_tf_language_type_APG",
+        "tech_tf_language_type_Missing",
+        "_case_tool_used_don_t_know",
+        "_case_tool_used_no",
+        "_case_tool_used_yes",
+        "tech_tf_architecture_don_t_know",
+        "tech_tf_architecture_no",
+        "tech_tf_architecture_not_applicable",
+        "tech_tf_architecture_yes",
+        "tech_tf_dbms_used_no",
+        "tech_tf_dbms_used_yes"
+    ],
+    "rows": 7058,
+    "cols": 42,
+    "target_is_numeric": true,
+    "columns_info": {
+        "project_prf_year_of_project": [
+            "scale"
+        ],
+        "external_eef_industry_sector": [
+            "categorical",
+            "few_categories"
+        ],
+        "external_eef_organisation_type": [
+            "categorical",
+            "many_categories"
+        ],
+        "project_prf_application_type": [
+            "categorical",
+            "many_categories"
+        ],
+        "tech_tf_primary_programming_language": [
+            "categorical",
+            "many_categories"
+        ],
+        "project_prf_functional_size": [
+            "missing_values",
+            "scale"
+        ],
+        "project_prf_relative_size": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_normalised_work_effort_level_1": [
+            "missing_values",
+            "scale"
+        ],
+        "project_prf_team_size_group": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_max_team_size": [
+            "missing_values",
+            "scale"
+        ],
+        "process_pmf_development_methodologies": [
+            "categorical",
+            "many_categories"
+        ],
+        "process_pmf_docs": [
+            "scale"
+        ],
+        "tech_tf_tools_used": [
+            "missing_values",
+            "scale"
+        ],
+        "external_eef_data_quality_rating_b": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_business_application": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_business_application__infrastructure_software": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_infrastructure_software": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_mathematically_intensive_application": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_mathematically_intensive_application_1": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_application_group_real_time_application": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_development_type_new_development": [
+            "categorical",
+            "few_categories"
+        ],
+        "project_prf_development_type_re_development": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_hand_held": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_mf": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_mr": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_multi": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_pc": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_development_platform_proprietary": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_language_type_3GL": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_language_type_4GL": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_language_type_5GL": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_language_type_APG": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_language_type_Missing": [
+            "categorical",
+            "few_categories"
+        ],
+        "_case_tool_used_don_t_know": [
+            "categorical",
+            "few_categories"
+        ],
+        "_case_tool_used_no": [
+            "categorical",
+            "few_categories"
+        ],
+        "_case_tool_used_yes": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_architecture_don_t_know": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_architecture_no": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_architecture_not_applicable": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_architecture_yes": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_dbms_used_no": [
+            "categorical",
+            "few_categories"
+        ],
+        "tech_tf_dbms_used_yes": [
+            "categorical",
+            "few_categories"
+        ]
+    },
+    "target_info": [
+        "scale_log"
+    ],
+    "n_features": 42,
+    "is_sample_weighted": false,
+    "is_fairness_applied": false
+}
