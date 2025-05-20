@@ -2,76 +2,370 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from models import load_model, predict_man_months
+import matplotlib.pyplot as plt
+import json
+import os
+from datetime import datetime
+from models import list_available_models, get_feature_importance
 
+# Dictionary mapping model keys to display names
 model_options = {
     "linear_regression": "Linear Regression",
     "random_forest": "Random Forest Regressor"
 }
 
+# Update model options based on available models
+def update_model_options():
+    available_models = list_available_models()
+    for model in available_models:
+        if model not in model_options:
+            # Add any newly discovered models with a sensible display name
+            display_name = ' '.join(word.capitalize() for word in model.split('_'))
+            model_options[model] = display_name
+
+
 def sidebar_inputs():
-    with st.sidebar.form("estimation_form"):
-        st.header("Project Information")
+    """Create input form in the sidebar."""
+    update_model_options()
+    
+    with st.sidebar:
+        st.title("Project Estimator")
+        
+        # Create tabs in the sidebar
+        tab1, tab2 = st.tabs(["Basic", "Advanced"])
+        
+        with tab1:
+            with st.form("estimation_form"):
+                st.header("Project Information")
+                
+                complexity = st.slider(
+                    "Project Complexity (1-5)", 
+                    min_value=1, 
+                    max_value=5, 
+                    value=3,
+                    help="Higher values indicate more complex projects"
+                )
+                
+                team_experience = st.slider(
+                    "Team Experience (1-5)", 
+                    min_value=1, 
+                    max_value=5, 
+                    value=3,
+                    help="Higher values indicate more experienced teams"
+                )
+                
+                num_requirements = st.number_input(
+                    "Number of Requirements", 
+                    min_value=1, 
+                    max_value=500, 
+                    value=20,
+                    help="Total number of user stories or requirements"
+                )
+                
+                team_size = st.number_input(
+                    "Team Size", 
+                    min_value=1, 
+                    max_value=100, 
+                    value=5,
+                    help="Number of full-time team members"
+                )
+                
+                tech_complexity = st.slider(
+                    "Technology Stack Complexity (1-5)", 
+                    min_value=1, 
+                    max_value=5, 
+                    value=3,
+                    help="Higher values indicate more complex technology stack"
+                )
 
-        complexity = st.slider("Project Complexity (1-5)", 1, 5, 3)
-        team_experience = st.slider("Team Experience (1-5)", 1, 5, 3)
-        num_requirements = st.number_input("Number of Requirements", 1, 500, 20)
-        team_size = st.number_input("Team Size", 1, 100, 5)
-        tech_complexity = st.slider("Technology Stack Complexity (1-5)", 1, 5, 3)
+                st.header("Model Selection")
+                selected_model = st.selectbox(
+                    "Select Prediction Model", 
+                    list(model_options.keys()), 
+                    format_func=lambda x: model_options[x],
+                    help="Choose which trained model to use for estimation"
+                )
 
-        st.header("Model Selection")
-        selected_model = st.selectbox("Select Prediction Model", list(model_options.keys()), 
-                                      format_func=lambda x: model_options[x])
-
-        create_models = st.checkbox("Create sample models (for testing)")
-        submit = st.form_submit_button("Predict Man-Months")
+                create_models = st.checkbox(
+                    "Create sample models (for testing)",
+                    help="Generate sample models if none exist"
+                )
+                
+                col1, col2 = st.columns(2)
+                submit = col1.form_submit_button("Predict Man-Months")
+                save_config = col2.form_submit_button("Save Config")
+        
+        with tab2:
+            st.header("Saved Configurations")
+            configs = load_saved_configurations()
+            
+            if configs:
+                selected_config = st.selectbox(
+                    "Choose a saved configuration",
+                    options=list(configs.keys()),
+                    format_func=lambda x: f"{x} ({configs[x]['date']})"
+                )
+                
+                load_config = st.button("Load Selected Config")
+                if load_config and selected_config:
+                    st.session_state.config_to_load = selected_config
+                    st.rerun()
+            else:
+                st.info("No saved configurations found. You can save configurations in the Basic tab.")
+    
+    # Handle loading saved configuration
+    if hasattr(st.session_state, 'config_to_load'):
+        config_name = st.session_state.config_to_load
+        loaded_config = load_configuration(config_name)
+        if loaded_config:
+            complexity = loaded_config.get('complexity', 3)
+            team_experience = loaded_config.get('team_experience', 3)
+            num_requirements = loaded_config.get('num_requirements', 20)
+            team_size = loaded_config.get('team_size', 5)
+            tech_complexity = loaded_config.get('tech_complexity', 3)
+            selected_model = loaded_config.get('selected_model', list(model_options.keys())[0])
+            
+            # Clear the session state to prevent reloading
+            del st.session_state.config_to_load
+            
+            # Show success message
+            st.success(f"Configuration '{config_name}' loaded successfully!")
+    
+    # Handle saving configuration
+    if save_config:
+        save_current_configuration(
+            complexity, team_experience, num_requirements, 
+            team_size, tech_complexity, selected_model
+        )
 
     return complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model, create_models, submit
 
+def save_current_configuration(complexity, team_experience, num_requirements, 
+                              team_size, tech_complexity, selected_model):
+    """Save current configuration to a file."""
+    config_name = st.text_input("Enter a name for this configuration:")
+    
+    if not config_name:
+        st.warning("Please enter a name for your configuration.")
+        return
+    
+    config = {
+        'complexity': complexity,
+        'team_experience': team_experience,
+        'num_requirements': num_requirements,
+        'team_size': team_size,
+        'tech_complexity': tech_complexity,
+        'selected_model': selected_model,
+        'date': datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+    
+    # Make sure the configs directory exists
+    if not os.path.exists('configs'):
+        os.makedirs('configs')
+    
+    # Save to file
+    with open(f'configs/{config_name}.json', 'w') as f:
+        json.dump(config, f)
+    
+    st.success(f"Configuration '{config_name}' saved successfully!")
+
+def load_saved_configurations():
+    """Load all saved configurations."""
+    configs = {}
+    
+    if not os.path.exists('configs'):
+        return configs
+    
+    for filename in os.listdir('configs'):
+        if filename.endswith('.json'):
+            config_name = os.path.splitext(filename)[0]
+            try:
+                with open(f'configs/{filename}', 'r') as f:
+                    config = json.load(f)
+                configs[config_name] = config
+            except:
+                pass
+    
+    return configs
+
+def load_configuration(config_name):
+    """Load a specific configuration by name."""
+    try:
+        with open(f'configs/{config_name}.json', 'r') as f:
+            return json.load(f)
+    except:
+        st.error(f"Failed to load configuration '{config_name}'")
+        return None
+
 def display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model):
+    """Display the input parameters in a formatted way."""
     col1, col2 = st.columns([2, 1])
+    
     with col1:
         st.subheader("Input Parameters")
+        
+        # Create a more visually appealing display for inputs
         input_df = pd.DataFrame({
             "Parameter": ["Project Complexity", "Team Experience", "Number of Requirements", 
-                          "Team Size", "Technology Stack Complexity"],
-            "Value": [complexity, team_experience, num_requirements, team_size, tech_complexity]
+                         "Team Size", "Technology Stack Complexity"],
+            "Value": [complexity, team_experience, num_requirements, team_size, tech_complexity],
+            "Description": [
+                "Higher value = more complex",
+                "Higher value = more experienced",
+                "Total count of requirements",
+                "Number of team members",
+                "Higher value = more complex tech"
+            ]
         })
-        st.table(input_df)
-        st.write(f"Selected Model: **{model_options[selected_model]}**")
+        
+        # Format the table for better readability
+        st.dataframe(input_df, use_container_width=True)
+        
+        # Display the selected model with icon
+        st.write(f"📊 Selected Model: **{model_options[selected_model]}**")
+    
     return col2
 
+def show_feature_importance(selected_model, params_list, col):
+    """Display feature importance if available."""
+    feature_importance = get_feature_importance(selected_model)
+    
+    if feature_importance is not None:
+        with col:
+            st.subheader("Feature Importance")
+            
+            # Create a DataFrame for the feature importance values
+            features = ['Project Complexity', 'Team Experience', 
+                       'Number of Requirements', 'Team Size', 
+                       'Technology Stack Complexity']
+            
+            importance_df = pd.DataFrame({
+                'Feature': features,
+                'Importance': np.abs(feature_importance) if len(feature_importance) == len(features) else [0] * len(features)
+            })
+            
+            # Sort by importance
+            importance_df = importance_df.sort_values('Importance', ascending=False)
+            
+            # Create a horizontal bar chart
+            fig, ax = plt.subplots(figsize=(8, 4))
+            bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
+            
+            # Add value labels
+            for bar in bars:
+                width = bar.get_width()
+                label_x_pos = width * 1.01
+                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
+                       va='center')
+            
+            ax.set_xlabel('Relative Importance')
+            ax.set_title('Feature Importance in Prediction')
+            
+            # Display the plot
+            st.pyplot(fig)
+
 def show_prediction(col2, prediction, team_size):
+    """Display the prediction results in a visually appealing way."""
     with col2:
         st.subheader("Prediction Result")
+        
+        if prediction is None:
+            st.error("Failed to make prediction. Please check logs for details.")
+            return
+        
+        # Create a visually appealing display for the prediction
         st.markdown(f"""
-        <div style='background-color:#f0f2f6; padding:20px; border-radius:10px;'>
+        <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
             <h3 style='text-align:center;'>Estimated Effort</h3>
-            <h1 style='text-align:center; color:#1f77b4;'>{prediction:.2f} Man-Months</h1>
+            <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Months</h1>
         </div>
         """, unsafe_allow_html=True)
 
+        # Calculate calendar time and per-person effort
         months = int(prediction)
         remaining_days = int((prediction - months) * 30)
+        per_person = prediction / team_size
 
-        st.write(f"⏱️ Approximately: {months} months and {remaining_days} days")
-        st.write(f"👨‍💻 With team size of {team_size}: {(prediction / team_size):.2f} months per person")
+        # Display additional metrics
+        st.markdown("### Timeline Breakdown")
+        
+        metrics_col1, metrics_col2 = st.columns(2)
+        
+        with metrics_col1:
+            st.metric(
+                label="Calendar Time", 
+                value=f"{months}m {remaining_days}d",
+                help="Estimated calendar duration assuming full team availability"
+            )
+        
+        with metrics_col2:
+            st.metric(
+                label="Per Person", 
+                value=f"{per_person:.2f}m",
+                help="Average effort per team member"
+            )
+        
+        # Display warning for potentially inaccurate predictions
+        if prediction < 1:
+            st.warning("This prediction seems unusually low. Consider reviewing your inputs.")
+        elif prediction > 100:
+            st.warning("This prediction seems unusually high. Consider reviewing your inputs.")
 
 def about_section():
+    """Display information about the application."""
     st.markdown("---")
-    st.subheader("About this Estimator")
-    st.write("""
-    This application uses machine learning models to predict the effort required for agile projects.
-    The models have been trained on historical project data to provide early estimations based on
-    key project parameters. These estimations can help in project planning and resource allocation.
-    """)
+    
+    with st.expander("About this Estimator", expanded=False):
+        st.subheader("Machine Learning for Agile Project Estimation")
+        
+        st.write("""
+        This application uses machine learning models to predict the effort required for agile projects.
+        The models have been trained on historical project data to provide early estimations based on
+        key project parameters. These estimations can help in project planning and resource allocation.
+        
+        ### How it Works
+        
+        The estimator uses the following input parameters:
+        
+        - **Project Complexity**: Overall complexity of the project scope
+        - **Team Experience**: Experience level of the team with similar projects
+        - **Number of Requirements**: Count of user stories or requirements
+        - **Team Size**: Number of full-time team members
+        - **Technology Stack Complexity**: Complexity of the technology being used
+        
+        The selected machine learning model processes these inputs to predict the required effort in man-months.
+        """)
 
 def tips_section():
-    st.subheader("Tips for Accurate Estimation")
-    st.write("""
-    - Be realistic about project complexity
-    - Consider team experience with similar projects
-    - Break down requirements to ensure accurate counting
-    - Factor in technical complexity appropriately
-    - Validate predictions against your historical data
-    """)
+    """Display tips for accurate estimation."""
+    with st.expander("Tips for Accurate Estimation", expanded=False):
+        st.markdown("""
+        ### Tips for Getting Accurate Estimations
+
+        1. **Project Complexity**
+           - Rate 1-2 for simple projects with well-understood requirements
+           - Rate 3 for moderate complexity with some uncertainty
+           - Rate 4-5 for highly complex projects with significant unknowns
+
+        2. **Team Experience**
+           - Rate 1-2 for teams new to the domain or technology
+           - Rate 3 for teams with moderate experience in similar projects
+           - Rate 4-5 for highly experienced teams who have done similar work
+
+        3. **Requirements Analysis**
+           - Count only well-defined requirements
+           - Break down epics into smaller stories when possible
+           - Consider using story points as a proxy for requirements count
+
+        4. **Team Size Considerations**
+           - Larger teams may increase coordination overhead
+           - Consider the "mythical man-month" effect
+           - Ensure your team size is appropriate for the project scope
+
+        5. **Technology Complexity**
+           - Rate 1-2 for familiar, stable technology stacks
+           - Rate 3 for mixed familiar/new technologies
+           - Rate 4-5 for cutting-edge or highly specialized technologies
+        """)
+
+        st.info("Remember that these estimations are meant to be starting points. Always review and adjust based on your team's specific context and historical performance.")
