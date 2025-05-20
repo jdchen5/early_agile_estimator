@@ -3,6 +3,7 @@
 "iterations":[
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 {"learn":[8701.834133],"iteration":0,"passed_time":0.002578990859,"remaining_time":2.576411868},
 {"learn":[8639.974578],"iteration":1,"passed_time":0.00745685396,"remaining_time":3.720970126},
 {"learn":[8581.38883],"iteration":2,"passed_time":0.01115005786,"remaining_time":3.705535894},
@@ -1004,6 +1005,8 @@
 {"learn":[52.65676505],"iteration":998,"passed_time":2.25377036,"remaining_time":0.002256026386},
 {"learn":[52.39008551],"iteration":999,"passed_time":2.255559519,"remaining_time":0}
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 {"learn":[10639.82313],"iteration":0,"passed_time":0.01346716263,"remaining_time":13.45369546},
@@ -2165,6 +2168,9 @@
 {"learn":[29.2336518],"iteration":999,"passed_time":3.208635333,"remaining_time":0}
 ]}e":0}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
