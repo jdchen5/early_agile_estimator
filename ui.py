@@ -1,4 +1,11 @@
 # ui.py
+"""
+- Launch the Streamlit App: Run streamlit run main.py and Use the 
+  "Check for required models" option to verify your models are detected properly. Should be only model allowed at one time.
+- Explore Additional Features: Save/load configurations for frequently used project settings, Use the what-if analysis to 
+  see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
+"""
+
 import streamlit as st
 import numpy as np
 import pandas as pd
