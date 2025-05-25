@@ -6,8 +6,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import logging
-from models import create_sample_models, load_model, predict_man_months, get_feature_importance
+from models import load_model, predict_man_months, get_feature_importance
 from ui import sidebar_inputs, display_inputs, show_prediction, about_section, tips_section, show_feature_importance
+
+import sys
+print("Python executable:", sys.executable)
+
+
 
 # Configure logging
 logging.basicConfig(
@@ -77,17 +82,9 @@ def show_disclaimer():
 # Main application logic
 def main():
     try:
-        # Sidebar form input
+        # Sidebar form inputs
         (complexity, team_experience, num_requirements, team_size, 
-         tech_complexity, selected_model, create_models, submit) = sidebar_inputs()
-
-        # Create sample models if requested
-        if create_models:
-            with st.spinner("Creating sample models..."):
-                if create_sample_models():
-                    st.success("Sample models created successfully!")
-                else:
-                    st.error("Failed to create sample models. Check logs for details.")
+         tech_complexity, selected_model, submit) = sidebar_inputs()
 
         # Create tabs for different sections
         tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
@@ -104,10 +101,10 @@ def main():
 
                     if model is not None and scaler is not None:
                         features = np.array([complexity, team_experience, num_requirements, team_size, tech_complexity])
-                        prediction = predict_man_months(features, model, scaler)
+                        prediction = predict_man_months(features, selected_model)
                         show_prediction(col2, prediction, team_size)
                     else:
-                        st.error("Required model or scaler not found. Try creating sample models first.")
+                        st.error("Required model or scaler not found. Please make sure your trained models and scaler (if used) are in the models folder.")
             else:
                 col2.info("Click the 'Predict Man-Months' button to see the estimation result.")
 
@@ -145,7 +142,7 @@ def main():
                 
                 # Get the model and scaler
                 model = load_model(selected_model)
-                scaler = load_model("scaler")
+                scaler = load_model("standard_scaler")
                 
                 if model is not None and scaler is not None:
                     # Make predictions for each value in the range
@@ -158,7 +155,7 @@ def main():
                         modified_features[param_index] = val
                         
                         # Make prediction
-                        prediction = predict_man_months(modified_features, model, scaler)
+                        prediction = predict_man_months(modified_features, selected_model)
                         predictions.append(prediction)
                     
                     # Create a DataFrame for the results
@@ -176,8 +173,9 @@ def main():
                     ax.grid(True, linestyle='--', alpha=0.7)
                     
                     # Add horizontal line for current prediction
-                    ax.axhline(y=predict_man_months(features, model, scaler), color='r', linestyle='--', 
-                               label=f"Current Estimation ({predict_man_months(features, model, scaler):.2f} man-months)")
+                    current_pred = predict_man_months(features, selected_model)
+                    ax.axhline(y=current_pred, color='r', linestyle='--', 
+                               label=f"Current Estimation ({current_pred:.2f} man-months)")
                     
                     # Add legend
                     ax.legend()
@@ -191,7 +189,7 @@ def main():
                     # Add interpretation
                     st.markdown(f"""
                     ### Interpretation
-                    
+
                     The graph above shows how the estimated man-months change when varying **{what_if_param}** 
                     while keeping all other parameters constant. This can help you understand which factors 
                     most strongly influence your project timeline.

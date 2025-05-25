@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import json
 import os
 from datetime import datetime
-from models import list_available_models, get_feature_importance
+from models import list_available_models, get_feature_importance, check_required_models
 
 # Dictionary to store display names for default models
 DEFAULT_MODEL_OPTIONS = {
@@ -112,10 +112,6 @@ def sidebar_inputs():
                     st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
                     selected_model = None
                 
-                create_models = st.checkbox(
-                    "Create sample models (for testing)",
-                    help="Generate sample models if none exist"
-                )
                 
                 # Buttons
                 col1, col2 = st.columns(2)
@@ -205,7 +201,7 @@ def sidebar_inputs():
             team_size, tech_complexity, selected_model
         )
 
-    return complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model, create_models, submit
+    return complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model, submit
 
 def save_current_configuration(complexity, team_experience, num_requirements, 
                               team_size, tech_complexity, selected_model):
@@ -266,6 +262,8 @@ def load_configuration(config_name):
 
 def display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model):
     """Display the input parameters in a formatted way."""
+    model_options = get_model_options()
+    col2 = st.empty()   
     col1, col2 = st.columns([2, 1])
     
     with col1:
