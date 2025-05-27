@@ -1,0 +1,105 @@
+feature,ExtraTreesRegressor,OrthogonalMatchingPursuit,avg_importance
+project_prf_max_team_size,0.3603267111006078,7641.605028926638,3820.982677818869
+external_eef_organisation_type_information technology,0.0696375909712496,4323.669526498662,2161.8695820448165
+project_prf_team_size_group_Missing,2.444587857448443e-06,1796.5245208816068,898.2622616630973
+project_prf_application_type_data warehouse system; financial transaction process_accounting; management or performance reporting,8.800695449372307e-08,679.8673513134413,339.9336757007241
+project_prf_team_size_group_9_14,0.0088377967889484,649.9993476805522,325.0040927386706
+external_eef_industry_sector_education,1.4674765259470257e-07,629.9696829502011,314.9848415484744
+external_eef_organisation_type_aerospace _ automotive,0.0012814315848741,362.2902137896041,181.14574761059447
+external_eef_organisation_type_community services,3.597705049747599e-08,325.2802816940393,162.64014086500816
+external_eef_organisation_type_community services; government; public administration,2.640208634811692e-07,268.2941560394328,134.14707815172682
+project_prf_application_type_idm,0.0006892300894305,205.84635581992143,102.92352252500542
+project_prf_team_size_group_41_50,0.0749644601786056,0.0,0.0374822300893028
+process_pmf_development_methodologies_agile_development__iterative,0.0748350297533983,0.0,0.03741751487669915
+project_prf_team_size_group_21_30,0.0721310631111283,0.0,0.03606553155556415
+project_prf_application_type_web-based application,0.0697670213964569,0.0,0.03488351069822845
+project_prf_year_of_project,0.051756295545049,0.0,0.0258781477725245
+project_prf_application_type_hospital information system,0.0474800994015266,0.0,0.0237400497007633
+external_eef_organisation_type_medical and health care,0.0256257891601058,0.0,0.0128128945800529
+project_prf_team_size_group_61_70,0.0245211313989255,0.0,0.01226056569946275
+process_pmf_development_methodologies_agile_development__joint_application_development_jad__multifunctional_teams,0.0211389407577598,0.0,0.0105694703788799
+project_prf_relative_size_l,0.0208108655478232,0.0,0.0104054327739116
+project_prf_functional_size,0.0179007929963702,0.0,0.0089503964981851
+people_prf_personnel_changes,0.0154890587484443,0.0,0.00774452937422215
+project_prf_relative_size_m2,0.0134087042551108,0.0,0.0067043521275554
+process_pmf_docs,0.0109255164270325,0.0,0.00546275821351625
+tech_tf_primary_programming_language_java,0.0065653487222691,0.0,0.00328267436113455
+tech_tf_primary_programming_language_c_,0.0017696255140951,0.0,0.00088481275704755
+process_pmf_development_methodologies_agile_development__unified_process,0.0017176105692724,0.0,0.0008588052846362
+project_prf_application_type_catalogue_register of things or events,0.0012797306235409,0.0,0.00063986531177045
+project_prf_development_type_new_development,0.0012328541107031,0.0,0.00061642705535155
+project_prf_application_group_mathematically_intensive_application,0.0010479291138904,0.0,0.0005239645569452
+tech_tf_development_platform_multi,0.0009716444575803,0.0,0.00048582222879015
+external_eef_industry_sector_medical_health care,0.0008458166288305,0.0,0.00042290831441525
+project_prf_application_type_mathematical modelling_finance or eng; software development tool,0.0008152357873456,0.0,0.0004076178936728
+external_eef_industry_sector_manufacturing,0.0007392896340416,0.0,0.0003696448170208
+tech_tf_architecture_client_server,0.0005195020755043,0.0,0.00025975103775215
+tech_tf_client_server_yes,0.0002597895230593,0.0,0.00012989476152965
+project_prf_relative_size_m1,0.0001886507543528,0.0,9.43253771764e-05
+external_eef_industry_sector_electronics_computers,0.0001294321514618,0.0,6.47160757309e-05
+external_eef_industry_sector_service industry,0.0001219743339693,0.0,6.098716698465e-05
+tech_tf_primary_programming_language_oracle,7.60001591961056e-05,0.0,3.80000795980528e-05
+project_prf_relative_size_xxs,4.429968864340669e-05,0.0,2.2149844321703343e-05
+tech_tf_development_platform_proprietary,2.379817833387883e-05,0.0,1.1899089166939415e-05
+tech_tf_primary_programming_language_proprietary_agile_platform,2.292625470667088e-05,0.0,1.146312735333544e-05
+tech_tf_language_type_5GL,1.701711244617413e-05,0.0,8.508556223087065e-06
+tech_tf_tools_used,1.3821046066429351e-05,0.0,6.910523033214676e-06
+external_eef_organisation_type_community services; government,7.215803226730996e-06,0.0,3.607901613365498e-06
+tech_tf_primary_programming_language_pl_i,6.614486291170079e-06,0.0,3.3072431455850393e-06
+external_eef_organisation_type_government,4.955334270681022e-06,0.0,2.477667135340511e-06
+external_eef_industry_sector_banking,4.484595481089852e-06,0.0,2.242297740544926e-06
+project_prf_relative_size_s,4.408060931664051e-06,0.0,2.2040304658320255e-06
+project_prf_team_size_group_3_4,4.277146228208225e-06,0.0,2.1385731141041125e-06
+external_eef_organisation_type_banking; communications; education institution; government; medical and health care; transport_storage; wholesale_retail trade,4.129013173741499e-06,0.0,2.0645065868707493e-06
+external_eef_organisation_type_transport_storage,2.89496833141786e-06,0.0,1.44748416570893e-06
+project_prf_application_type_surveillance and security,2.8386965569472804e-06,0.0,1.4193482784736402e-06
+tech_tf_architecture_multi_tier_with_web_public_interface,2.7605394460437973e-06,0.0,1.3802697230218987e-06
+external_eef_industry_sector_government,2.662658375641656e-06,0.0,1.331329187820828e-06
+project_prf_application_type_data or database management,2.319613760873977e-06,0.0,1.1598068804369886e-06
+project_prf_application_type_business application,2.2200873831717467e-06,0.0,1.1100436915858734e-06
+tech_tf_development_platform_pc,2.1532921717817837e-06,0.0,1.0766460858908919e-06
+project_prf_application_type_proposal builder,1.835565409859172e-06,0.0,9.17782704929586e-07
+project_prf_application_group_business_application,1.754381842001753e-06,0.0,8.771909210008765e-07
+project_prf_application_group_infrastructure_software,1.739710320655483e-06,0.0,8.698551603277415e-07
+project_prf_team_size_group_2,1.499183519056316e-06,0.0,7.49591759528158e-07
+external_eef_organisation_type_banking,1.3846843330147372e-06,0.0,6.923421665073686e-07
+tech_tf_dbms_used_yes,8.661728260994521e-07,0.0,4.3308641304972606e-07
+project_prf_application_type_auditing management,5.904104066362646e-07,0.0,2.952052033181323e-07
+tech_tf_language_type_4GL,5.722965869510987e-07,0.0,2.8614829347554934e-07
+project_prf_cost_currency_european__euro,3.871655572596082e-07,0.0,1.935827786298041e-07
+tech_tf_web_development_web,3.726184543563285e-07,0.0,1.8630922717816426e-07
+project_prf_application_type_security controls,2.910381435958964e-07,0.0,1.455190717979482e-07
+project_prf_relative_size_xs,2.696285333685885e-07,0.0,1.3481426668429424e-07
+project_prf_team_size_group_5_8,2.4505957489435905e-07,0.0,1.2252978744717952e-07
+tech_tf_client_server_no,1.9153049025340915e-07,0.0,9.576524512670457e-08
+tech_tf_architecture_stand_alone,1.4323149705907117e-07,0.0,7.161574852953559e-08
+external_eef_organisation_type_surveillance_security,1.3323860191541508e-07,0.0,6.661930095770754e-08
+project_prf_application_type_catalogue_register of things or events; logistic or supply planning_control,1.3323860191541506e-07,0.0,6.661930095770753e-08
+project_prf_application_type_electronic data interchange,1.3323860191541506e-07,0.0,6.661930095770753e-08
+tech_tf_development_platform_mr,1.1734260599163075e-07,0.0,5.8671302995815376e-08
+project_prf_development_type_re_development,1.1592021164672505e-07,0.0,5.796010582336253e-08
+project_prf_cost_currency_canada__dollar,9.205617941115465e-08,0.0,4.6028089705577326e-08
+process_pmf_development_methodologies_agile_development__scrum,8.800695449372304e-08,0.0,4.400347724686152e-08
+external_eef_organisation_type_education institution,7.994316114924902e-08,0.0,3.997158057462451e-08
+project_prf_application_type_customer billing_relationship management,3.1479919185291487e-08,0.0,1.5739959592645743e-08
+external_eef_organisation_type_food processing,2.498223785914033e-08,0.0,1.2491118929570166e-08
+project_prf_application_type_airport management,2.498223785914033e-08,0.0,1.2491118929570166e-08
+tech_tf_primary_programming_language_javascript,2.24856565609225e-08,0.0,1.124282828046125e-08
+project_prf_application_type_content management system; dynamic website,2.0568462797537683e-08,0.0,1.0284231398768842e-08
+project_prf_application_type_complex process control; workflow support_management,1.7988525248737995e-08,0.0,8.994262624368998e-09
+external_eef_organisation_type_biotech,1.6431720660693512e-08,0.0,8.215860330346756e-09
+project_prf_application_type_analysis management,1.5774451834265773e-08,0.0,7.887225917132886e-09
+tech_tf_primary_programming_language_c__,9.992895143656133e-09,0.0,4.9964475718280664e-09
+external_eef_industry_sector_financial,8.994262624368998e-09,0.0,4.497131312184499e-09
+"external_eef_organisation_type_financial, property_business services",8.994262624368998e-09,0.0,4.497131312184499e-09
+"external_eef_organisation_type_education institution; electricity, gas, water; ieee",5.522043634610769e-09,0.0,2.7610218173053846e-09
+process_pmf_development_methodologies_agile_development__personal_software_process_psp__unified_process,5.522043634610768e-09,0.0,2.761021817305384e-09
+project_prf_application_type_customer billing; financial transaction process_accounting,4.996447571828065e-09,0.0,2.4982237859140324e-09
+external_eef_organisation_type_high tech,2.65754509244504e-09,0.0,1.32877254622252e-09
+external_eef_organisation_type_public sector,1.3911870786779659e-09,0.0,6.955935393389829e-10
+project_prf_application_type_course management,1.192446067438257e-09,0.0,5.962230337191285e-10
+project_prf_application_type_project management,1.093075561818402e-09,0.0,5.46537780909201e-10
+tech_tf_primary_programming_language_abap,0.0,0.0,0.0
+project_prf_application_group_real_time_application,0.0,0.0,0.0
+tech_tf_dbms_used_tech_tf_dbms_used,0.0,0.0,0.0
+tech_tf_web_development_tech_tf_web_development,0.0,0.0,0.0

@@ -291,43 +291,42 @@ def display_inputs(complexity, team_experience, num_requirements, team_size, tec
     
     return col2
 
-def show_feature_importance(selected_model, params_list, col):
+def show_feature_importance(selected_model, params_list, st):
     """Display feature importance if available."""
     feature_importance = get_feature_importance(selected_model)
     
     if feature_importance is not None:
-        with col:
-            st.subheader("Feature Importance")
-            
-            # Create a DataFrame for the feature importance values
-            features = ['Project Complexity', 'Team Experience', 
-                       'Number of Requirements', 'Team Size', 
-                       'Technology Stack Complexity']
-            
-            importance_df = pd.DataFrame({
-                'Feature': features,
-                'Importance': np.abs(feature_importance) if len(feature_importance) == len(features) else [0] * len(features)
-            })
-            
-            # Sort by importance
-            importance_df = importance_df.sort_values('Importance', ascending=False)
-            
-            # Create a horizontal bar chart
-            fig, ax = plt.subplots(figsize=(8, 4))
-            bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
-            
-            # Add value labels
-            for bar in bars:
-                width = bar.get_width()
-                label_x_pos = width * 1.01
-                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
-                       va='center')
-            
-            ax.set_xlabel('Relative Importance')
-            ax.set_title('Feature Importance in Prediction')
-            
-            # Display the plot
-            st.pyplot(fig)
+        st.subheader("Feature Importance")
+        
+        # Create a DataFrame for the feature importance values
+        features = ['Project Complexity', 'Team Experience', 
+                   'Number of Requirements', 'Team Size', 
+                   'Technology Stack Complexity']
+        
+        importance_df = pd.DataFrame({
+            'Feature': features,
+            'Importance': np.abs(feature_importance) if len(feature_importance) == len(features) else [0] * len(features)
+        })
+        
+        # Sort by importance
+        importance_df = importance_df.sort_values('Importance', ascending=False)
+        
+        # Create a horizontal bar chart
+        fig, ax = plt.subplots(figsize=(8, 4))
+        bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
+        
+        # Add value labels
+        for bar in bars:
+            width = bar.get_width()
+            label_x_pos = width * 1.01
+            ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
+                   va='center')
+        
+        ax.set_xlabel('Relative Importance')
+        ax.set_title('Feature Importance in Prediction')
+        
+        # Display the plot
+        st.pyplot(fig)
 
 def show_prediction(col2, prediction, team_size):
     """Display the prediction results in a visually appealing way."""

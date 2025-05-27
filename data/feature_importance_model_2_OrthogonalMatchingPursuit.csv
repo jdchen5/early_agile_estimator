@@ -1,0 +1,105 @@
+feature,importance,model,importance_type,rank
+project_prf_max_team_size,7641.605028926638,OrthogonalMatchingPursuit,coef_ (absolute values),1
+external_eef_organisation_type_information technology,4323.669526498662,OrthogonalMatchingPursuit,coef_ (absolute values),2
+project_prf_team_size_group_Missing,1796.5245208816068,OrthogonalMatchingPursuit,coef_ (absolute values),3
+project_prf_application_type_data warehouse system; financial transaction process_accounting; management or performance reporting,679.8673513134413,OrthogonalMatchingPursuit,coef_ (absolute values),4
+project_prf_team_size_group_9_14,649.9993476805522,OrthogonalMatchingPursuit,coef_ (absolute values),5
+external_eef_industry_sector_education,629.9696829502011,OrthogonalMatchingPursuit,coef_ (absolute values),6
+external_eef_organisation_type_aerospace _ automotive,362.2902137896041,OrthogonalMatchingPursuit,coef_ (absolute values),7
+external_eef_organisation_type_community services,325.2802816940393,OrthogonalMatchingPursuit,coef_ (absolute values),8
+external_eef_organisation_type_community services; government; public administration,268.2941560394328,OrthogonalMatchingPursuit,coef_ (absolute values),9
+project_prf_application_type_idm,205.84635581992143,OrthogonalMatchingPursuit,coef_ (absolute values),10
+tech_tf_primary_programming_language_pl_i,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),11
+tech_tf_primary_programming_language_oracle,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),12
+project_prf_year_of_project,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),13
+tech_tf_primary_programming_language_javascript,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),14
+project_prf_relative_size_l,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),15
+project_prf_relative_size_m1,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),16
+project_prf_relative_size_m2,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),17
+tech_tf_primary_programming_language_proprietary_agile_platform,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),18
+tech_tf_primary_programming_language_c__,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),19
+tech_tf_primary_programming_language_java,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),20
+project_prf_relative_size_xs,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),21
+tech_tf_primary_programming_language_c_,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),22
+tech_tf_primary_programming_language_abap,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),23
+tech_tf_language_type_5GL,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),24
+tech_tf_language_type_4GL,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),25
+tech_tf_development_platform_proprietary,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),26
+tech_tf_development_platform_pc,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),27
+tech_tf_development_platform_multi,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),28
+tech_tf_development_platform_mr,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),29
+project_prf_development_type_re_development,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),30
+project_prf_development_type_new_development,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),31
+project_prf_relative_size_s,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),32
+project_prf_team_size_group_3_4,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),33
+project_prf_relative_size_xxs,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),34
+tech_tf_architecture_client_server,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),35
+project_prf_cost_currency_canada__dollar,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),36
+tech_tf_dbms_used_yes,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),37
+tech_tf_dbms_used_tech_tf_dbms_used,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),38
+tech_tf_web_development_web,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),39
+tech_tf_web_development_tech_tf_web_development,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),40
+tech_tf_client_server_yes,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),41
+tech_tf_client_server_no,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),42
+tech_tf_architecture_stand_alone,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),43
+tech_tf_architecture_multi_tier_with_web_public_interface,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),44
+process_pmf_development_methodologies_agile_development__unified_process,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),45
+project_prf_team_size_group_2,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),46
+process_pmf_development_methodologies_agile_development__scrum,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),47
+process_pmf_development_methodologies_agile_development__personal_software_process_psp__unified_process,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),48
+process_pmf_development_methodologies_agile_development__joint_application_development_jad__multifunctional_teams,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),49
+process_pmf_development_methodologies_agile_development__iterative,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),50
+project_prf_team_size_group_61_70,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),51
+project_prf_team_size_group_5_8,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),52
+project_prf_team_size_group_41_50,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),53
+project_prf_application_group_mathematically_intensive_application,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),54
+project_prf_team_size_group_21_30,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),55
+project_prf_application_group_real_time_application,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),56
+tech_tf_tools_used,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),57
+project_prf_application_group_infrastructure_software,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),58
+external_eef_organisation_type_banking; communications; education institution; government; medical and health care; transport_storage; wholesale_retail trade,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),59
+external_eef_organisation_type_education institution,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),60
+external_eef_organisation_type_surveillance_security,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),61
+external_eef_organisation_type_community services; government,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),62
+external_eef_organisation_type_biotech,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),63
+"external_eef_organisation_type_financial, property_business services",0.0,OrthogonalMatchingPursuit,coef_ (absolute values),64
+external_eef_organisation_type_transport_storage,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),65
+external_eef_organisation_type_high tech,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),66
+external_eef_organisation_type_banking,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),67
+external_eef_organisation_type_food processing,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),68
+external_eef_organisation_type_public sector,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),69
+project_prf_application_type_data or database management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),70
+external_eef_organisation_type_medical and health care,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),71
+"external_eef_organisation_type_education institution; electricity, gas, water; ieee",0.0,OrthogonalMatchingPursuit,coef_ (absolute values),72
+external_eef_organisation_type_government,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),73
+external_eef_industry_sector_financial,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),74
+external_eef_industry_sector_electronics_computers,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),75
+external_eef_industry_sector_banking,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),76
+external_eef_industry_sector_medical_health care,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),77
+external_eef_industry_sector_service industry,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),78
+external_eef_industry_sector_manufacturing,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),79
+project_prf_application_type_mathematical modelling_finance or eng; software development tool,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),80
+project_prf_application_type_catalogue_register of things or events,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),81
+project_prf_application_group_business_application,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),82
+project_prf_application_type_customer billing_relationship management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),83
+people_prf_personnel_changes,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),84
+external_eef_industry_sector_government,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),85
+process_pmf_docs,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),86
+project_prf_functional_size,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),87
+project_prf_application_type_catalogue_register of things or events; logistic or supply planning_control,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),88
+project_prf_application_type_electronic data interchange,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),89
+project_prf_application_type_analysis management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),90
+project_prf_application_type_airport management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),91
+project_prf_application_type_proposal builder,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),92
+project_prf_application_type_security controls,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),93
+project_prf_application_type_business application,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),94
+project_prf_application_type_web-based application,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),95
+project_prf_application_type_course management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),96
+project_prf_application_type_auditing management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),97
+project_prf_application_type_complex process control; workflow support_management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),98
+project_prf_application_type_customer billing; financial transaction process_accounting,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),99
+project_prf_application_type_surveillance and security,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),100
+project_prf_application_type_project management,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),101
+project_prf_application_type_hospital information system,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),102
+project_prf_application_type_content management system; dynamic website,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),103
+project_prf_cost_currency_european__euro,0.0,OrthogonalMatchingPursuit,coef_ (absolute values),104
