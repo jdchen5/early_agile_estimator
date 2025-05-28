@@ -286,15 +286,68 @@ def load_scaler() -> Optional[Any]:
 def get_expected_feature_names():
     """
     Get the expected feature names for the model.
-    Adjust these based on your actual training data columns.
+    Updated with the complete PyCaret trained model feature list.
     """
     return [
         'project_prf_year_of_project',
-        'project_prf_functional_size', 
+        'external_eef_industry_sector',
+        'external_eef_organisation_type',
+        'project_prf_application_type',
+        'project_prf_functional_size',
         'project_prf_max_team_size',
         'process_pmf_docs',
         'tech_tf_tools_used',
-        'people_prf_personnel_changes'
+        'people_prf_personnel_changes',
+        'project_prf_application_group_business_application',
+        'project_prf_application_group_infrastructure_software',
+        'project_prf_application_group_mathematically_intensive_application',
+        'project_prf_application_group_real_time_application',
+        'project_prf_development_type_new_development',
+        'project_prf_development_type_re_development',
+        'tech_tf_development_platform_mr',
+        'tech_tf_development_platform_multi',
+        'tech_tf_development_platform_pc',
+        'tech_tf_development_platform_proprietary',
+        'tech_tf_language_type_4GL',
+        'tech_tf_language_type_5GL',
+        'tech_tf_primary_programming_language_abap',
+        'tech_tf_primary_programming_language*c*',
+        'tech_tf_primary_programming_language_c',
+        'tech_tf_primary_programming_language_java',
+        'tech_tf_primary_programming_language_javascript',
+        'tech_tf_primary_programming_language_oracle',
+        'tech_tf_primary_programming_language_pl_i',
+        'tech_tf_primary_programming_language_proprietary_agile_platform',
+        'project_prf_relative_size_l',
+        'project_prf_relative_size_m1',
+        'project_prf_relative_size_m2',
+        'project_prf_relative_size_s',
+        'project_prf_relative_size_xs',
+        'project_prf_relative_size_xxs',
+        'project_prf_team_size_group_2',
+        'project_prf_team_size_group_21_30',
+        'project_prf_team_size_group_3_4',
+        'project_prf_team_size_group_41_50',
+        'project_prf_team_size_group_5_8',
+        'project_prf_team_size_group_61_70',
+        'project_prf_team_size_group_9_14',
+        'project_prf_team_size_group_Missing',
+        'process_pmf_development_methodologies_agile_developmentiterative',
+        'process_pmf_development_methodologies_agile_developmentjoint_application_development_jadmultifunctional_teams',
+        'process_pmf_development_methodologies_agile_developmentpersonal_software_process_pspunified_process',
+        'process_pmf_development_methodologies_agile_developmentscrum',
+        'process_pmf_development_methodologies_agile_developmentunified_process',
+        'tech_tf_architecture_client_server',
+        'tech_tf_architecture_multi_tier_with_web_public_interface',
+        'tech_tf_architecture_stand_alone',
+        'tech_tf_client_server_no',
+        'tech_tf_client_server_yes',
+        'tech_tf_web_development_tech_tf_web_development',
+        'tech_tf_web_development_web',
+        'tech_tf_dbms_used_tech_tf_dbms_used',
+        'tech_tf_dbms_used_yes',
+        'project_prf_cost_currency_canadadollar',
+        'project_prf_cost_currency_europeaneuro'
     ]
 
 
@@ -367,15 +420,8 @@ def get_expected_feature_names_from_model(model=None) -> list:
             except Exception:
                 pass  # Both CSV reads failed
 
-    # 3. Fallback: Hardcoded minimal list (order should match your model training)
-    return [
-        'project_prf_year_of_project',
-        'project_prf_functional_size', 
-        'project_prf_max_team_size',
-        'process_pmf_docs',
-        'tech_tf_tools_used',
-        'people_prf_personnel_changes'
-    ]
+    # 3. Fallback: Hardcoded complete list (order should match your model training)
+    return get_expected_feature_names()
 
 def align_features_to_model(features_df: pd.DataFrame, expected_columns: list) -> pd.DataFrame:
     """
@@ -526,7 +572,7 @@ def get_feature_importance(model_name: str) -> Optional[np.ndarray]:
             # Pipeline case
             estimator = None
             for step_name, step in model.named_steps.items():
-                if hasattr(step, 'feature_importances_') or hasattr(step, 'coef_'):
+                if hasattr(step, 'feature_importances
                     estimator = step
                     break
         elif hasattr(model, '_final_estimator'):
