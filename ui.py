@@ -6,6 +6,14 @@
   see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
 """
 
+# ui.py
+"""
+- Launch the Streamlit App: Run streamlit run main.py and Use the 
+  "Check for required models" option to verify your models are detected properly. Should be only model allowed at one time.
+- Explore Additional Features: Save/load configurations for frequently used project settings, Use the what-if analysis to 
+  see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
+"""
+
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -13,34 +21,10 @@ import matplotlib.pyplot as plt
 import json
 import os
 from datetime import datetime
-from models import list_available_models, get_feature_importance, check_required_models
-
-# Dictionary to store display names for default models
-DEFAULT_MODEL_OPTIONS = {
-    "linear_regression": "Linear Regression",
-    "random_forest": "Random Forest Regressor"
-}
-
-def get_model_options():
-    """Get all available models and their display names"""
-    model_options = DEFAULT_MODEL_OPTIONS.copy()
-    
-    # Get available models from the models directory
-    available_models = list_available_models()
-    
-    # Add any models found that aren't in the default options
-    for model in available_models:
-        if model not in model_options:
-            # Create a nice display name by capitalizing words
-            display_name = ' '.join(word.capitalize() for word in model.split('_'))
-            model_options[model] = display_name
-    
-    return model_options
+from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name, get_model_technical_name
 
 def sidebar_inputs():
     """Create input form in the sidebar."""
-    model_options = get_model_options()
-    
     # Check if we have any models available
     model_status = check_required_models()
     
@@ -98,20 +82,30 @@ def sidebar_inputs():
                 
                 # Check if we have any models available
                 if model_status["models_available"]:
-                    available_model_options = {k: v for k, v in model_options.items() 
-                                              if k in model_status["found_models"]}
+                    # Get available models with display names
+                    available_models = list_available_models()
                     
-                    # Select only from available models
-                    selected_model = st.selectbox(
-                        "Select Prediction Model", 
-                        options=list(available_model_options.keys()),
-                        format_func=lambda x: available_model_options[x],
-                        help="Choose which trained model to use for estimation"
-                    )
+                    if available_models:
+                        # Create options mapping for selectbox (display_name -> technical_name)
+                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
+                        
+                        # Select model using display names
+                        selected_display_name = st.selectbox(
+                            "Select Prediction Model", 
+                            options=list(model_options.keys()),
+                            help="Choose which trained model to use for estimation"
+                        )
+                        
+                        # Get the technical name for the selected display name
+                        selected_model = model_options[selected_display_name]
+                    else:
+                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
+                        selected_model = None
+                        selected_display_name = None
                 else:
                     st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
                     selected_model = None
-                
+                    selected_display_name = None
                 
                 # Buttons
                 col1, col2 = st.columns(2)
@@ -139,7 +133,12 @@ def sidebar_inputs():
             # Add model information
             st.header("Model Information")
             if model_status["models_available"]:
-                st.success(f"Found {len(model_status['found_models'])} trained models: {', '.join(model_status['found_models'])}")
+                available_models = list_available_models()
+                model_display_names = [model['display_name'] for model in available_models]
+                st.success(f"Found {len(available_models)} trained models:")
+                for model in available_models:
+                    st.write(f"• {model['display_name']}")
+                
                 if model_status["scaler_available"]:
                     st.info("Feature scaler is available for normalization.")
                 else:
@@ -162,12 +161,21 @@ def sidebar_inputs():
             num_requirements = loaded_config.get('num_requirements', 20)
             team_size = loaded_config.get('team_size', 5)
             tech_complexity = loaded_config.get('tech_complexity', 3)
-            selected_model = loaded_config.get('selected_model')
+            saved_model = loaded_config.get('selected_model')
             
             # Make sure the selected model is available
-            if selected_model not in model_status["found_models"] and model_status["models_available"]:
-                selected_model = model_status["found_models"][0]
-                st.warning(f"The model specified in the configuration is not available. Using {selected_model} instead.")
+            if model_status["models_available"]:
+                available_technical_names = [model['technical_name'] for model in list_available_models()]
+                if saved_model in available_technical_names:
+                    selected_model = saved_model
+                    selected_display_name = get_model_display_name(saved_model)
+                else:
+                    # Use first available model if saved model is not available
+                    available_models = list_available_models()
+                    if available_models:
+                        selected_model = available_models[0]['technical_name']
+                        selected_display_name = available_models[0]['display_name']
+                        st.warning(f"The model specified in the configuration is not available. Using {selected_display_name} instead.")
             
             # Clear the session state to prevent reloading
             del st.session_state.config_to_load
@@ -179,9 +187,9 @@ def sidebar_inputs():
     if hasattr(st.session_state, 'check_models'):
         st.subheader("Available Models")
         if model_status["models_available"]:
-            for model_name in model_status["found_models"]:
-                display_name = model_options.get(model_name, model_name)
-                st.write(f"✅ {display_name} ({model_name})")
+            available_models = list_available_models()
+            for model in available_models:
+                st.write(f"✅ {model['display_name']} ({model['technical_name']})")
         else:
             st.error("No models found in the 'models' directory.")
         
@@ -195,7 +203,7 @@ def sidebar_inputs():
         del st.session_state.check_models
     
     # Handle saving configuration
-    if save_config:
+    if save_config and selected_model:
         save_current_configuration(
             complexity, team_experience, num_requirements, 
             team_size, tech_complexity, selected_model
@@ -218,7 +226,7 @@ def save_current_configuration(complexity, team_experience, num_requirements,
         'num_requirements': num_requirements,
         'team_size': team_size,
         'tech_complexity': tech_complexity,
-        'selected_model': selected_model,
+        'selected_model': selected_model,  # Save technical name
         'date': datetime.now().strftime("%Y-%m-%d %H:%M")
     }
     
@@ -262,8 +270,6 @@ def load_configuration(config_name):
 
 def display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model):
     """Display the input parameters in a formatted way."""
-    model_options = get_model_options()
-    col2 = st.empty()   
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -286,47 +292,84 @@ def display_inputs(complexity, team_experience, num_requirements, team_size, tec
         # Format the table for better readability
         st.dataframe(input_df, use_container_width=True)
         
-        # Display the selected model with icon
-        st.write(f"📊 Selected Model: **{model_options[selected_model]}**")
+        # Display the selected model with icon and friendly name
+        if selected_model:
+            model_display_name = get_model_display_name(selected_model)
+            st.write(f"📊 Selected Model: **{model_display_name}**")
+        else:
+            st.write("📊 Selected Model: **None**")
     
     return col2
 
-def show_feature_importance(selected_model, params_list, st):
+def show_feature_importance(selected_model, features_dict, st):
     """Display feature importance if available."""
+    if not selected_model:
+        st.info("No model selected for feature importance analysis.")
+        return
+        
     feature_importance = get_feature_importance(selected_model)
     
     if feature_importance is not None:
         st.subheader("Feature Importance")
         
-        # Create a DataFrame for the feature importance values
-        features = ['Project Complexity', 'Team Experience', 
-                   'Number of Requirements', 'Team Size', 
-                   'Technology Stack Complexity']
+        # Get feature names from the features_dict keys
+        feature_names = list(features_dict.keys())
         
+        # Map technical feature names to user-friendly names
+        feature_name_mapping = {
+            "project_prf_complexity": "Project Complexity",
+            "project_prf_team_experience": "Team Experience",
+            "project_prf_num_requirements": "Number of Requirements",
+            "project_prf_max_team_size": "Team Size",
+            "tech_tf_tech_complexity": "Technology Stack Complexity"
+        }
+        
+        # Create friendly names list
+        friendly_names = [feature_name_mapping.get(name, name) for name in feature_names]
+        
+        # Ensure we have the right number of importance values
+        if len(feature_importance) >= len(friendly_names):
+            importance_values = feature_importance[:len(friendly_names)]
+        else:
+            # Pad with zeros if we have fewer importance values than features
+            importance_values = list(feature_importance) + [0] * (len(friendly_names) - len(feature_importance))
+        
+        # Create a DataFrame for the feature importance values
         importance_df = pd.DataFrame({
-            'Feature': features,
-            'Importance': np.abs(feature_importance) if len(feature_importance) == len(features) else [0] * len(features)
+            'Feature': friendly_names,
+            'Importance': np.abs(importance_values)
         })
         
         # Sort by importance
         importance_df = importance_df.sort_values('Importance', ascending=False)
         
         # Create a horizontal bar chart
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(10, 6))
         bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
         
         # Add value labels
         for bar in bars:
             width = bar.get_width()
-            label_x_pos = width * 1.01
-            ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
-                   va='center')
+            if width > 0:  # Only add label if there's a value
+                label_x_pos = width * 1.01
+                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
+                       va='center')
         
         ax.set_xlabel('Relative Importance')
-        ax.set_title('Feature Importance in Prediction')
+        ax.set_title(f'Feature Importance - {get_model_display_name(selected_model)}')
+        ax.grid(True, linestyle='--', alpha=0.3)
+        
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
         
         # Display the plot
         st.pyplot(fig)
+        
+        # Display the data table
+        st.dataframe(importance_df.round(4), use_container_width=True)
+    else:
+        model_display_name = get_model_display_name(selected_model)
+        st.info(f"Feature importance is not available for {model_display_name}. This might be because the model doesn't support feature importance or there was an error retrieving it.")
 
 def show_prediction(col2, prediction, team_size):
     """Display the prediction results in a visually appealing way."""
@@ -372,7 +415,7 @@ def show_prediction(col2, prediction, team_size):
         # Display warning for potentially inaccurate predictions
         if prediction < 1:
             st.warning("This prediction seems unusually low. Consider reviewing your inputs.")
-        elif prediction > 100:
+        elif prediction > 10000:
             st.warning("This prediction seems unusually high. Consider reviewing your inputs.")
 
 def about_section():
@@ -397,7 +440,7 @@ def about_section():
         - **Team Size**: Number of full-time team members
         - **Technology Stack Complexity**: Complexity of the technology being used
         
-        The selected machine learning model processes these inputs to predict the required effort in man-Hours.
+        The selected machine learning model processes these inputs to predict the required effort in man-hours.
         """)
 
 def tips_section():

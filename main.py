@@ -1,12 +1,11 @@
 # main.py
 
-
 import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import logging
-from models import load_model, predict_man_hours, get_feature_importance
+from models import load_model, predict_man_hours, get_feature_importance, get_model_display_name
 from ui import sidebar_inputs, display_inputs, show_prediction, about_section, tips_section, show_feature_importance
 
 import sys
@@ -104,7 +103,7 @@ def main():
             col2 = display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model)
             
             # Perform prediction
-            if submit:
+            if submit and selected_model:
                 with st.spinner("Calculating estimation..."):
                     model = load_model(selected_model)
                     scaler = load_model(MODEL_SCALER)
@@ -120,12 +119,15 @@ def main():
                         prediction = predict_man_hours(features, selected_model)
                         show_prediction(col2, prediction, team_size)
                     else:
-                        st.error("Required model not found. Please make sure your trained models are in the models folder.")
+                        model_display_name = get_model_display_name(selected_model)
+                        st.error(f"Required model '{model_display_name}' not found. Please make sure your trained models are in the models folder.")
+            elif submit and not selected_model:
+                col2.error("Please select a model before making a prediction.")
             else:
                 col2.info("Click the 'Predict Man-Hours' button to see the estimation result.")
 
         with tab_viz:
-            if submit:
+            if submit and selected_model:
                 # Show feature importance
                 show_feature_importance(selected_model, features, st)
                 
@@ -187,11 +189,14 @@ def main():
                         })
                         
                         # Plot the results
-                        fig, ax = plt.subplots(figsize=(10, 6))
-                        ax.plot(what_if_df[what_if_param], what_if_df["Estimated Man-Hours"], marker='o')
+                        fig, ax = plt.subplots(figsize=(12, 6))
+                        ax.plot(what_if_df[what_if_param], what_if_df["Estimated Man-Hours"], marker='o', linewidth=2, markersize=6)
                         ax.set_xlabel(what_if_param)
                         ax.set_ylabel("Estimated Man-Hours")
-                        ax.set_title(f"Impact of {what_if_param} on Estimation")
+                        
+                        # Get model display name for title
+                        model_display_name = get_model_display_name(selected_model)
+                        ax.set_title(f"Impact of {what_if_param} on Estimation\nUsing {model_display_name}")
                         ax.grid(True, linestyle='--', alpha=0.7)
                         
                         # Add horizontal line for current prediction
@@ -204,6 +209,9 @@ def main():
                         else:
                             st.warning("Current prediction failed, so reference line is not shown.")
                         
+                        # Improve layout
+                        plt.tight_layout()
+                        
                         # Show the plot
                         st.pyplot(fig)
                         
@@ -214,14 +222,19 @@ def main():
                         st.markdown(f"""
                         ### Interpretation
 
-                        The graph above shows how the estimated man-Hours change when varying **{what_if_param}** 
-                        while keeping all other parameters constant. This can help you understand which factors 
-                        most strongly influence your project timeline.
+                        The graph above shows how the estimated man-hours change when varying **{what_if_param}** 
+                        while keeping all other parameters constant. This analysis was performed using the 
+                        **{model_display_name}** model.
+                        
+                        This can help you understand which factors most strongly influence your project timeline.
                         """)
                     else:
                         st.error("All predictions failed. Please check your model and input parameters.")
                 else:
-                    st.error("Model not found. Please check your model files.")
+                    model_display_name = get_model_display_name(selected_model) if selected_model else "Unknown"
+                    st.error(f"Model '{model_display_name}' not found. Please check your model files.")
+            elif not selected_model:
+                st.info("Please select a model first to see visualizations and what-if analysis.")
             else:
                 st.info("Make a prediction first to see visualizations and what-if analysis.")
 
