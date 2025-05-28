@@ -4,7 +4,7 @@
    to the models folder with its own names ad pkl as file extension. 
    Hence the model file names can be different.
 - Make Predictions: Input your project parameters, Select your 
-  preferred model and Click "Predict Man-Months"
+  preferred model and Click "Predict Man-Hours"
 """
 
 import os
@@ -30,20 +30,22 @@ logging.basicConfig(
 )
 
 # Constants
-MODELS_DIR = 'models'
-FEATURE_COLS = 'pycaret_processed_features_before_model_training.csv'
+FEATURE_COLS_FILE = 'pycaret_processed_features_before_model_training.csv'
+DATA_FOLDER = 'data'
+MODELS_FOLDER = 'models'
 
-def ensure_models_dir() -> str:
+
+def ensure_MODELS_FOLDER() -> str:
     """
     Ensure the models directory exists.
     
     Returns:
         str: Path to the models directory
     """
-    if not os.path.exists(MODELS_DIR):
-        os.makedirs(MODELS_DIR)
-        logging.info(f"Created models directory at '{MODELS_DIR}'")
-    return MODELS_DIR
+    if not os.path.exists(MODELS_FOLDER):
+        os.makedirs(MODELS_FOLDER)
+        logging.info(f"Created models directory at '{MODELS_FOLDER}'")
+    return MODELS_FOLDER
 
 def list_available_models() -> List[str]:
     """
@@ -52,11 +54,11 @@ def list_available_models() -> List[str]:
     Returns:
         List[str]: Names of available trained models (without extension)
     """
-    ensure_models_dir()
+    ensure_MODELS_FOLDER()
     
     # Get all .pkl files except scaler.pkl
     model_files = []
-    for f in os.listdir(MODELS_DIR):
+    for f in os.listdir(MODELS_FOLDER):
         if f.endswith('.pkl') and not ('scaler' in f.lower()):
             model_name = os.path.splitext(f)[0]
             model_files.append(model_name)
@@ -71,10 +73,10 @@ def check_required_models() -> Dict[str, bool]:
     Returns:
         Dict[str, bool]: Dictionary with model status (True if found)
     """
-    ensure_models_dir()
+    ensure_MODELS_FOLDER()
     
     # Get all model files
-    existing_files = os.listdir(MODELS_DIR)
+    existing_files = os.listdir(MODELS_FOLDER)
     existing_models = [f for f in existing_files if f.endswith('.pkl')]
     
     # Check for at least one model and optionally a scaler
@@ -88,9 +90,9 @@ def check_required_models() -> Dict[str, bool]:
     }
     
     if has_models:
-        logging.info(f"Found models in '{MODELS_DIR}': {[f for f in existing_models if not ('scaler' in f.lower())]}")
+        logging.info(f"Found models in '{MODELS_FOLDER}': {[f for f in existing_models if not ('scaler' in f.lower())]}")
     else:
-        logging.warning(f"No trained models found in '{MODELS_DIR}'")
+        logging.warning(f"No trained models found in '{MODELS_FOLDER}'")
         logging.info("Please train and save models via PyCaret in your Jupyter notebook before using this app.")
     
     return model_status
@@ -105,8 +107,8 @@ def load_model(model_name: str) -> Optional[Any]:
     Returns:
         Optional[Any]: Loaded model object or None if not found/error
     """
-    model_path = os.path.join(MODELS_DIR, model_name)
-    model_path_with_ext = os.path.join(MODELS_DIR, f'{model_name}.pkl')
+    model_path = os.path.join(MODELS_FOLDER, model_name)
+    model_path_with_ext = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
     
     # First, try PyCaret's load_model (without extension)
     if PYCARET_AVAILABLE:
@@ -147,8 +149,8 @@ def load_scaler() -> Optional[Any]:
     Returns:
         Optional[Any]: Loaded scaler object or None if not found/error
     """
-    ensure_models_dir()
-    scaler_files = [f for f in os.listdir(MODELS_DIR) 
+    ensure_MODELS_FOLDER()
+    scaler_files = [f for f in os.listdir(MODELS_FOLDER) 
                    if 'scaler' in f.lower() and f.endswith('.pkl')]
     
     if not scaler_files:
@@ -156,7 +158,7 @@ def load_scaler() -> Optional[Any]:
         return None
     
     # Use the first scaler found
-    scaler_path = os.path.join(MODELS_DIR, scaler_files[0])
+    scaler_path = os.path.join(MODELS_FOLDER, scaler_files[0])
     
     try:
         with open(scaler_path, 'rb') as f:
@@ -195,14 +197,83 @@ def prepare_features_for_pycaret_from_csv(features_dict: dict) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame with all expected columns, ready for prediction.
     """
-    feature_cols_path = os.path.join(MODELS_DIR, FEATURE_COLS)
+    feature_cols_path = os.path.join(MODELS_FOLDER, FEATURE_COLS_FILE)
     feature_names = pd.read_csv(feature_cols_path, header=None)[0].tolist()
     # Fill in missing columns with 0
     full_features = {col: features_dict.get(col, 0) for col in feature_names}
     return pd.DataFrame([full_features])
 
+def prepare_features_for_pycaret(features_dict: dict, model=None) -> pd.DataFrame:
+    """
+    Prepare a prediction DataFrame with the exact columns expected by the model pipeline.
+    Missing columns will be filled with 0.
 
+    Args:
+        features_dict (dict): Input features as {column_name: value}
 
+    Returns:
+        pd.DataFrame: DataFrame with all expected columns, ready for prediction.
+    """
+    feature_names = get_expected_feature_names_from_model(model)
+    # Make sure the input dict has all required keys
+    row = {col: features_dict.get(col, 0) for col in feature_names}
+    features_df = pd.DataFrame([row])
+    # Ensure order and add any missing cols (paranoia)
+    features_df = align_features_to_model(features_df, feature_names)
+    return features_df
+
+def get_expected_feature_names_from_model(model=None) -> list:
+    """
+    Gets the expected feature names from a loaded model or falls back to CSV or hardcoded defaults.
+    """
+    # 1. Try to extract from model directly (best, ensures proper order)
+    if model is not None:
+        if hasattr(model, 'feature_names_in_'):
+            return list(model.feature_names_in_)
+        # Some scikit-learn wrappers/transformers or PyCaret models may expose columns differently
+        elif hasattr(model, 'X') and hasattr(model.X, 'columns'):
+            return list(model.X.columns)
+        # Sometimes PyCaret pipelines have steps that expose feature names
+        elif hasattr(model, 'named_steps'):
+            for step in model.named_steps.values():
+                if hasattr(step, 'feature_names_in_'):
+                    return list(step.feature_names_in_)
+
+    # 2. Fall back to CSV file (as in PyCaret export)
+    feature_cols_path = os.path.join(DATA_FOLDER, FEATURE_COLS_FILE)
+    if os.path.exists(feature_cols_path):
+        try:
+            # Try reading as a single-column CSV (common PyCaret export)
+            cols = pd.read_csv(feature_cols_path, header=None)[0].tolist()
+            if isinstance(cols[0], str):  # Confirm it's feature names, not numbers
+                return cols
+        except Exception:
+            try:
+                # Try reading CSV as DataFrame with headers
+                df = pd.read_csv(feature_cols_path)
+                return list(df.columns)
+            except Exception:
+                pass  # Both CSV reads failed
+
+    # 3. Fallback: Hardcoded minimal list (order should match your model training)
+    return [
+        'project_prf_year_of_project',
+        'project_prf_functional_size', 
+        'project_prf_max_team_size',
+        'process_pmf_docs',
+        'tech_tf_tools_used',
+        'people_prf_personnel_changes'
+    ]
+
+def align_features_to_model(features_df: pd.DataFrame, expected_columns: list) -> pd.DataFrame:
+    """
+    Ensures the features_df has all columns (in correct order) that the model expects.
+    Missing columns are filled with 0.
+    """
+    for col in expected_columns:
+        if col not in features_df.columns:
+            features_df[col] = 0
+    return features_df[expected_columns]
 
 def predict_man_hours(
     features: np.ndarray, 
@@ -218,7 +289,7 @@ def predict_man_hours(
         use_scaler (bool): Whether to apply scaling if available
         
     Returns:
-        Optional[float]: Predicted man-months value or None if error
+        Optional[float]: Predicted man-Hours value or None if error
     """
     try:
         # Debug logging
@@ -235,7 +306,7 @@ def predict_man_hours(
         logging.info(f"Loaded model type: {type(model)}")
 
         # Prepare features DataFrame using CSV-defined columns
-        features_df = prepare_features_for_pycaret_from_csv(features)
+        features_df = prepare_features_for_pycaret(features, model=model)
         logging.info(f"Features DataFrame columns: {list(features_df.columns)}")
         logging.info(f"Features DataFrame shape: {features_df.shape}")
         

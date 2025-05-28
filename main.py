@@ -107,7 +107,7 @@ def main():
             if submit:
                 with st.spinner("Calculating estimation..."):
                     model = load_model(selected_model)
-                    scaler = load_model("scaler")
+                    scaler = load_model(MODEL_SCALER)
 
                     print("Loaded model type:", type(model))   # <-- for debugging
                     if scaler is not None:
@@ -117,7 +117,6 @@ def main():
                     print("Loaded scaler type:", type(scaler)) # <-- for debugging
 
                     if model is not None:
-                        features = np.array([complexity, team_experience, num_requirements, team_size, tech_complexity])
                         prediction = predict_man_hours(features, selected_model)
                         show_prediction(col2, prediction, team_size)
                     else:
@@ -128,7 +127,6 @@ def main():
         with tab_viz:
             if submit:
                 # Show feature importance
-                features = np.array([complexity, team_experience, num_requirements, team_size, tech_complexity])
                 show_feature_importance(selected_model, features, st)
                 
                 # Show what-if analysis
@@ -190,9 +188,9 @@ def main():
                         
                         # Plot the results
                         fig, ax = plt.subplots(figsize=(10, 6))
-                        ax.plot(what_if_df[what_if_param], what_if_df["Estimated Man-Months"], marker='o')
+                        ax.plot(what_if_df[what_if_param], what_if_df["Estimated Man-Hours"], marker='o')
                         ax.set_xlabel(what_if_param)
-                        ax.set_ylabel("Estimated Man-Months")
+                        ax.set_ylabel("Estimated Man-Hours")
                         ax.set_title(f"Impact of {what_if_param} on Estimation")
                         ax.grid(True, linestyle='--', alpha=0.7)
                         
@@ -216,7 +214,7 @@ def main():
                         st.markdown(f"""
                         ### Interpretation
 
-                        The graph above shows how the estimated man-months change when varying **{what_if_param}** 
+                        The graph above shows how the estimated man-Hours change when varying **{what_if_param}** 
                         while keeping all other parameters constant. This can help you understand which factors 
                         most strongly influence your project timeline.
                         """)

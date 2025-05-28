@@ -115,7 +115,7 @@ def sidebar_inputs():
                 
                 # Buttons
                 col1, col2 = st.columns(2)
-                submit = col1.form_submit_button("Predict Man-Months")
+                submit = col1.form_submit_button("Predict Man-Hours")
                 save_config = col2.form_submit_button("Save Config")
         
         with tab2:
@@ -341,13 +341,13 @@ def show_prediction(col2, prediction, team_size):
         st.markdown(f"""
         <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
             <h3 style='text-align:center;'>Estimated Effort</h3>
-            <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Months</h1>
+            <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Hours</h1>
         </div>
         """, unsafe_allow_html=True)
 
         # Calculate calendar time and per-person effort
-        months = int(prediction)
-        remaining_days = int((prediction - months) * 30)
+        hours = int(prediction)
+        days = hours // 8  # Assuming 8-hour workdays
         per_person = prediction / team_size
 
         # Display additional metrics
@@ -358,15 +358,15 @@ def show_prediction(col2, prediction, team_size):
         with metrics_col1:
             st.metric(
                 label="Calendar Time", 
-                value=f"{months}m {remaining_days}d",
+                value=f"{days}d",
                 help="Estimated calendar duration assuming full team availability"
             )
         
         with metrics_col2:
             st.metric(
                 label="Per Person", 
-                value=f"{per_person:.2f}m",
-                help="Average effort per team member"
+                value=f"{per_person:.2f}h",
+                help="Average effort per team member in hours"
             )
         
         # Display warning for potentially inaccurate predictions
@@ -397,7 +397,7 @@ def about_section():
         - **Team Size**: Number of full-time team members
         - **Technology Stack Complexity**: Complexity of the technology being used
         
-        The selected machine learning model processes these inputs to predict the required effort in man-months.
+        The selected machine learning model processes these inputs to predict the required effort in man-Hours.
         """)
 
 def tips_section():
