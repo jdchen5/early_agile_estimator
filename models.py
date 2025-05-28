@@ -34,6 +34,99 @@ FEATURE_COLS_FILE = 'pycaret_processed_features_before_model_training.csv'
 DATA_FOLDER = 'data'
 MODELS_FOLDER = 'models'
 
+# Model name mapping for user-friendly display names
+MODEL_DISPLAY_NAMES = {
+    # PyCaret model names to user-friendly names
+    "top_model_1_KNeighborsRegressor": "K-Nearest Neighbors Regressor",
+    "top_model_2_OrthogonalMatchingPursuit": "Orthogonal Matching Pursuit",
+    "top_model_3_ExtraTreesRegressor": "Extra Trees Regressor",
+    "top_model_4_RandomForestRegressor": "Random Forest Regressor",
+    "top_model_5_GradientBoostingRegressor": "Gradient Boosting Regressor",
+    "top_model_6_AdaBoostRegressor": "Ada Boost Regressor",
+    "top_model_7_LinearRegression": "Linear Regression",
+    "top_model_8_Ridge": "Ridge Regression",
+    "top_model_9_Lasso": "Lasso Regression",
+    "top_model_10_ElasticNet": "Elastic Net Regression",
+    "top_model_11_SVR": "Support Vector Regression",
+    "top_model_12_DecisionTreeRegressor": "Decision Tree Regressor",
+    "top_model_13_XGBRegressor": "XGBoost Regressor",
+    "top_model_14_LGBMRegressor": "LightGBM Regressor",
+    "top_model_15_CatBoostRegressor": "CatBoost Regressor",
+    
+    # Common generic model names
+    "linear_regression": "Linear Regression",
+    "random_forest": "Random Forest Regressor",
+    "gradient_boosting": "Gradient Boosting Regressor",
+    "xgboost": "XGBoost Regressor",
+    "lightgbm": "LightGBM Regressor",
+    "catboost": "CatBoost Regressor",
+    "decision_tree": "Decision Tree Regressor",
+    "svm": "Support Vector Regression",
+    "knn": "K-Nearest Neighbors Regressor",
+    "ridge": "Ridge Regression",
+    "lasso": "Lasso Regression",
+    "elastic_net": "Elastic Net Regression",
+    "ada_boost": "Ada Boost Regressor",
+    "extra_trees": "Extra Trees Regressor",
+    
+    # Add more mappings as needed
+}
+
+def get_model_display_name(model_filename: str) -> str:
+    """
+    Get user-friendly display name for a model.
+    
+    Args:
+        model_filename (str): The model filename (without extension)
+        
+    Returns:
+        str: User-friendly display name
+    """
+    # Check if we have a predefined mapping
+    if model_filename in MODEL_DISPLAY_NAMES:
+        return MODEL_DISPLAY_NAMES[model_filename]
+    
+    # Try to extract algorithm name from PyCaret naming convention
+    if model_filename.startswith("top_model_"):
+        parts = model_filename.split("_")
+        if len(parts) >= 4:
+            algorithm_name = "_".join(parts[3:])  # Everything after "top_model_X_"
+            
+            # Convert CamelCase to readable format
+            readable_name = ""
+            for i, char in enumerate(algorithm_name):
+                if char.isupper() and i > 0:
+                    readable_name += " "
+                readable_name += char
+            
+            # Add "Regressor" if not present
+            if not readable_name.endswith("Regressor") and not readable_name.endswith("Regression"):
+                if "Regression" not in readable_name:
+                    readable_name += " Regressor"
+            
+            return readable_name
+    
+    # Fallback: Convert underscores to spaces and capitalize
+    return " ".join(word.capitalize() for word in model_filename.split("_"))
+
+def get_model_technical_name(display_name: str) -> str:
+    """
+    Get technical filename from display name.
+    
+    Args:
+        display_name (str): User-friendly display name
+        
+    Returns:
+        str: Technical model filename
+    """
+    # Reverse lookup in the mapping
+    for tech_name, friendly_name in MODEL_DISPLAY_NAMES.items():
+        if friendly_name == display_name:
+            return tech_name
+    
+    # If not found, convert display name back to technical format
+    return display_name.lower().replace(" ", "_").replace("-", "_")
+
 
 def ensure_MODELS_FOLDER() -> str:
     """
@@ -47,12 +140,12 @@ def ensure_MODELS_FOLDER() -> str:
         logging.info(f"Created models directory at '{MODELS_FOLDER}'")
     return MODELS_FOLDER
 
-def list_available_models() -> List[str]:
+def list_available_models() -> List[Dict[str, str]]:
     """
-    List all available models in the models directory.
+    List all available models in the models directory with both technical and display names.
     
     Returns:
-        List[str]: Names of available trained models (without extension)
+        List[Dict[str, str]]: List of dictionaries with 'technical_name' and 'display_name'
     """
     ensure_MODELS_FOLDER()
     
@@ -60,18 +153,25 @@ def list_available_models() -> List[str]:
     model_files = []
     for f in os.listdir(MODELS_FOLDER):
         if f.endswith('.pkl') and not ('scaler' in f.lower()):
-            model_name = os.path.splitext(f)[0]
-            model_files.append(model_name)
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            model_files.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
     
-    logging.info(f"Found {len(model_files)} available models: {model_files}")
+    # Sort by display name for better user experience
+    model_files.sort(key=lambda x: x['display_name'])
+    
+    logging.info(f"Found {len(model_files)} available models")
     return model_files
 
-def check_required_models() -> Dict[str, bool]:
+def check_required_models() -> Dict[str, Any]:
     """
     Check for existing models in the models directory.
     
     Returns:
-        Dict[str, bool]: Dictionary with model status (True if found)
+        Dict[str, Any]: Dictionary with model status and information
     """
     ensure_MODELS_FOLDER()
     
@@ -83,14 +183,26 @@ def check_required_models() -> Dict[str, bool]:
     has_models = any(f for f in existing_models if not f.startswith('scaler'))
     has_scaler = any(f for f in existing_models if f.startswith('scaler'))
     
+    # Get model information with display names
+    found_models = []
+    for f in existing_models:
+        if not ('scaler' in f.lower()):
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            found_models.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
+    
     model_status = {
         "models_available": has_models,
         "scaler_available": has_scaler,
-        "found_models": [os.path.splitext(f)[0] for f in existing_models if not ('scaler' in f.lower())]
+        "found_models": found_models,
+        "technical_names": [model['technical_name'] for model in found_models]
     }
     
     if has_models:
-        logging.info(f"Found models in '{MODELS_FOLDER}': {[f for f in existing_models if not ('scaler' in f.lower())]}")
+        logging.info(f"Found models in '{MODELS_FOLDER}': {[model['display_name'] for model in found_models]}")
     else:
         logging.warning(f"No trained models found in '{MODELS_FOLDER}'")
         logging.info("Please train and save models via PyCaret in your Jupyter notebook before using this app.")
@@ -285,7 +397,7 @@ def predict_man_hours(
     
     Args:
         features (np.ndarray): Array of input features
-        model_name (str): Name of the model to use
+        model_name (str): Name of the model to use (technical name)
         use_scaler (bool): Whether to apply scaling if available
         
     Returns:
@@ -398,7 +510,7 @@ def get_feature_importance(model_name: str) -> Optional[np.ndarray]:
     Get feature importance for a given model if available.
     
     Args:
-        model_name (str): Name of the model to analyze
+        model_name (str): Name of the model to analyze (technical name)
         
     Returns:
         Optional[np.ndarray]: Feature importance values or None if not available
@@ -455,7 +567,7 @@ def analyze_what_if(
     
     Args:
         base_features (np.ndarray): Base feature values
-        model_name (str): Name of the model to use
+        model_name (str): Name of the model to use (technical name)
         param_index (int): Index of the parameter to vary
         param_values (List[float]): Values to use for the parameter
         use_scaler (bool): Whether to apply scaling if available
