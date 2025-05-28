@@ -82,25 +82,20 @@ def show_disclaimer():
 # Main application logic
 def main():
     try:
-        # Sidebar form inputs
-        (complexity, team_experience, num_requirements, team_size, 
-         tech_complexity, selected_model, submit) = sidebar_inputs()
-
-        # Make a features dict -- KEYS MUST MATCH your model's CSV column names!
-        features = {
-            "project_prf_complexity": complexity,
-            "project_prf_team_experience": team_experience,
-            "project_prf_num_requirements": num_requirements,
-            "project_prf_max_team_size": team_size,
-            "tech_tf_tech_complexity": tech_complexity
-        }
+        # Sidebar form inputs - now returns a dictionary of all features
+        user_inputs = sidebar_inputs()
+        
+        # Extract key values for display and analysis
+        selected_model = user_inputs.get('selected_model')
+        submit = user_inputs.get('submit', False)
+        team_size = user_inputs.get('project_prf_max_team_size', 5)
         
         # Create tabs for different sections
         tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
 
         with tab_results:
             # Display input parameters
-            col2 = display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model)
+            col2 = display_inputs(user_inputs, selected_model)
             
             # Perform prediction
             if submit and selected_model:
@@ -116,7 +111,7 @@ def main():
                     print("Loaded scaler type:", type(scaler)) # <-- for debugging
 
                     if model is not None:
-                        prediction = predict_man_hours(features, selected_model)
+                        prediction = predict_man_hours(user_inputs, selected_model)
                         show_prediction(col2, prediction, team_size)
                     else:
                         model_display_name = get_model_display_name(selected_model)
@@ -129,48 +124,51 @@ def main():
         with tab_viz:
             if submit and selected_model:
                 # Show feature importance
-                show_feature_importance(selected_model, features, st)
+                show_feature_importance(selected_model, user_inputs, st)
                 
                 # Show what-if analysis
                 st.subheader("What-If Analysis")
                 st.write("See how changing one parameter affects the estimation:")
                 
+                # Define key parameters for what-if analysis
+                key_params = {
+                    "Project Year": "project_prf_year_of_project",
+                    "Functional Size": "project_prf_functional_size", 
+                    "Max Team Size": "project_prf_max_team_size",
+                    "Documentation": "process_pmf_docs",
+                    "Tools Used": "tech_tf_tools_used",
+                    "Personnel Changes": "people_prf_personnel_changes"
+                }
+                
                 what_if_param = st.selectbox(
                     "Select parameter to vary",
-                    ["Project Complexity", "Team Experience", "Number of Requirements", "Team Size", "Technology Stack Complexity"]
+                    list(key_params.keys())
                 )
                 
-                param_key_map = {
-                    "Project Complexity": "project_prf_complexity",
-                    "Team Experience": "project_prf_team_experience",
-                    "Number of Requirements": "project_prf_num_requirements",
-                    "Team Size": "project_prf_max_team_size",
-                    "Technology Stack Complexity": "tech_tf_tech_complexity"
-                }
-                param_key = param_key_map[what_if_param]
+                param_key = key_params[what_if_param]
 
                 # Create ranges for different parameters
-                ranges = {
-                    "project_prf_complexity": np.linspace(1, 5, 5),
-                    "project_prf_team_experience": np.linspace(1, 5, 5),
-                    "project_prf_num_requirements": np.linspace(max(1, num_requirements-50), num_requirements+50, 11),
-                    "project_prf_max_team_size": np.linspace(max(1, team_size-5), team_size+5, 11),
-                    "tech_tf_tech_complexity": np.linspace(1, 5, 5)
-                }
-                what_if_values = ranges[param_key]
+                current_value = user_inputs.get(param_key, 0)
                 
-                # Get the model and scaler
+                if param_key == "project_prf_year_of_project":
+                    what_if_values = np.arange(2015, 2026)
+                elif param_key == "project_prf_functional_size":
+                    what_if_values = np.linspace(max(1, current_value-500), current_value+500, 11)
+                elif param_key == "project_prf_max_team_size":
+                    what_if_values = np.linspace(max(1, current_value-5), current_value+5, 11)
+                else:
+                    # For other numerical parameters, create a reasonable range
+                    what_if_values = np.linspace(max(0, current_value-50), current_value+50, 11)
+                
+                # Get the model
                 model = load_model(selected_model)
-                scaler = load_model(MODEL_SCALER)
                 
                 if model is not None:
-                    # Make predictions for each value in the range
-                    what_if_values = ranges[param_key]
                     predictions = []
                     
                     for val in what_if_values:
                         # Create a copy of features and modify the selected parameter
-                        modified_features = features.copy()
+                        modified_features = user_inputs.copy()
                         modified_features[param_key] = val
                         
                         # Make prediction
@@ -178,7 +176,7 @@ def main():
                         predictions.append(prediction if prediction is not None else 0)
                     
                     # Filter out None predictions
-                    valid_predictions = [(val, pred) for val, pred in zip(what_if_values, predictions) if pred is not None]
+                    valid_predictions = [(val, pred) for val, pred in zip(what_if_values, predictions) if pred is not None and pred > 0]
                     
                     if valid_predictions:
                         # Create a DataFrame for the results
@@ -200,7 +198,7 @@ def main():
                         ax.grid(True, linestyle='--', alpha=0.7)
                         
                         # Add horizontal line for current prediction
-                        current_pred = predict_man_hours(features, selected_model)
+                        current_pred = predict_man_hours(user_inputs, selected_model)
                         if current_pred is not None:
                             ax.axhline(y=current_pred, color='r', linestyle='--', 
                                        label=f"Current Estimation ({current_pred:.2f} man-hours)")
