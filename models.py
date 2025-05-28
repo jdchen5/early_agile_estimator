@@ -481,8 +481,6 @@ def predict_man_hours(
         else:
             logging.info("No scaling applied or scaler not available.")
         
-
-        
         # Try PyCaret prediction first
         if PYCARET_AVAILABLE:
             try:
@@ -572,7 +570,7 @@ def get_feature_importance(model_name: str) -> Optional[np.ndarray]:
             # Pipeline case
             estimator = None
             for step_name, step in model.named_steps.items():
-                if hasattr(step, 'feature_importances
+                if hasattr(step, 'feature_importances_'):
                     estimator = step
                     break
         elif hasattr(model, '_final_estimator'):
