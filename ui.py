@@ -103,8 +103,22 @@ def sidebar_inputs():
                 else:
                     st.warning("No trained models found. Please create or add trained models.")
 
-            # Model select, etc, still inside the form
-            selected_model = st.selectbox("Select Model", ["modelA", "modelB"]) # example
+            # AFTER all tabs, always visible:
+            st.markdown("---")
+            st.header("Model Selection")
+            selected_model = None
+            if model_status["models_available"]:
+                available_models = list_available_models()
+                if available_models:
+                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
+                    selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
+                    selected_model = model_options[selected_display_name]
+                else:
+                    st.warning("No trained models found. Please add trained models to the 'models' directory.")
+            else:
+                st.warning("No trained models found. Please create or add trained models.")
+
+
             col1, col2 = st.columns(2)
             submit = col1.form_submit_button("Predict Man-Hours")
             save_config = col2.form_submit_button("Save Config")
@@ -115,16 +129,34 @@ def sidebar_inputs():
             # Build and return your input dict as before!
             user_inputs = {
                 "project_prf_year_of_project": project_year,
-                # ...all fields from above...
+                "external_eef_industry_sector": industry_sector,
+                "external_eef_organisation_type": organisation_type,
+                "project_prf_application_type": application_type,
+                "project_prf_functional_size": functional_size,
+                "project_prf_max_team_size": max_team_size,
+                "process_pmf_docs": docs,
+                "tech_tf_tools_used": tools_used,
+                "people_prf_personnel_changes": personnel_changes,
+                "application_group": application_group,
+                "development_type": development_type,
+                "development_platform": development_platform,
+                "language_type": language_type,
+                "primary_language": primary_language,
+                "relative_size": relative_size,
+                "team_size_group": team_size_group,
+                "development_methodology": development_methodology,
+                "architecture": architecture,
+                "client_server": client_server,
+                "web_development": web_development,
+                "dbms_used": dbms_used,
+                "cost_currency": cost_currency,
                 "selected_model": selected_model,
                 "submit": submit
             }
-            # do config save here if needed
-            # return the features dict on submit
+
             if submit or save_config:
                 return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-            
-            # Default, so main() always gets a dict:
+            # Always return a dict!
             return {'selected_model': None, 'submit': False}
 
 

@@ -52,3 +52,79 @@
 2025-05-29 11:15:23,110:INFO:load_model(model_name=models\modelA, platform=None, authentication=None, verbose=True)
 2025-05-29 11:15:23,114:INFO:Initializing load_model()
 2025-05-29 11:15:23,114:INFO:load_model(model_name=models\modelA, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:29,623:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:23:29,623:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:23:29,623:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:23:29,623:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:23:53,581:INFO:Initializing load_model()
+2025-05-29 11:23:53,581:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:53,871:INFO:Initializing load_model()
+2025-05-29 11:23:53,871:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:53,970:INFO:Initializing load_model()
+2025-05-29 11:23:53,971:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,730:INFO:Initializing load_model()
+2025-05-29 11:23:54,730:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,761:INFO:Initializing load_model()
+2025-05-29 11:23:54,761:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,809:INFO:Initializing load_model()
+2025-05-29 11:23:54,809:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,850:INFO:Initializing load_model()
+2025-05-29 11:23:54,850:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,902:INFO:Initializing load_model()
+2025-05-29 11:23:54,902:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:54,933:INFO:Initializing load_model()
+2025-05-29 11:23:54,933:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,015:INFO:Initializing load_model()
+2025-05-29 11:23:55,015:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,053:INFO:Initializing load_model()
+2025-05-29 11:23:55,053:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,089:INFO:Initializing load_model()
+2025-05-29 11:23:55,089:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,127:INFO:Initializing load_model()
+2025-05-29 11:23:55,127:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,169:INFO:Initializing load_model()
+2025-05-29 11:23:55,169:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:55,200:INFO:Initializing load_model()
+2025-05-29 11:23:55,200:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:57,958:INFO:Initializing load_model()
+2025-05-29 11:23:57,958:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,022:INFO:Initializing load_model()
+2025-05-29 11:23:58,022:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,059:INFO:Initializing load_model()
+2025-05-29 11:23:58,059:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,707:INFO:Initializing load_model()
+2025-05-29 11:23:58,707:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,755:INFO:Initializing load_model()
+2025-05-29 11:23:58,755:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,800:INFO:Initializing load_model()
+2025-05-29 11:23:58,800:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,839:INFO:Initializing load_model()
+2025-05-29 11:23:58,839:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,873:INFO:Initializing load_model()
+2025-05-29 11:23:58,873:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,917:INFO:Initializing load_model()
+2025-05-29 11:23:58,917:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,955:INFO:Initializing load_model()
+2025-05-29 11:23:58,955:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:58,991:INFO:Initializing load_model()
+2025-05-29 11:23:58,991:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:59,028:INFO:Initializing load_model()
+2025-05-29 11:23:59,028:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:59,058:INFO:Initializing load_model()
+2025-05-29 11:23:59,058:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:59,101:INFO:Initializing load_model()
+2025-05-29 11:23:59,102:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:23:59,138:INFO:Initializing load_model()
+2025-05-29 11:23:59,139:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 11:29:40,470:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:29:40,470:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:29:40,470:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 11:29:40,470:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
