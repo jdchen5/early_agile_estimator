@@ -143,7 +143,8 @@ def sidebar_inputs():
                     index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
                 cost_currency = st.selectbox(
                     "Cost Currency",
-                    list(FEATURE_CONFIG["special_cases"]["cost_currency"]["mapping"].keys()))
+                    list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys())
+                )
                 st.header("Model Selection")
                 selected_model = None
                 if model_status["models_available"]:
