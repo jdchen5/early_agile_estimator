@@ -11,65 +11,65 @@ categorical_features:
     options: ["Banking", "Education", "Electronics Computers", "Financial", "Government", "Insurance","Insurance", "Manufacturing",  "Medical Healthcare",  "Service Industry", "Telecommunications", "Utilisties", "Wholesale Retail", "Other"]
   external_eef_organisation_type:
     options:
-      - all industry organization types
-      - aerospace _ automotive
-      - banking
-      - biotech
-      - communications
-      - community services
-      - consumer goods
-      - education institution
-      - electricity, gas, water
-      - energy
-      - financial, property_business services
-      - food processing
-      - government
-      - high tech
-      - ieee
-      - information technology
-      - institutions eg. kindergartens
-      - medical and health care
-      - public administration
-      - public sector
-      - surveillance_security
-      - transport_storage
-      - wholesale_retail trade
+      - All industry organization types
+      - Aerospace / Automotive
+      - Banking
+      - Biotech
+      - Communications
+      - Community Services
+      - Consumer Foods
+      - Education Institution
+      - Electricity, Gas, Water
+      - Energy
+      - Financial, Property & Business Services
+      - Food Processing
+      - Government
+      - High Tech
+      - IEEE
+      - Information Technology
+      - Institutions eg. Kindergartens
+      - Medical & Healthcare
+      - Public Administration
+      - Public Sector
+      - Surveillance Security
+      - Transport Storage
+      - Wholesale & Retail Trade
   project_prf_application_type:
     options:
-      - airport management
-      - analysis management
-      - auditing management
-      - automated data acquisition
-      - business application
-      - catalogue_register of things or events
-      - clinical archive
-      - complex process control
-      - content management system
-      - course management
-      - customer billing
-      - customer billing_relationship management
-      - customer relationship management
-      - data or database management
-      - data warehouse system
-      - dynamic website
-      - electronic data interchange
-      - financial transaction process_accounting
-      - hospital information system
-      - idm
-      - logistic or supply planning_control
-      - management or performance reporting
-      - mathematical modelling_finance or eng
-      - online analysis and reporting
-      - project management
-      - promotions
-      - proposal builder
-      - software development tool
-      - security_authentication
-      - security controls
-      - student_tests management
-      - surveillance and security
-      - web-based application
-      - workflow support_management
+      - Airport Management
+      - Analysis Management
+      - Auditing Management
+      - Automated Data Acquisition
+      - Business Application
+      - Catalogue_Register Of Things Or Events
+      - Clinical Archive
+      - Complex Process Control
+      - Content Management System
+      - Course Management
+      - Customer Billing
+      - Customer Billing_Relationship Management
+      - Customer Relationship Management
+      - Data Or Database Management
+      - Data Warehouse System
+      - Dynamic Website
+      - Electronic Data Interchange
+      - Financial Transaction Process_Accounting
+      - Hospital Information System
+      - Identify Management
+      - Logistic/Supply Planning_Control
+      - Management / Performance Reporting
+      - Mathematical Modelling_Finance / Eng
+      - Online Analysis & Reporting
+      - Project Management
+      - Promotions
+      - Proposal Builder
+      - Software Development Tool
+      - Security_Authentication
+      - Security Controls
+      - Student_Tests Management
+      - Surveillance & Security
+      - Web-Based Application
+      - Workflow Support_Management
 
 one_hot_features:
   application_group:

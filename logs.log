@@ -1271,3 +1271,759 @@
 2025-05-29 11:46:03,678:INFO:Preloading libraries
 2025-05-29 11:46:03,678:INFO:Set up data.
 2025-05-29 11:46:03,702:INFO:Set up index.
+2025-05-29 13:07:57,449:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:07:57,449:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:07:57,449:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:07:57,464:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:21:23,716:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:21:23,716:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:21:23,716:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:21:23,716:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-05-29 13:21:40,145:INFO:Initializing load_model()
+2025-05-29 13:21:40,145:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:40,297:INFO:Initializing load_model()
+2025-05-29 13:21:40,297:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:40,355:INFO:Initializing predict_model()
+2025-05-29 13:21:40,355:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EF4F810>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021708B0C540>)
+2025-05-29 13:21:40,355:INFO:Checking exceptions
+2025-05-29 13:21:40,355:INFO:Preloading libraries
+2025-05-29 13:21:40,356:INFO:Set up data.
+2025-05-29 13:21:40,398:INFO:Set up index.
+2025-05-29 13:21:40,566:INFO:Initializing load_model()
+2025-05-29 13:21:40,567:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:41,246:INFO:Initializing load_model()
+2025-05-29 13:21:41,246:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:41,288:INFO:Initializing load_model()
+2025-05-29 13:21:41,288:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:41,342:INFO:Initializing predict_model()
+2025-05-29 13:21:41,342:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323B3D90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EFBB240>)
+2025-05-29 13:21:41,342:INFO:Checking exceptions
+2025-05-29 13:21:41,342:INFO:Preloading libraries
+2025-05-29 13:21:41,343:INFO:Set up data.
+2025-05-29 13:21:41,372:INFO:Set up index.
+2025-05-29 13:21:41,545:INFO:Initializing load_model()
+2025-05-29 13:21:41,545:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:41,589:INFO:Initializing predict_model()
+2025-05-29 13:21:41,589:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732376CD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021732327880>)
+2025-05-29 13:21:41,589:INFO:Checking exceptions
+2025-05-29 13:21:41,590:INFO:Preloading libraries
+2025-05-29 13:21:41,590:INFO:Set up data.
+2025-05-29 13:21:41,606:INFO:Set up index.
+2025-05-29 13:21:41,776:INFO:Initializing load_model()
+2025-05-29 13:21:41,776:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:41,831:INFO:Initializing predict_model()
+2025-05-29 13:21:41,831:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323C5E90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021732327BA0>)
+2025-05-29 13:21:41,831:INFO:Checking exceptions
+2025-05-29 13:21:41,831:INFO:Preloading libraries
+2025-05-29 13:21:41,831:INFO:Set up data.
+2025-05-29 13:21:41,859:INFO:Set up index.
+2025-05-29 13:21:42,013:INFO:Initializing load_model()
+2025-05-29 13:21:42,013:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:42,065:INFO:Initializing predict_model()
+2025-05-29 13:21:42,065:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732350690>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021708AE3F60>)
+2025-05-29 13:21:42,065:INFO:Checking exceptions
+2025-05-29 13:21:42,065:INFO:Preloading libraries
+2025-05-29 13:21:42,067:INFO:Set up data.
+2025-05-29 13:21:42,088:INFO:Set up index.
+2025-05-29 13:21:42,245:INFO:Initializing load_model()
+2025-05-29 13:21:42,245:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:42,291:INFO:Initializing predict_model()
+2025-05-29 13:21:42,291:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217322FD210>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EFBB560>)
+2025-05-29 13:21:42,292:INFO:Checking exceptions
+2025-05-29 13:21:42,292:INFO:Preloading libraries
+2025-05-29 13:21:42,292:INFO:Set up data.
+2025-05-29 13:21:42,315:INFO:Set up index.
+2025-05-29 13:21:42,467:INFO:Initializing load_model()
+2025-05-29 13:21:42,469:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:42,517:INFO:Initializing predict_model()
+2025-05-29 13:21:42,517:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323BBC90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021708AE3F60>)
+2025-05-29 13:21:42,517:INFO:Checking exceptions
+2025-05-29 13:21:42,517:INFO:Preloading libraries
+2025-05-29 13:21:42,517:INFO:Set up data.
+2025-05-29 13:21:42,542:INFO:Set up index.
+2025-05-29 13:21:42,702:INFO:Initializing load_model()
+2025-05-29 13:21:42,702:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:42,746:INFO:Initializing predict_model()
+2025-05-29 13:21:42,746:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732366E50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021732327CE0>)
+2025-05-29 13:21:42,746:INFO:Checking exceptions
+2025-05-29 13:21:42,746:INFO:Preloading libraries
+2025-05-29 13:21:42,746:INFO:Set up data.
+2025-05-29 13:21:42,768:INFO:Set up index.
+2025-05-29 13:21:42,934:INFO:Initializing load_model()
+2025-05-29 13:21:42,934:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:42,982:INFO:Initializing predict_model()
+2025-05-29 13:21:42,982:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EA9B3D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EF7E7A0>)
+2025-05-29 13:21:42,982:INFO:Checking exceptions
+2025-05-29 13:21:42,982:INFO:Preloading libraries
+2025-05-29 13:21:42,982:INFO:Set up data.
+2025-05-29 13:21:43,013:INFO:Set up index.
+2025-05-29 13:21:43,184:INFO:Initializing load_model()
+2025-05-29 13:21:43,184:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:43,231:INFO:Initializing predict_model()
+2025-05-29 13:21:43,231:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732354E10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021708AE3F60>)
+2025-05-29 13:21:43,231:INFO:Checking exceptions
+2025-05-29 13:21:43,231:INFO:Preloading libraries
+2025-05-29 13:21:43,231:INFO:Set up data.
+2025-05-29 13:21:43,265:INFO:Set up index.
+2025-05-29 13:21:43,417:INFO:Initializing load_model()
+2025-05-29 13:21:43,417:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:43,480:INFO:Initializing predict_model()
+2025-05-29 13:21:43,480:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EFE5250>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EF2F100>)
+2025-05-29 13:21:43,480:INFO:Checking exceptions
+2025-05-29 13:21:43,480:INFO:Preloading libraries
+2025-05-29 13:21:43,480:INFO:Set up data.
+2025-05-29 13:21:43,506:INFO:Set up index.
+2025-05-29 13:21:43,668:INFO:Initializing load_model()
+2025-05-29 13:21:43,668:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:43,715:INFO:Initializing predict_model()
+2025-05-29 13:21:43,715:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323B1350>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021708AE3F60>)
+2025-05-29 13:21:43,715:INFO:Checking exceptions
+2025-05-29 13:21:43,715:INFO:Preloading libraries
+2025-05-29 13:21:43,716:INFO:Set up data.
+2025-05-29 13:21:43,739:INFO:Set up index.
+2025-05-29 13:21:43,915:INFO:Initializing load_model()
+2025-05-29 13:21:43,915:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:43,949:INFO:Initializing predict_model()
+2025-05-29 13:21:43,949:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021731FDFA10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000217323D77E0>)
+2025-05-29 13:21:43,949:INFO:Checking exceptions
+2025-05-29 13:21:43,949:INFO:Preloading libraries
+2025-05-29 13:21:43,949:INFO:Set up data.
+2025-05-29 13:21:43,981:INFO:Set up index.
+2025-05-29 13:21:54,171:INFO:Initializing load_model()
+2025-05-29 13:21:54,171:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:54,223:INFO:Initializing load_model()
+2025-05-29 13:21:54,223:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:54,270:INFO:Initializing predict_model()
+2025-05-29 13:21:54,270:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EEFAFD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EF2F100>)
+2025-05-29 13:21:54,270:INFO:Checking exceptions
+2025-05-29 13:21:54,270:INFO:Preloading libraries
+2025-05-29 13:21:54,270:INFO:Set up data.
+2025-05-29 13:21:54,293:INFO:Set up index.
+2025-05-29 13:21:54,479:INFO:Initializing load_model()
+2025-05-29 13:21:54,479:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,121:INFO:Initializing load_model()
+2025-05-29 13:21:55,121:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,166:INFO:Initializing load_model()
+2025-05-29 13:21:55,166:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,220:INFO:Initializing predict_model()
+2025-05-29 13:21:55,221:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732352950>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172E024A40>)
+2025-05-29 13:21:55,221:INFO:Checking exceptions
+2025-05-29 13:21:55,221:INFO:Preloading libraries
+2025-05-29 13:21:55,221:INFO:Set up data.
+2025-05-29 13:21:55,243:INFO:Set up index.
+2025-05-29 13:21:55,402:INFO:Initializing load_model()
+2025-05-29 13:21:55,402:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,466:INFO:Initializing predict_model()
+2025-05-29 13:21:55,466:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021731FD1DD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EFAF240>)
+2025-05-29 13:21:55,466:INFO:Checking exceptions
+2025-05-29 13:21:55,466:INFO:Preloading libraries
+2025-05-29 13:21:55,466:INFO:Set up data.
+2025-05-29 13:21:55,479:INFO:Set up index.
+2025-05-29 13:21:55,699:INFO:Initializing load_model()
+2025-05-29 13:21:55,699:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,747:INFO:Initializing predict_model()
+2025-05-29 13:21:55,747:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323E57D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172E024A40>)
+2025-05-29 13:21:55,747:INFO:Checking exceptions
+2025-05-29 13:21:55,747:INFO:Preloading libraries
+2025-05-29 13:21:55,747:INFO:Set up data.
+2025-05-29 13:21:55,778:INFO:Set up index.
+2025-05-29 13:21:55,933:INFO:Initializing load_model()
+2025-05-29 13:21:55,933:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:55,985:INFO:Initializing predict_model()
+2025-05-29 13:21:55,985:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323825D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000217323CDC60>)
+2025-05-29 13:21:55,985:INFO:Checking exceptions
+2025-05-29 13:21:55,986:INFO:Preloading libraries
+2025-05-29 13:21:55,986:INFO:Set up data.
+2025-05-29 13:21:56,008:INFO:Set up index.
+2025-05-29 13:21:56,167:INFO:Initializing load_model()
+2025-05-29 13:21:56,167:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:56,359:INFO:Initializing predict_model()
+2025-05-29 13:21:56,359:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172ED0E150>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172E024A40>)
+2025-05-29 13:21:56,359:INFO:Checking exceptions
+2025-05-29 13:21:56,359:INFO:Preloading libraries
+2025-05-29 13:21:56,359:INFO:Set up data.
+2025-05-29 13:21:56,402:INFO:Set up index.
+2025-05-29 13:21:56,615:INFO:Initializing load_model()
+2025-05-29 13:21:56,615:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:56,652:INFO:Initializing predict_model()
+2025-05-29 13:21:56,652:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EAA4150>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172E024A40>)
+2025-05-29 13:21:56,652:INFO:Checking exceptions
+2025-05-29 13:21:56,652:INFO:Preloading libraries
+2025-05-29 13:21:56,661:INFO:Set up data.
+2025-05-29 13:21:56,689:INFO:Set up index.
+2025-05-29 13:21:56,848:INFO:Initializing load_model()
+2025-05-29 13:21:56,848:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:56,890:INFO:Initializing predict_model()
+2025-05-29 13:21:56,890:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EE97050>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002171B2F94E0>)
+2025-05-29 13:21:56,890:INFO:Checking exceptions
+2025-05-29 13:21:56,890:INFO:Preloading libraries
+2025-05-29 13:21:56,890:INFO:Set up data.
+2025-05-29 13:21:56,923:INFO:Set up index.
+2025-05-29 13:21:57,078:INFO:Initializing load_model()
+2025-05-29 13:21:57,078:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:57,123:INFO:Initializing predict_model()
+2025-05-29 13:21:57,123:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732306F50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021709C567A0>)
+2025-05-29 13:21:57,123:INFO:Checking exceptions
+2025-05-29 13:21:57,123:INFO:Preloading libraries
+2025-05-29 13:21:57,123:INFO:Set up data.
+2025-05-29 13:21:57,162:INFO:Set up index.
+2025-05-29 13:21:57,320:INFO:Initializing load_model()
+2025-05-29 13:21:57,320:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:57,357:INFO:Initializing predict_model()
+2025-05-29 13:21:57,357:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021732381E90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172E024A40>)
+2025-05-29 13:21:57,357:INFO:Checking exceptions
+2025-05-29 13:21:57,357:INFO:Preloading libraries
+2025-05-29 13:21:57,357:INFO:Set up data.
+2025-05-29 13:21:57,386:INFO:Set up index.
+2025-05-29 13:21:57,547:INFO:Initializing load_model()
+2025-05-29 13:21:57,547:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:57,593:INFO:Initializing predict_model()
+2025-05-29 13:21:57,594:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002172EFE7250>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002171B2F94E0>)
+2025-05-29 13:21:57,594:INFO:Checking exceptions
+2025-05-29 13:21:57,594:INFO:Preloading libraries
+2025-05-29 13:21:57,594:INFO:Set up data.
+2025-05-29 13:21:57,616:INFO:Set up index.
+2025-05-29 13:21:57,781:INFO:Initializing load_model()
+2025-05-29 13:21:57,781:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:57,827:INFO:Initializing predict_model()
+2025-05-29 13:21:57,827:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323073D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021709C567A0>)
+2025-05-29 13:21:57,827:INFO:Checking exceptions
+2025-05-29 13:21:57,827:INFO:Preloading libraries
+2025-05-29 13:21:57,828:INFO:Set up data.
+2025-05-29 13:21:57,850:INFO:Set up index.
+2025-05-29 13:21:58,053:INFO:Initializing load_model()
+2025-05-29 13:21:58,053:INFO:load_model(model_name=models\top_model_3_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-05-29 13:21:58,092:INFO:Initializing predict_model()
+2025-05-29 13:21:58,092:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000217323052D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'people_prf_personnel_changes'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_i...
+                                             'external_eef_organisation_type',
+                                             'project_prf_application_type'],
+                                    transformer=OneHotEncoder(cols=['external_eef_industry_sector',
+                                                                    'external_eef_organisation_type',
+                                                                    'project_prf_application_type'],
+                                                              handle_missing='return_nan',
+                                                              use_cat_names=True))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002172EFB8E00>)
+2025-05-29 13:21:58,092:INFO:Checking exceptions
+2025-05-29 13:21:58,092:INFO:Preloading libraries
+2025-05-29 13:21:58,092:INFO:Set up data.
+2025-05-29 13:21:58,125:INFO:Set up index.
