@@ -8,15 +8,72 @@ numeric_features:
 
 categorical_features:
   external_eef_industry_sector:
-    options: ["Banking", "Insurance", "Manufacturing", "Government", "Healthcare", "Telecommunications", "Other"]
+    options: ["Banking", "Education", "Electronics Computers", "Financial", "Government", "Insurance","Insurance", "Manufacturing",  "Medical Healthcare",  "Service Industry", "Telecommunications", "Utilisties", "Wholesale Retail", "Other"]
   external_eef_organisation_type:
-    options: ["Commercial", "Government", "Non-Profit", "Academic"]
+    options:
+      - all industry organization types
+      - aerospace _ automotive
+      - banking
+      - biotech
+      - communications
+      - community services
+      - consumer goods
+      - education institution
+      - electricity, gas, water
+      - energy
+      - financial, property_business services
+      - food processing
+      - government
+      - high tech
+      - ieee
+      - information technology
+      - institutions eg. kindergartens
+      - medical and health care
+      - public administration
+      - public sector
+      - surveillance_security
+      - transport_storage
+      - wholesale_retail trade
   project_prf_application_type:
-    options: ["Management Information System", "Process Control", "Scientific", "Embedded", "Web Application", "Mobile Application"]
+    options:
+      - airport management
+      - analysis management
+      - auditing management
+      - automated data acquisition
+      - business application
+      - catalogue_register of things or events
+      - clinical archive
+      - complex process control
+      - content management system
+      - course management
+      - customer billing
+      - customer billing_relationship management
+      - customer relationship management
+      - data or database management
+      - data warehouse system
+      - dynamic website
+      - electronic data interchange
+      - financial transaction process_accounting
+      - hospital information system
+      - idm
+      - logistic or supply planning_control
+      - management or performance reporting
+      - mathematical modelling_finance or eng
+      - online analysis and reporting
+      - project management
+      - promotions
+      - proposal builder
+      - software development tool
+      - security_authentication
+      - security controls
+      - student_tests management
+      - surveillance and security
+      - web-based application
+      - workflow support_management
 
 one_hot_features:
   application_group:
-    input_key: application_group
+    input_key: project_prf_application_group
     mapping:
       "Business Application": project_prf_application_group_business_application
       "Infrastructure Software": project_prf_application_group_infrastructure_software
@@ -24,13 +81,14 @@ one_hot_features:
       "Real-time Application": project_prf_application_group_real_time_application
 
   development_type:
-    input_key: development_type
+    input_key: project_prf_development_type
     mapping:
+      "Enhancement": project_prf_development_type_enhancement
       "New Development": project_prf_development_type_new_development
       "Re-development": project_prf_development_type_re_development
 
   development_platform:
-    input_key: development_platform
+    input_key: tech_tf_development_platform
     mapping:
       "Mainframe (MR)": tech_tf_development_platform_mr
       "Multi-platform": tech_tf_development_platform_multi
@@ -38,69 +96,81 @@ one_hot_features:
       "Proprietary": tech_tf_development_platform_proprietary
 
   language_type:
-    input_key: language_type
+    input_key: tech_tf_language_type
     mapping:
+      "2GL (Second Generation)": tech_tf_language_type_2GL
+      "3GL (Third Generation)": tech_tf_language_type_3GL
       "4GL (Fourth Generation)": tech_tf_language_type_4GL
       "5GL (Fifth Generation)": tech_tf_language_type_5GL
+      "Application Generator": tech_tf_language_type_application_generator
+      "Other": tech_tf_language_type_other
 
   primary_language:
-    input_key: primary_language
+    input_key: tech_tf_primary_language
     mapping:
-      "ABAP": tech_tf_primary_programming_language_abap
-      "C*": tech_tf_primary_programming_language*c*
-      "C": tech_tf_primary_programming_language_c
-      "Java": tech_tf_primary_programming_language_java
-      "JavaScript": tech_tf_primary_programming_language_javascript
-      "Oracle": tech_tf_primary_programming_language_oracle
-      "PL/I": tech_tf_primary_programming_language_pl_i
+      "ABAP": tech_tf_primary_language_abap
+      "Agile platform": tech_tf_primary_language_agile_platform
+      "JAVA": tech_tf_primary_language_java
+      "Javascript": tech_tf_primary_language_javascript
+      "C": tech_tf_primary_language_c
+      "C++": tech_tf_primary_language_cplusplus
+      "PL/i": tech_tf_primary_language_pli
+      "Natural": tech_tf_primary_language_natural
+      "Cobol": tech_tf_primary_language_cobol
+      "Oracle": tech_tf_primary_language_oracle
+      "Other": tech_tf_primary_language_other
       "Proprietary Agile Platform": tech_tf_primary_programming_language_proprietary_agile_platform
 
   relative_size:
-    input_key: relative_size
+    input_key: project_prf_relative_size
     mapping:
-      "L (Large)": project_prf_relative_size_l
-      "M1 (Medium 1)": project_prf_relative_size_m1
-      "M2 (Medium 2)": project_prf_relative_size_m2
-      "S (Small)": project_prf_relative_size_s
-      "XS (Extra Small)": project_prf_relative_size_xs
-      "XXS (Extra Extra Small)": project_prf_relative_size_xxs
+      "XXS (Extra Extra Small)": project_prfrelative_size_xxs
+      "XS (Extra Small)": project_prfrelative_size_xs
+      "S (Small)": project_prfrelative_size_s
+      "M1 (Medium 1)": project_prfrelative_size_m1
+      "M2 (Medium 2)": project_prfrelative_size_m2
+      "L (Large)": project_prfrelative_size_l
+      "XL (Extra Large)": project_prfrelative_size_xl
+      "XXL (Extra Extra Large)": project_prfrelative_size_xxl
+      "XXXL (Extra Extra Extra Large)": project_prfrelative_size_xxxl
 
   architecture:
-    input_key: architecture
+    input_key: tech_tf_architecture
     mapping:
       "Client-Server": tech_tf_architecture_client_server
       "Multi-tier with Web Interface": tech_tf_architecture_multi_tier_with_web_public_interface
       "Stand-alone": tech_tf_architecture_stand_alone
 
   client_server:
-    input_key: client_server
+    input_key: tech_tf_client_server
     mapping:
       "No": tech_tf_client_server_no
       "Yes": tech_tf_client_server_yes
 
   web_development:
-    input_key: web_development
+    input_key: tech_tf_web_development
     mapping:
       "Yes": tech_tf_web_development_tech_tf_web_development
       "No": tech_tf_web_development_web
 
   dbms_used:
-    input_key: dbms_used
+    input_key: tech_tf_dbms_used
     mapping:
       "Yes": tech_tf_dbms_used_tech_tf_dbms_used
       "No": tech_tf_dbms_used_yes
 
   cost_currency:
-    input_key: cost_currency
+    input_key: project_prfcost_currency
     mapping:
       "Canadian Dollar": project_prf_cost_currency_canadadollar
       "European Euro": project_prf_cost_currency_europeaneuro
 
 special_cases:
   team_size_group:
-    input_key: team_size_group
+    input_key: project_prf_team_size_group
     options: ["2", "3-4", "5-8", "9-14", "21-30", "41-50", "61-70", "Missing"]
     output_keys:
+      "1": project_prf_team_size_group_1
       "2": project_prf_team_size_group_2
       "3-4": project_prf_team_size_group_3_4
       "5-8": project_prf_team_size_group_5_8
@@ -108,13 +178,19 @@ special_cases:
       "21-30": project_prf_team_size_group_21_30
       "41-50": project_prf_team_size_group_41_50
       "61-70": project_prf_team_size_group_61_70
+      "71-80": project_prf_team_size_group_71_80
+      "81-90": project_prf_team_size_group_81_90
+      "91-100": project_prf_team_size_group_91_100
+      "100+": project_prf_team_size_group_100plus
       "Missing": project_prf_team_size_group_Missing
 
   development_methodology:
-    input_key: development_methodology
+    input_key: process_pmf_development_methodology
     mapping:
-      "Agile Development/Iterative": process_pmf_development_methodologies_agile_developmentiterative
-      "Agile Development/JAD/Multifunctional Teams": process_pmf_development_methodologies_agile_developmentjoint_application_development_jadmultifunctional_teams
-      "Agile Development/PSP/Unified Process": process_pmf_development_methodologies_agile_developmentpersonal_software_process_pspunified_process
-      "Agile Development/Scrum": process_pmf_development_methodologies_agile_developmentscrum
-      "Agile Development/Unified Process": process_pmf_development_methodologies_agile_developmentunified_process
+      "Agile Development": process_pmf_development_methodologies_agile_development
+      "Iterative": process_pmf_development_methodologies_iterative
+      "Joint Application Development (jad)": process_pmf_development_joint_application_development_jad
+      "Multifunctional Teams": process_pmf_development_methodologies_agile_development_multifunctional_teams
+      "Personal Software Process (psp)": process_pmf_development_methodologies_agile_development_personal_software_process_psp
+      "Scrum": process_pmf_development_methodologies_agile_development_scrum
+      "Unified Process": process_pmf_development_methodologies_agile_development_unified_process
