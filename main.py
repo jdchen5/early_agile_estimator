@@ -1,12 +1,22 @@
 # main.py
 
 import streamlit as st
+
+# THIS MUST BE FIRST, before any other Streamlit call!
+st.set_page_config(
+    page_title="Agile Project Estimator", 
+    page_icon="⏱️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import logging
 from models import load_model, predict_man_hours, get_feature_importance, get_model_display_name
 from ui import sidebar_inputs, display_inputs, show_prediction, about_section, tips_section, show_feature_importance
+
 
 MODEL_SCALER = 'standard_scaler'
 
@@ -101,12 +111,7 @@ def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label
 
 def main():
     add_custom_css()
-    st.set_page_config(
-        page_title="Agile Project Estimator",
-        page_icon="⏱️",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+
     st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
     st.markdown("""
     This application helps project managers and team leads estimate the effort required for

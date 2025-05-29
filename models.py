@@ -29,6 +29,52 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+def list_available_models() -> list:
+    """
+    Lists all available model files in the models directory (without extension).
+    Returns a list of dicts with 'technical_name' and 'display_name'.
+    """
+    ensure_MODELS_FOLDER()
+    model_files = []
+    for f in os.listdir(MODELS_FOLDER):
+        if f.endswith('.pkl') and not ('scaler' in f.lower()):
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            model_files.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
+    # Sort by display name for user-friendly dropdown
+    model_files.sort(key=lambda x: x['display_name'])
+    return model_files
+
+def check_required_models() -> dict:
+    """
+    Checks for the presence of model files and a scaler in the models folder.
+    Returns a dictionary summarizing their availability and listing the models.
+    """
+    ensure_MODELS_FOLDER()
+    existing_files = os.listdir(MODELS_FOLDER)
+    existing_models = [f for f in existing_files if f.endswith('.pkl')]
+    has_models = any(f for f in existing_models if not f.startswith('scaler'))
+    has_scaler = any(f for f in existing_models if f.startswith('scaler'))
+    found_models = []
+    for f in existing_models:
+        if not ('scaler' in f.lower()):
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            found_models.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
+    return {
+        "models_available": has_models,
+        "scaler_available": has_scaler,
+        "found_models": found_models,
+        "technical_names": [model['technical_name'] for model in found_models]
+    }
+
+
 # Load model display names from config file
 def load_model_display_names() -> Dict[str, str]:
     if os.path.exists(MODEL_DISPLAY_NAMES_FILE):
