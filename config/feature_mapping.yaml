@@ -70,9 +70,34 @@ categorical_features:
       - Surveillance & Security
       - Web-Based Application
       - Workflow Support_Management
+  tech_tf_client_roles:
+    options:
+      - business logic or rule processing
+      - data entry & validation
+      - data retrieval & presentation
+      - database server
+      - device/equipment interface
+      - run a computer-human interface
+      - security
+      - web/html browser
+      - web public interface
+ 
+  tech_tf_server_roles:
+    options:
+      - business logic + integration to 30 other systems
+      - data acquisation
+      - database server
+      - file &/or print server
+      - ftp server
+      - html/web server
+      - multi-user legacy application
+      - security/authentication
+      - mail server
+      - messaging server
+      - object/component server
 
 one_hot_features:
-  application_group:
+  project_prf_application_group:
     input_key: project_prf_application_group
     mapping:
       "Business Application": project_prf_application_group_business_application
@@ -121,7 +146,7 @@ one_hot_features:
       "Other": tech_tf_primary_language_other
       "Proprietary Agile Platform": tech_tf_primary_programming_language_proprietary_agile_platform
 
-  relative_size:
+  project_prf_relative_size:
     input_key: project_prf_relative_size
     mapping:
       "XXS (Extra Extra Small)": project_prfrelative_size_xxs
@@ -157,13 +182,15 @@ one_hot_features:
     input_key: tech_tf_dbms_used
     mapping:
       "Yes": tech_tf_dbms_used_tech_tf_dbms_used
-      "No": tech_tf_dbms_used_yes
+      "No": tech_tf_dbms_used_no
 
   cost_currency:
     input_key: project_prfcost_currency
     mapping:
       "Canadian Dollar": project_prf_cost_currency_canadadollar
       "European Euro": project_prf_cost_currency_europeaneuro
+
+
 
 special_cases:
   team_size_group:
@@ -187,13 +214,30 @@ special_cases:
       "100+": project_prf_team_size_group_100plus
       "Missing": project_prf_team_size_group_Missing
 
-  development_methodology:
-    input_key: process_pmf_development_methodology
+  process_pmf_development_methodologies:
+    input_key: process_pmf_development_methodologies
     mapping:
       "Agile Development": process_pmf_development_methodologies_agile_development
       "Iterative": process_pmf_development_methodologies_iterative
-      "Joint Application Development (jad)": process_pmf_development_joint_application_development_jad
+      "Joint Application Development (jad)": process_pmf_development_methodologies_joint_application_development_jad
       "Multifunctional Teams": process_pmf_development_methodologies_agile_development_multifunctional_teams
       "Personal Software Process (psp)": process_pmf_development_methodologies_agile_development_personal_software_process_psp
       "Scrum": process_pmf_development_methodologies_agile_development_scrum
       "Unified Process": process_pmf_development_methodologies_agile_development_unified_process
+
+binary_features:
+  client_server:
+    input_key: client_server
+    mapping:
+      "No": client_server_no
+      "Yes": client_server_yes
+  web_development:
+    input_key: web_development
+    mapping:
+      "Yes": web_development_yes
+      "No": web_development_no
+  dbms_used:
+    input_key: dbms_used
+    mapping:
+      "Yes": dbms_used_yes
+      "No": dbms_used_no

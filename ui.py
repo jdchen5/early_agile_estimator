@@ -135,7 +135,8 @@ def sidebar_inputs():
                 # MULTISELECT for process_pmf_development_methodologies
                 development_methodologies = st.multiselect(
                     "Development Methodologies",
-                    FEATURE_CONFIG["categorical_features"]["process_pmf_development_methodologies"]["options"])
+                    list(FEATURE_CONFIG["one_hot_features"]["process_pmf_development_methodologies"]["mapping"].keys())
+                )
                 team_size_group = st.selectbox(
                     "Team Size Group",
                     FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
