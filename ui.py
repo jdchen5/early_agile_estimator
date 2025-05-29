@@ -16,7 +16,7 @@ import yaml
 from datetime import datetime
 from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
 
-# --- Reduce vertical gap between fields in sidebar forms ---
+# --- Compact sidebar CSS ---
 st.markdown("""
 <style>
 section[data-testid="stSidebar"] .stForm .stFormItem, 
@@ -30,6 +30,7 @@ section[data-testid="stSidebar"] .stForm .stSelectbox,
 section[data-testid="stSidebar"] .stForm .stNumberInput {
     margin-bottom: 0.1rem !important;
 }
+.main .block-container { padding-top: 1.5rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -37,17 +38,24 @@ section[data-testid="stSidebar"] .stForm .stNumberInput {
 def load_feature_mapping_config(path="config/feature_mapping.yaml"):
     with open(path, "r") as f:
         return yaml.safe_load(f)
-
 FEATURE_CONFIG = load_feature_mapping_config()
 
 def get_team_size_group(max_team_size):
-    if max_team_size == 2: return "2"
+    # You may want to adjust this based on your grouping rules.
+    if max_team_size == 1: return "1"
+    elif max_team_size == 2: return "2"
     elif 3 <= max_team_size <= 4: return "3-4"
     elif 5 <= max_team_size <= 8: return "5-8"
     elif 9 <= max_team_size <= 14: return "9-14"
+    elif 15 <= max_team_size <= 20: return "15-20"
     elif 21 <= max_team_size <= 30: return "21-30"
+    elif 31 <= max_team_size <= 40: return "31-40"
     elif 41 <= max_team_size <= 50: return "41-50"
     elif 61 <= max_team_size <= 70: return "61-70"
+    elif 71 <= max_team_size <= 80: return "71-80"
+    elif 81 <= max_team_size <= 90: return "81-90"
+    elif 91 <= max_team_size <= 100: return "91-100"
+    elif 101 <= max_team_size: return "100+"
     else: return "Missing"
 
 def sidebar_inputs():
@@ -55,73 +63,98 @@ def sidebar_inputs():
     with st.sidebar:
         with st.form("estimation_form"):
             tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
+            # ---- BASIC tab ----
             with tab1:
-                # All your tab 1 input widgets here
                 project_year = st.number_input("Project Year", 2015, 2030, 2024)
-                industry_sector = st.selectbox("Industry Sector",
+                industry_sector = st.selectbox(
+                    "Industry Sector",
                     FEATURE_CONFIG["categorical_features"]["external_eef_industry_sector"]["options"])
-                organisation_type = st.selectbox("Organisation Type",
+                # MULTISELECT for organisation_type
+                organisation_types = st.multiselect(
+                    "Organisation Type",
                     FEATURE_CONFIG["categorical_features"]["external_eef_organisation_type"]["options"])
-                application_type = st.selectbox("Application Type",
+                # MULTISELECT for application_type
+                application_types = st.multiselect(
+                    "Application Type",
                     FEATURE_CONFIG["categorical_features"]["project_prf_application_type"]["options"])
                 functional_size = st.number_input("Functional Size (Function Points)", 1, 10000, 100)
                 max_team_size = st.number_input("Maximum Team Size", 1, 100, 5)
                 st.subheader("Application Group")
-                application_group = st.radio("Primary Application Category",
-                    list(FEATURE_CONFIG["one_hot_features"]["application_group"]["mapping"].keys()))
-                development_type = st.radio("Development Type",
+                # Handles both selectbox/radio (assume single value)
+                application_group = st.radio(
+                    "Primary Application Category",
+                    list(FEATURE_CONFIG["one_hot_features"]["project_prf_application_group"]["mapping"].keys()))
+                development_type = st.radio(
+                    "Development Type",
                     list(FEATURE_CONFIG["one_hot_features"]["development_type"]["mapping"].keys()))
-                relative_size = st.selectbox("Relative Project Size",
-                    list(FEATURE_CONFIG["one_hot_features"]["relative_size"]["mapping"].keys()), 2)
+                # Relative size (e.g., XXS, XS, S, ..., XXL, XXXL)
+                relative_size = st.selectbox(
+                    "Relative Project Size",
+                    list(FEATURE_CONFIG["one_hot_features"]["project_prf_relative_size"]["mapping"].keys()), 2)
 
-            # --- Tab 2: Technical ---
+            # ---- TECHNICAL tab ----
             with tab2:
                 st.header("Technical Information")
-                development_platform = st.selectbox("Development Platform",
+                development_platform = st.selectbox(
+                    "Development Platform",
                     list(FEATURE_CONFIG["one_hot_features"]["development_platform"]["mapping"].keys()))
-                language_type = st.selectbox("Programming Language Type",
-                    ["3GL (Third Generation)"] +
+                language_type = st.selectbox(
+                    "Programming Language Type",
                     list(FEATURE_CONFIG["one_hot_features"]["language_type"]["mapping"].keys()))
-                primary_language = st.selectbox("Primary Programming Language",
+                primary_language = st.selectbox(
+                    "Primary Programming Language",
                     list(FEATURE_CONFIG["one_hot_features"]["primary_language"]["mapping"].keys()))
-                architecture = st.selectbox("System Architecture",
+                architecture = st.selectbox(
+                    "System Architecture",
                     list(FEATURE_CONFIG["one_hot_features"]["architecture"]["mapping"].keys()), 1)
-                client_server = st.radio("Client-Server Architecture",
-                    list(FEATURE_CONFIG["one_hot_features"]["client_server"]["mapping"].keys()))
-                web_development = st.radio("Web Development",
-                    list(FEATURE_CONFIG["one_hot_features"]["web_development"]["mapping"].keys()))
-                dbms_used = st.radio("Database Management System Used",
-                    list(FEATURE_CONFIG["one_hot_features"]["dbms_used"]["mapping"].keys()))
+                # BINARY (radio)
+                client_server = st.radio(
+                    "Client-Server Architecture",
+                    list(FEATURE_CONFIG["binary_features"]["client_server"]["mapping"].keys()))
+                web_development = st.radio(
+                    "Web Development",
+                    list(FEATURE_CONFIG["binary_features"]["web_development"]["mapping"].keys()))
+                # MULTISELECT for tech_tf_client_roles
+                client_roles = st.multiselect(
+                    "Client Roles",
+                    FEATURE_CONFIG["categorical_features"]["tech_tf_client_roles"]["options"])
+                # MULTISELECT for tech_tf_server_roles
+                server_roles = st.multiselect(
+                    "Server Roles",
+                    FEATURE_CONFIG["categorical_features"]["tech_tf_server_roles"]["options"])
+                dbms_used = st.radio(
+                    "Database Management System Used",
+                    list(FEATURE_CONFIG["binary_features"]["dbms_used"]["mapping"].keys()))
                 tools_used = st.slider("Development Tools Sophistication (1-5)", 1, 5, 3)
 
-            # --- Tab 3: Process & People ---
+            # ---- ADVANCED tab ----
             with tab3:
                 st.header("Process & People")
                 docs = st.slider("Documentation Level (1-5)", 1, 5, 3)
                 personnel_changes = st.slider("Personnel Changes (1-5)", 1, 5, 2)
-                development_methodology = st.selectbox("Development Methodology",
-                    list(FEATURE_CONFIG["special_cases"]["development_methodology"]["mapping"].keys()))
-                team_size_group = st.selectbox("Team Size Group",
+                # MULTISELECT for process_pmf_development_methodologies
+                development_methodologies = st.multiselect(
+                    "Development Methodologies",
+                    FEATURE_CONFIG["categorical_features"]["process_pmf_development_methodologies"]["options"])
+                team_size_group = st.selectbox(
+                    "Team Size Group",
                     FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
                     index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
-                cost_currency = st.selectbox("Cost Currency",
-                    list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
-
-            # AFTER all tabs, always visible:
-            st.markdown("---")
-            st.header("Model Selection")
-            selected_model = None
-            if model_status["models_available"]:
-                available_models = list_available_models()
-                if available_models:
-                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                    selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
-                    selected_model = model_options[selected_display_name]
+                cost_currency = st.selectbox(
+                    "Cost Currency",
+                    list(FEATURE_CONFIG["special_cases"]["cost_currency"]["mapping"].keys()))
+                st.header("Model Selection")
+                selected_model = None
+                if model_status["models_available"]:
+                    available_models = list_available_models()
+                    if available_models:
+                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
+                        selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()), key="model_selectbox")
+                        selected_model = model_options[selected_display_name]
+                    else:
+                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
                 else:
-                    st.warning("No trained models found. Please add trained models to the 'models' directory.")
-            else:
-                st.warning("No trained models found. Please create or add trained models.")
-
+                    st.warning("No trained models found. Please create or add trained models.")
 
             col1, col2 = st.columns(2)
             submit = col1.form_submit_button("Predict Man-Hours")
@@ -130,58 +163,89 @@ def sidebar_inputs():
             if save_config:
                 config_name = st.text_input("Enter a name for this configuration:")
 
-            # Build and return your input dict as before!
+            # Assemble user_inputs
             user_inputs = {
                 "project_prf_year_of_project": project_year,
                 "external_eef_industry_sector": industry_sector,
-                "external_eef_organisation_type": organisation_type,
-                "project_prf_application_type": application_type,
+                "external_eef_organisation_type": organisation_types,
+                "project_prf_application_type": application_types,
                 "project_prf_functional_size": functional_size,
                 "project_prf_max_team_size": max_team_size,
                 "process_pmf_docs": docs,
                 "tech_tf_tools_used": tools_used,
                 "people_prf_personnel_changes": personnel_changes,
-                "application_group": application_group,
-                "development_type": development_type,
+                "project_prf_application_group": application_group,
+                "project_prf_development_type": development_type,
+                "project_prf_relative_size": relative_size,
                 "development_platform": development_platform,
                 "language_type": language_type,
                 "primary_language": primary_language,
-                "relative_size": relative_size,
-                "team_size_group": team_size_group,
-                "development_methodology": development_methodology,
                 "architecture": architecture,
                 "client_server": client_server,
                 "web_development": web_development,
                 "dbms_used": dbms_used,
+                "client_roles": client_roles,
+                "server_roles": server_roles,
+                "process_pmf_development_methodologies": development_methodologies,
+                "team_size_group": team_size_group,
                 "cost_currency": cost_currency,
                 "selected_model": selected_model,
                 "submit": submit
             }
 
+            # Save config logic (if needed)
+            if save_config and selected_model:
+                if config_name:
+                    save_current_configuration(user_inputs, config_name)
+                else:
+                    st.warning("Please enter a name for your configuration above and resubmit.")
+
             if submit or save_config:
                 return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-            # Always return a dict!
-            return {'selected_model': None, 'submit': False}
+            return {'selected_model': None, 'submit': False}  # Default to avoid NoneType errors
 
-
+# -- Feature dict creation (supports multi-hot) --
 def create_feature_dict_from_config(user_inputs, config):
     features = {}
+    # Numeric
     for key in config.get("numeric_features", []):
         features[key] = user_inputs.get(key, 0)
+    # Categorical (single select)
     for key, meta in config.get("categorical_features", {}).items():
-        features[key] = user_inputs.get(key, "")
+        val = user_inputs.get(key, None)
+        # If user selected multiple, just join with ';' (if needed)
+        if isinstance(val, list):
+            features[key] = ";".join(val)
+        else:
+            features[key] = val
+    # One-hot and multi-hot
     for group, mapping in config.get("one_hot_features", {}).items():
-        input_value = user_inputs.get(mapping["input_key"], "")
+        input_value = user_inputs.get(mapping["input_key"], [])
+        if isinstance(input_value, list):
+            selected_values = set(input_value)
+        else:
+            selected_values = {input_value}
         for label, feat_key in mapping["mapping"].items():
-            features[feat_key] = int(input_value == label)
+            features[feat_key] = int(label in selected_values)
+    # Special cases (multi-hot/binary etc)
     for group, spec in config.get("special_cases", {}).items():
-        input_value = user_inputs.get(spec["input_key"], "")
+        input_value = user_inputs.get(spec["input_key"], [])
         if "mapping" in spec:
+            # Handle multi-hot for special cases
+            if isinstance(input_value, list):
+                selected_values = set(input_value)
+            else:
+                selected_values = {input_value}
             for label, feat_key in spec["mapping"].items():
-                features[feat_key] = int(input_value == label)
+                features[feat_key] = int(label in selected_values)
         if "output_keys" in spec:
             for label, feat_key in spec["output_keys"].items():
                 features[feat_key] = int(input_value == label)
+    # Binary features
+    for group, mapping in config.get("binary_features", {}).items():
+        input_value = user_inputs.get(mapping["input_key"], "")
+        for label, feat_key in mapping["mapping"].items():
+            features[feat_key] = int(input_value == label)
     features["selected_model"] = user_inputs.get("selected_model")
     features["submit"] = user_inputs.get("submit", False)
     return features

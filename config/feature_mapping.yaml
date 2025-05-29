@@ -175,8 +175,11 @@ special_cases:
       "3-4": project_prf_team_size_group_3_4
       "5-8": project_prf_team_size_group_5_8
       "9-14": project_prf_team_size_group_9_14
+      "15-20": project_prf_team_size_group_15_20
       "21-30": project_prf_team_size_group_21_30
+      "31-40": project_prf_team_size_group_31_40
       "41-50": project_prf_team_size_group_41_50
+      "51-60": project_prf_team_size_group_51_60
       "61-70": project_prf_team_size_group_61_70
       "71-80": project_prf_team_size_group_71_80
       "81-90": project_prf_team_size_group_81_90

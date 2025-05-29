@@ -1,47 +1,57 @@
-Column: external_eef_data_quality_rating (n_unique = 2)
-['b' 'a']
+Column: external_eef_data_quality_rating (n_unique = 4)
+['b' 'a' 'c' 'd']
 ----------------------------------------
-Column: external_eef_industry_sector (n_unique = 10)
-['banking' 'government' 'service industry' 'manufacturing' 'education' nan
- 'medical_health care' 'financial' 'electronics_computers'
- 'wholesale_retail' 'utilities']
+Column: external_eef_industry_sector (n_unique = 11)
+['banking' 'government' 'service industry' 'communication' 'manufacturing'
+ 'education' nan 'medical & health care' 'financial'
+ 'electronics & computers' 'wholesale & retail' 'utilities']
 ----------------------------------------
-Column: external_eef_organisation_type (n_unique = 22)
-['banking; communications; education institution; government; medical and health care; transport_storage; wholesale_retail trade'
- 'government' 'community services' 'banking' 'aerospace _ automotive'
+Column: external_eef_organisation_type (n_unique = 26)
+['banking; communications; education institution; government; medical and health care; transport & storage; wholesale & retail trade'
+ 'government' 'community services' 'telecommunications'
+ 'art , events , ticketing' 'banking' 'aerospace / automotive'
  'education institution; electricity, gas, water; ieee'
  'community services; government; public administration'
- 'education institution' 'food processing' 'transport_storage'
+ 'education institution' 'food processing' 'transport & storage'
  'all industry organization types' 'medical and health care'
- 'financial, property_business services' 'information technology'
- 'surveillance_security' 'consumer goods' 'public sector'
- 'community services; institutions eg. kindergartens' 'high tech'
- 'biotech' 'community services; government' 'energy']
+ 'financial, property & business services'
+ 'education institution; electricity, gas, water; university'
+ 'information technology' 'surveillance & security' 'consumer goods'
+ 'public sector' 'community services; institutions eg. kindergartens'
+ 'high tech' 'biotech' 'community services; government'
+ 'banking; communications; community services; construction; defence; education institution; financial, property & business services; government; manufacturing; medical and health care; professional; real estate & property; transport & storage; wholesale & retail trade'
+ 'energy']
 ----------------------------------------
 Column: project_prf_application_group (n_unique = 4)
-['business application' nan 'mathematically-intensive application'
- 'real-time application' 'infrastructure software']
+['business application' 'real-time application' nan
+ 'mathematically-intensive application' 'infrastructure software']
 ----------------------------------------
-Column: project_prf_application_type (n_unique = 29)
+Column: project_prf_application_type (n_unique = 34)
 ['surveillance and security' 'business application'
- 'complex process control; workflow support_management' 'idm'
+ 'complex process control; workflow support & management'
+ 'embedded software - simple device control; online analysis and reporting; telecom & network management'
+ 'idm'
+ 'customer billing; document management; financial transaction process/accounting; online analysis and reporting; reservation system eg. airline, hotel; stock control & order processing; workflow support & management'
  'auditing management'
- 'data warehouse system; financial transaction process_accounting; management or performance reporting'
- 'mathematical modelling_finance or eng; software development tool'
+ 'data warehouse system; financial transaction process/accounting; management or performance reporting'
+ 'mathematical modelling finance or eng; software development tool'
  'content management system; dynamic website'
- 'catalogue_register of things or events'
- 'catalogue_register of things or events; logistic or supply planning_control'
- 'customer billing; financial transaction process_accounting'
- 'security_authentication' 'security controls' 'clinical archive'
- 'customer billing_relationship management' 'web-based application'
+ 'catalogue/register of things or events'
+ 'catalogue/register of things or events; logistic or supply planning & control'
+ 'customer billing; financial transaction process/accounting'
+ 'security/authentication' 'security controls' 'clinical archive'
+ 'customer billing/relationship management'
+ 'course management system; dynamic website' 'web-based application'
  'electronic data interchange' 'automated data acquisition' 'promotions'
- 'airport management' 'project management' 'online analysis and reporting'
- 'proposal builder' 'course management' 'analysis management'
- 'hospital information system' 'data or database management'
- 'customer relationship management' 'student_tests management']
+ 'management information system' 'airport management' 'project management'
+ 'online analysis and reporting' 'proposal builder' 'course management'
+ 'analysis management' 'hospital information system'
+ 'data or database management'
+ 'catalogue/register of things or events; customer billing; financial transaction process/accounting; job, case, incident, project management; management or performance reporting; mathematical modelling; online analysis and reporting; workflow support & management'
+ 'customer relationship management' 'student & tests management']
 ----------------------------------------
 Column: project_prf_development_type (n_unique = 3)
-['enhancement' 'new development' 're-development']
+['enhancement' 're-development' 'new development']
 ----------------------------------------
 Column: tech_tf_development_platform (n_unique = 4)
 ['pc' nan 'multi' 'proprietary' 'mr']
@@ -50,78 +60,71 @@ Column: tech_tf_language_type (n_unique = 3)
 ['3GL' '4GL' '5GL']
 ----------------------------------------
 Column: tech_tf_primary_programming_language (n_unique = 9)
-['c#' '.net' 'oracle' 'javascript' 'proprietary agile platform' 'java'
- 'c++' 'abap' 'pl_i']
+['c#' '.net' 'oracle' 'javascript' 'c++' 'java'
+ 'proprietary agile platform' 'abap' 'pl/i']
 ----------------------------------------
-Column: project_prf_relative_size (n_unique = 6)
-['xs' 'xxs' 's' 'm1' 'm2' nan 'l']
+Column: project_prf_relative_size (n_unique = 7)
+['xs' 'xxs' 's' 'm1' 'm2' nan 'l' 'xl']
 ----------------------------------------
 Column: project_prf_team_size_group (n_unique = 8)
-['1' nan '9-14' '5-8' '21-30' '3-4' '41-50' '2' '61-70']
+['1' nan '9-14' '5-8' '2' '21-30' '3-4' '41-50' '61-70']
 ----------------------------------------
 Column: project_prf_case_tool_used (n_unique = 2)
 [nan 'no' 'yes']
 ----------------------------------------
-Column: process_pmf_development_methodologies (n_unique = 6)
-['agile development' 'agile development; unified process'
- 'agile development; personal software process_psp; unified process'
- 'agile development; scrum' 'agile development; iterative'
- 'agile development; joint application development_jad; multifunctional teams']
+Column: process_pmf_development_methodologies (n_unique = 9)
+['agile development' nan 'agile development; unified process'
+ 'agile development; personal software process psp; unified process'
+ 'agile development; scrum'
+ 'personal software process psp; unified process'
+ 'agile development; iterative'
+ 'agile development; multifunctional teams; scrum'
+ 'agile development; joint application development jad; multifunctional teams'
+ 'agile development; extreme programming xp; imes oom; iterative; rapid application development rad; scrum; timeboxing; unified process']
 ----------------------------------------
 Column: process_pmf_prototyping_used (n_unique = 1)
 [nan 'yes']
 ----------------------------------------
-Column: tech_tf_architecture (n_unique = 3)
-['stand-alone' nan 'client-server' 'multi-tier with web public interface']
+Column: tech_tf_architecture (n_unique = 4)
+['stand-alone' nan 'client-server' 'multi-tier'
+ 'multi-tier with web public interface']
 ----------------------------------------
 Column: tech_tf_client_server (n_unique = 2)
 [nan 'yes' 'no']
 ----------------------------------------
 Column: tech_tf_client_roles (n_unique = 10)
 [nan
- 'data entry_validation; data retrieval_presentation; web_html browser'
+ 'data entry & validation; data retrieval & presentation; web/html browser'
  'web public interface'
- 'data entry_validation; data retrieval_presentation; run a computer-human interface; security; web_html browser'
- 'data entry_validation; run a computer-human interface; web public interface'
- 'web_html browser'
- 'business logic or rule processing; data entry_validation; data retrieval_presentation'
+ 'data entry & validation; data retrieval & presentation; run a computer-human interface; security; web/html browser'
+ 'data entry & validation; run a computer-human interface; web public interface'
+ 'web/html browser'
+ 'business logic or rule processing; data entry & validation; data retrieval & presentation'
  'business logic or rule processing; database server; run a computer-human interface'
- 'business logic or rule processing; data entry_validation; data retrieval_presentation; run a computer-human interface'
- 'data entry_validation; data retrieval_presentation; device_equipment interface'
- 'data entry_validation; data retrieval_presentation; run a computer-human interface; web_html browser']
+ 'business logic or rule processing; data entry & validation; data retrieval & presentation; run a computer-human interface'
+ 'data entry & validation; data retrieval & presentation; device/equipment interface'
+ 'data entry & validation; data retrieval & presentation; run a computer-human interface; web/html browser']
 ----------------------------------------
-Column: tech_tf_server_roles (n_unique = 11)
-[nan 'html_web server; security_authentication'
+Column: tech_tf_server_roles (n_unique = 12)
+[nan 'html/web server; security/authentication'
  'multi-user legacy application'
- 'database server; file_ print server; html_web server; multi-user legacy application'
- 'database server; html_web server; mail server; security_authentication'
- 'security_authentication' 'database server'
- 'database server; file_ print server; html_web server; mail server; security_authentication'
- 'html_web server; multi-user legacy application' 'data acquisation'
- 'business logic_integration to 30 other systems; database server; ftp server; html_web server; messaging server; object_component server; security_authentication'
- 'database server; html_web server']
+ 'database server; file &/or print server; html/web server; multi-user legacy application'
+ 'database server; html/web server; mail server; security/authentication'
+ 'security/authentication' 'database server'
+ 'database server; file &/or print server; html/web server; mail server; security/authentication'
+ 'html/web server; multi-user legacy application'
+ 'database server; html/web server; security/authentication'
+ 'data acquisation' 'database server; html/web server'
+ 'business logic + integration to 30 other systems; database server; ftp server; html/web server; messaging server; object/component server; security/authentication']
 ----------------------------------------
-Column: tech_tf_type_of_server (n_unique = 3)
-[nan 'tech_tf_type_of_server' 'mainframe' 'proprietary midrange']
+Column: tech_tf_web_development (n_unique = 1)
+[nan 'web']
 ----------------------------------------
-Column: tech_tf_client_server_description (n_unique = 4)
-[nan 'c_s' '10%' 'tech_tf_client_server_description'
- 'client_presentation; server_processing']
+Column: tech_tf_dbms_used (n_unique = 1)
+['yes' nan]
 ----------------------------------------
-Column: tech_tf_web_development (n_unique = 2)
-[nan 'tech_tf_web_development' 'web']
-----------------------------------------
-Column: tech_tf_dbms_used (n_unique = 2)
-['yes' nan 'tech_tf_dbms_used']
-----------------------------------------
-Column: tech_tf_upper_case_used (n_unique = 4)
-[nan 'no' 'tech_tf_upper_case_used' "don't know" 'yes']
-----------------------------------------
-Column: people_prf_project_user_involvement (n_unique = 2)
-[nan 'people_prf_project_user_involvement' 'yes']
-----------------------------------------
-Column: project_prf_cost_currency (n_unique = 2)
-[nan 'european, euro' 'canada, dollar']
+Column: project_prf_cost_currency (n_unique = 3)
+[nan 'european, euro' 'canada, dollar' 'united states, dollar']
 ----------------------------------------
 Column: project_prf_currency_multiple (n_unique = 2)
 [nan 'no' 'yes 10,000']
