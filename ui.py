@@ -89,20 +89,7 @@ def sidebar_inputs():
                     index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
                 cost_currency = st.selectbox("Cost Currency",
                     list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
-                st.header("Model Selection")
-                selected_model = None
-                selected_display_name = None
-                if model_status["models_available"]:
-                    available_models = list_available_models()
-                    if available_models:
-                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                        selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
-                        selected_model = model_options[selected_display_name]
-                    else:
-                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
-                else:
-                    st.warning("No trained models found. Please create or add trained models.")
-
+        
             # AFTER all tabs, always visible:
             st.markdown("---")
             st.header("Model Selection")

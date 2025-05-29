@@ -1,4 +1,4 @@
-# main.py
+#main.py 
 
 import streamlit as st
 
@@ -14,9 +14,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import logging
-from models import load_model, predict_man_hours, get_feature_importance, get_model_display_name
+from models import (
+    load_model, 
+    predict_man_hours, 
+    get_feature_importance, 
+    get_model_display_name,
+    get_expected_feature_names_from_model  # <-- import this
+)
 from ui import sidebar_inputs, display_inputs, show_prediction, about_section, tips_section, show_feature_importance
-
 
 MODEL_SCALER = 'standard_scaler'
 
@@ -67,18 +72,26 @@ def get_what_if_range(param_key, current_value):
     else:
         return np.linspace(max(0, current_value-50), current_value+50, 11)
 
+def prepare_feature_vector(user_inputs, model=None):
+    """Ensure features are in correct order as required by the model."""
+    feature_names = get_expected_feature_names_from_model(model)
+    return [user_inputs.get(f, 0) for f in feature_names]
+
 def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label):
     model = load_model(selected_model)
     if not model:
         st.error(f"Model '{get_model_display_name(selected_model)}' not found.")
         return
+
+    feature_names = get_expected_feature_names_from_model(model)
     current_value = user_inputs.get(param_key, 0)
     what_if_values = get_what_if_range(param_key, current_value)
     predictions = []
     for val in what_if_values:
         modified_features = user_inputs.copy()
         modified_features[param_key] = val
-        prediction = predict_man_hours(modified_features, selected_model)
+        feature_vector = [modified_features.get(f, 0) for f in feature_names]
+        prediction = predict_man_hours(feature_vector, selected_model)
         predictions.append(prediction if prediction is not None else 0)
     valid_predictions = [(val, pred) for val, pred in zip(what_if_values, predictions) if pred is not None and pred > 0]
     if not valid_predictions:
@@ -94,7 +107,9 @@ def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label
     model_display_name = get_model_display_name(selected_model)
     ax.set_title(f"Impact of {param_label} on Estimation\nUsing {model_display_name}")
     ax.grid(True, linestyle='--', alpha=0.7)
-    current_pred = predict_man_hours(user_inputs, selected_model)
+    # Show current estimation as a red line
+    feature_vector_current = [user_inputs.get(f, 0) for f in feature_names]
+    current_pred = predict_man_hours(feature_vector_current, selected_model)
     if current_pred is not None:
         ax.axhline(y=current_pred, color='r', linestyle='--',
                    label=f"Current Estimation ({current_pred:.2f} man-hours)")
@@ -122,14 +137,17 @@ def main():
     selected_model = user_inputs.get('selected_model')
     submit = user_inputs.get('submit', False)
     team_size = user_inputs.get('project_prf_max_team_size', 5)
+
     tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
+
     with tab_results:
         col2 = display_inputs(user_inputs, selected_model)
         if submit and selected_model:
             with st.spinner("Calculating estimation..."):
                 model = load_model(selected_model)
                 if model:
-                    prediction = predict_man_hours(user_inputs, selected_model)
+                    feature_vector = prepare_feature_vector(user_inputs, model)
+                    prediction = predict_man_hours(feature_vector, selected_model)
                     show_prediction(col2, prediction, team_size)
                 else:
                     st.error(f"Required model '{get_model_display_name(selected_model)}' not found. Please make sure your trained models are in the models folder.")
@@ -137,6 +155,7 @@ def main():
             col2.error("Please select a model before making a prediction.")
         else:
             col2.info("Click the 'Predict Man-Hours' button to see the estimation result.")
+
     with tab_viz:
         if submit and selected_model:
             show_feature_importance(selected_model, user_inputs, st)
@@ -156,6 +175,7 @@ def main():
             st.info("Please select a model first to see visualizations and what-if analysis.")
         else:
             st.info("Make a prediction first to see visualizations and what-if analysis.")
+
     with tab_help:
         about_section()
         tips_section()
