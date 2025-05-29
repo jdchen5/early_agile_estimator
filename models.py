@@ -9,205 +9,104 @@
 
 import os
 import pickle
+import json
 import numpy as np
 import pandas as pd
 import logging
+
 from typing import Dict, List, Optional, Union, Any
 
-# Try to import PyCaret for model loading
-try:
-    from pycaret.regression import load_model as pycaret_load_model, predict_model
-    PYCARET_AVAILABLE = True
-    logging.info("PyCaret is available for model loading")
-except ImportError:
-    PYCARET_AVAILABLE = False
-    logging.warning("PyCaret not available, falling back to pickle loading")
+# Paths
+DATA_FOLDER = 'data'
+CONFIG_FOLDER = 'config'
+MODELS_FOLDER = 'models'
+FEATURE_COLS_FILE = os.path.join(DATA_FOLDER, 'expected_features.txt')
+MODEL_DISPLAY_NAMES_FILE = os.path.join(CONFIG_FOLDER, 'model_display_names.json')
 
-# Configure logging with timestamps
+# Logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Constants
-FEATURE_COLS_FILE = 'pycaret_processed_features_before_model_training.csv'
-DATA_FOLDER = 'data'
-MODELS_FOLDER = 'models'
+# Load model display names from config file
+def load_model_display_names() -> Dict[str, str]:
+    if os.path.exists(MODEL_DISPLAY_NAMES_FILE):
+        with open(MODEL_DISPLAY_NAMES_FILE, 'r') as f:
+            return json.load(f)
+    else:
+        logging.warning("Model display names file not found. Using empty mapping.")
+        return {}
 
-# Model name mapping for user-friendly display names
-MODEL_DISPLAY_NAMES = {
-    # PyCaret model names to user-friendly names
-    "top_model_1_KNeighborsRegressor": "K-Nearest Neighbors Regressor",
-    "top_model_2_OrthogonalMatchingPursuit": "Orthogonal Matching Pursuit",
-    "top_model_3_ExtraTreesRegressor": "Extra Trees Regressor",
-    "top_model_4_RandomForestRegressor": "Random Forest Regressor",
-    "top_model_5_GradientBoostingRegressor": "Gradient Boosting Regressor",
-    "top_model_6_AdaBoostRegressor": "Ada Boost Regressor",
-    "top_model_7_LinearRegression": "Linear Regression",
-    "top_model_8_Ridge": "Ridge Regression",
-    "top_model_9_Lasso": "Lasso Regression",
-    "top_model_10_ElasticNet": "Elastic Net Regression",
-    "top_model_11_SVR": "Support Vector Regression",
-    "top_model_12_DecisionTreeRegressor": "Decision Tree Regressor",
-    "top_model_13_XGBRegressor": "XGBoost Regressor",
-    "top_model_14_LGBMRegressor": "LightGBM Regressor",
-    "top_model_15_CatBoostRegressor": "CatBoost Regressor",
-    
-    # Common generic model names
-    "linear_regression": "Linear Regression",
-    "random_forest": "Random Forest Regressor",
-    "gradient_boosting": "Gradient Boosting Regressor",
-    "xgboost": "XGBoost Regressor",
-    "lightgbm": "LightGBM Regressor",
-    "catboost": "CatBoost Regressor",
-    "decision_tree": "Decision Tree Regressor",
-    "svm": "Support Vector Regression",
-    "knn": "K-Nearest Neighbors Regressor",
-    "ridge": "Ridge Regression",
-    "lasso": "Lasso Regression",
-    "elastic_net": "Elastic Net Regression",
-    "ada_boost": "Ada Boost Regressor",
-    "extra_trees": "Extra Trees Regressor",
-    
-    # Add more mappings as needed
-}
+MODEL_DISPLAY_NAMES = load_model_display_names()
 
 def get_model_display_name(model_filename: str) -> str:
-    """
-    Get user-friendly display name for a model.
-    
-    Args:
-        model_filename (str): The model filename (without extension)
-        
-    Returns:
-        str: User-friendly display name
-    """
-    # Check if we have a predefined mapping
     if model_filename in MODEL_DISPLAY_NAMES:
         return MODEL_DISPLAY_NAMES[model_filename]
-    
-    # Try to extract algorithm name from PyCaret naming convention
-    if model_filename.startswith("top_model_"):
-        parts = model_filename.split("_")
-        if len(parts) >= 4:
-            algorithm_name = "_".join(parts[3:])  # Everything after "top_model_X_"
-            
-            # Convert CamelCase to readable format
-            readable_name = ""
-            for i, char in enumerate(algorithm_name):
-                if char.isupper() and i > 0:
-                    readable_name += " "
-                readable_name += char
-            
-            # Add "Regressor" if not present
-            if not readable_name.endswith("Regressor") and not readable_name.endswith("Regression"):
-                if "Regression" not in readable_name:
-                    readable_name += " Regressor"
-            
-            return readable_name
-    
-    # Fallback: Convert underscores to spaces and capitalize
+    # ... (rest of your logic as before)
+    # Try to extract algorithm name from PyCaret naming convention...
+    # (No change here)
+    parts = model_filename.split("_")
+    if len(parts) >= 4 and model_filename.startswith("top_model_"):
+        algorithm_name = "_".join(parts[3:])
+        readable_name = ""
+        for i, char in enumerate(algorithm_name):
+            if char.isupper() and i > 0:
+                readable_name += " "
+            readable_name += char
+        if not readable_name.endswith("Regressor") and not readable_name.endswith("Regression"):
+            if "Regression" not in readable_name:
+                readable_name += " Regressor"
+        return readable_name
     return " ".join(word.capitalize() for word in model_filename.split("_"))
 
-def get_model_technical_name(display_name: str) -> str:
-    """
-    Get technical filename from display name.
-    
-    Args:
-        display_name (str): User-friendly display name
-        
-    Returns:
-        str: Technical model filename
-    """
-    # Reverse lookup in the mapping
-    for tech_name, friendly_name in MODEL_DISPLAY_NAMES.items():
-        if friendly_name == display_name:
-            return tech_name
-    
-    # If not found, convert display name back to technical format
-    return display_name.lower().replace(" ", "_").replace("-", "_")
+# --- Expected features loading ---
+def get_expected_feature_names() -> List[str]:
+    if os.path.exists(FEATURE_COLS_FILE):
+        with open(FEATURE_COLS_FILE, "r") as f:
+            return [line.strip() for line in f if line.strip()]
+    else:
+        logging.warning(f"Expected features file not found at {FEATURE_COLS_FILE}")
+        return []  # Or your hardcoded fallback
 
-
-def ensure_MODELS_FOLDER() -> str:
-    """
-    Ensure the models directory exists.
-    
-    Returns:
-        str: Path to the models directory
-    """
+# --- Helper: Ensure Models Folder Exists ---
+def ensure_MODELS_FOLDER():
+    """Ensure the MODELS_FOLDER directory exists."""
     if not os.path.exists(MODELS_FOLDER):
         os.makedirs(MODELS_FOLDER)
-        logging.info(f"Created models directory at '{MODELS_FOLDER}'")
-    return MODELS_FOLDER
+        logging.info(f"Created models folder at '{MODELS_FOLDER}'")
 
-def list_available_models() -> List[Dict[str, str]]:
+# --- PyCaret: Safe Load Model Wrapper ---
+def pycaret_load_model(model_path):
     """
-    List all available models in the models directory with both technical and display names.
-    
-    Returns:
-        List[Dict[str, str]]: List of dictionaries with 'technical_name' and 'display_name'
+    Safely load a PyCaret model using the correct PyCaret function if available.
+    Accepts either a path with or without extension.
     """
-    ensure_MODELS_FOLDER()
-    
-    # Get all .pkl files except scaler.pkl
-    model_files = []
-    for f in os.listdir(MODELS_FOLDER):
-        if f.endswith('.pkl') and not ('scaler' in f.lower()):
-            technical_name = os.path.splitext(f)[0]
-            display_name = get_model_display_name(technical_name)
-            model_files.append({
-                'technical_name': technical_name,
-                'display_name': display_name
-            })
-    
-    # Sort by display name for better user experience
-    model_files.sort(key=lambda x: x['display_name'])
-    
-    logging.info(f"Found {len(model_files)} available models")
-    return model_files
+    if not PYCARET_AVAILABLE:
+        raise ImportError("PyCaret is not installed or not available.")
+    from pycaret.regression import load_model as pc_load_model
+    # Remove .pkl extension if present for PyCaret compatibility
+    model_name = model_path
+    if model_name.endswith('.pkl'):
+        model_name = model_name[:-4]
+    return pc_load_model(model_name)
 
-def check_required_models() -> Dict[str, Any]:
+# --- Prepare Features for PyCaret Model ---
+def prepare_features_for_pycaret(features, model=None):
     """
-    Check for existing models in the models directory.
-    
+    Converts input features into a pandas DataFrame with correct columns/order.
+    Args:
+        features: numpy array or list-like
+        model: optional, can provide column names if present
     Returns:
-        Dict[str, Any]: Dictionary with model status and information
+        pd.DataFrame with proper columns/order
     """
-    ensure_MODELS_FOLDER()
-    
-    # Get all model files
-    existing_files = os.listdir(MODELS_FOLDER)
-    existing_models = [f for f in existing_files if f.endswith('.pkl')]
-    
-    # Check for at least one model and optionally a scaler
-    has_models = any(f for f in existing_models if not f.startswith('scaler'))
-    has_scaler = any(f for f in existing_models if f.startswith('scaler'))
-    
-    # Get model information with display names
-    found_models = []
-    for f in existing_models:
-        if not ('scaler' in f.lower()):
-            technical_name = os.path.splitext(f)[0]
-            display_name = get_model_display_name(technical_name)
-            found_models.append({
-                'technical_name': technical_name,
-                'display_name': display_name
-            })
-    
-    model_status = {
-        "models_available": has_models,
-        "scaler_available": has_scaler,
-        "found_models": found_models,
-        "technical_names": [model['technical_name'] for model in found_models]
-    }
-    
-    if has_models:
-        logging.info(f"Found models in '{MODELS_FOLDER}': {[model['display_name'] for model in found_models]}")
-    else:
-        logging.warning(f"No trained models found in '{MODELS_FOLDER}'")
-        logging.info("Please train and save models via PyCaret in your Jupyter notebook before using this app.")
-    
-    return model_status
+    if isinstance(features, pd.DataFrame):
+        return features
+    expected_columns = get_expected_feature_names_from_model(model)
+    features = np.array(features).reshape(1, -1)  # Ensure 2D
+    features_df = pd.DataFrame(features, columns=expected_columns)
+    return features_df
 
 def load_model(model_name: str) -> Optional[Any]:
     """
@@ -283,144 +182,18 @@ def load_scaler() -> Optional[Any]:
         logging.error(f"Error loading scaler '{scaler_files[0]}': {str(e)}")
         return None
 
-def get_expected_feature_names():
-    """
-    Get the expected feature names for the model.
-    Updated with the complete PyCaret trained model feature list.
-    """
-    return [
-        'project_prf_year_of_project',
-        'external_eef_industry_sector',
-        'external_eef_organisation_type',
-        'project_prf_application_type',
-        'project_prf_functional_size',
-        'project_prf_max_team_size',
-        'process_pmf_docs',
-        'tech_tf_tools_used',
-        'people_prf_personnel_changes',
-        'project_prf_application_group_business_application',
-        'project_prf_application_group_infrastructure_software',
-        'project_prf_application_group_mathematically_intensive_application',
-        'project_prf_application_group_real_time_application',
-        'project_prf_development_type_new_development',
-        'project_prf_development_type_re_development',
-        'tech_tf_development_platform_mr',
-        'tech_tf_development_platform_multi',
-        'tech_tf_development_platform_pc',
-        'tech_tf_development_platform_proprietary',
-        'tech_tf_language_type_4GL',
-        'tech_tf_language_type_5GL',
-        'tech_tf_primary_programming_language_abap',
-        'tech_tf_primary_programming_language*c*',
-        'tech_tf_primary_programming_language_c',
-        'tech_tf_primary_programming_language_java',
-        'tech_tf_primary_programming_language_javascript',
-        'tech_tf_primary_programming_language_oracle',
-        'tech_tf_primary_programming_language_pl_i',
-        'tech_tf_primary_programming_language_proprietary_agile_platform',
-        'project_prf_relative_size_l',
-        'project_prf_relative_size_m1',
-        'project_prf_relative_size_m2',
-        'project_prf_relative_size_s',
-        'project_prf_relative_size_xs',
-        'project_prf_relative_size_xxs',
-        'project_prf_team_size_group_2',
-        'project_prf_team_size_group_21_30',
-        'project_prf_team_size_group_3_4',
-        'project_prf_team_size_group_41_50',
-        'project_prf_team_size_group_5_8',
-        'project_prf_team_size_group_61_70',
-        'project_prf_team_size_group_9_14',
-        'project_prf_team_size_group_Missing',
-        'process_pmf_development_methodologies_agile_developmentiterative',
-        'process_pmf_development_methodologies_agile_developmentjoint_application_development_jadmultifunctional_teams',
-        'process_pmf_development_methodologies_agile_developmentpersonal_software_process_pspunified_process',
-        'process_pmf_development_methodologies_agile_developmentscrum',
-        'process_pmf_development_methodologies_agile_developmentunified_process',
-        'tech_tf_architecture_client_server',
-        'tech_tf_architecture_multi_tier_with_web_public_interface',
-        'tech_tf_architecture_stand_alone',
-        'tech_tf_client_server_no',
-        'tech_tf_client_server_yes',
-        'tech_tf_web_development_tech_tf_web_development',
-        'tech_tf_web_development_web',
-        'tech_tf_dbms_used_tech_tf_dbms_used',
-        'tech_tf_dbms_used_yes',
-        'project_prf_cost_currency_canadadollar',
-        'project_prf_cost_currency_europeaneuro'
-    ]
 
-
-def prepare_features_for_pycaret_from_csv(features_dict: dict) -> pd.DataFrame:
-    """
-    Prepare a prediction DataFrame with the exact columns expected by the model pipeline.
-    Missing columns will be filled with 0.
-
-    Args:
-        features_dict (dict): Input features as {column_name: value}
-
-    Returns:
-        pd.DataFrame: DataFrame with all expected columns, ready for prediction.
-    """
-    feature_cols_path = os.path.join(MODELS_FOLDER, FEATURE_COLS_FILE)
-    feature_names = pd.read_csv(feature_cols_path, header=None)[0].tolist()
-    # Fill in missing columns with 0
-    full_features = {col: features_dict.get(col, 0) for col in feature_names}
-    return pd.DataFrame([full_features])
-
-def prepare_features_for_pycaret(features_dict: dict, model=None) -> pd.DataFrame:
-    """
-    Prepare a prediction DataFrame with the exact columns expected by the model pipeline.
-    Missing columns will be filled with 0.
-
-    Args:
-        features_dict (dict): Input features as {column_name: value}
-
-    Returns:
-        pd.DataFrame: DataFrame with all expected columns, ready for prediction.
-    """
-    feature_names = get_expected_feature_names_from_model(model)
-    # Make sure the input dict has all required keys
-    row = {col: features_dict.get(col, 0) for col in feature_names}
-    features_df = pd.DataFrame([row])
-    # Ensure order and add any missing cols (paranoia)
-    features_df = align_features_to_model(features_df, feature_names)
-    return features_df
-
-def get_expected_feature_names_from_model(model=None) -> list:
-    """
-    Gets the expected feature names from a loaded model or falls back to CSV or hardcoded defaults.
-    """
-    # 1. Try to extract from model directly (best, ensures proper order)
+def get_expected_feature_names_from_model(model=None) -> List[str]:
+    # ... (keep the logic as you already have, but fallback to get_expected_feature_names)
     if model is not None:
         if hasattr(model, 'feature_names_in_'):
             return list(model.feature_names_in_)
-        # Some scikit-learn wrappers/transformers or PyCaret models may expose columns differently
         elif hasattr(model, 'X') and hasattr(model.X, 'columns'):
             return list(model.X.columns)
-        # Sometimes PyCaret pipelines have steps that expose feature names
         elif hasattr(model, 'named_steps'):
             for step in model.named_steps.values():
                 if hasattr(step, 'feature_names_in_'):
                     return list(step.feature_names_in_)
-
-    # 2. Fall back to CSV file (as in PyCaret export)
-    feature_cols_path = os.path.join(DATA_FOLDER, FEATURE_COLS_FILE)
-    if os.path.exists(feature_cols_path):
-        try:
-            # Try reading as a single-column CSV (common PyCaret export)
-            cols = pd.read_csv(feature_cols_path, header=None)[0].tolist()
-            if isinstance(cols[0], str):  # Confirm it's feature names, not numbers
-                return cols
-        except Exception:
-            try:
-                # Try reading CSV as DataFrame with headers
-                df = pd.read_csv(feature_cols_path)
-                return list(df.columns)
-            except Exception:
-                pass  # Both CSV reads failed
-
-    # 3. Fallback: Hardcoded complete list (order should match your model training)
     return get_expected_feature_names()
 
 def align_features_to_model(features_df: pd.DataFrame, expected_columns: list) -> pd.DataFrame:

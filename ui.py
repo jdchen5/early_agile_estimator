@@ -6,14 +6,6 @@
   see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
 """
 
-# ui.py
-"""
-- Launch the Streamlit App: Run streamlit run main.py and Use the 
-  "Check for required models" option to verify your models are detected properly. Should be only model allowed at one time.
-- Explore Additional Features: Save/load configurations for frequently used project settings, Use the what-if analysis to 
-  see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
-"""
-
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -32,150 +24,312 @@ def sidebar_inputs():
         st.title("Project Estimator")
         
         # Create tabs in the sidebar
-        tab1, tab2 = st.tabs(["Basic", "Advanced"])
+        tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
         
         with tab1:
             with st.form("estimation_form"):
                 st.header("Project Information")
                 
-                complexity = st.slider(
-                    "Project Complexity (1-5)", 
-                    min_value=1, 
-                    max_value=5, 
-                    value=3,
-                    help="Higher values indicate more complex projects"
+                # Basic project parameters
+                project_year = st.number_input(
+                    "Project Year", 
+                    min_value=2015, 
+                    max_value=2030, 
+                    value=2024,
+                    help="Year when the project is being developed"
                 )
                 
-                team_experience = st.slider(
-                    "Team Experience (1-5)", 
-                    min_value=1, 
-                    max_value=5, 
-                    value=3,
-                    help="Higher values indicate more experienced teams"
+                industry_sector = st.selectbox(
+                    "Industry Sector",
+                    options=["Banking", "Insurance", "Manufacturing", "Government", "Healthcare", "Telecommunications", "Other"],
+                    index=0,
+                    help="Industry sector of the organization"
                 )
                 
-                num_requirements = st.number_input(
-                    "Number of Requirements", 
-                    min_value=1, 
-                    max_value=500, 
-                    value=20,
-                    help="Total number of user stories or requirements"
+                organisation_type = st.selectbox(
+                    "Organisation Type",
+                    options=["Commercial", "Government", "Non-Profit", "Academic"],
+                    index=0,
+                    help="Type of organization developing the project"
                 )
                 
-                team_size = st.number_input(
-                    "Team Size", 
+                application_type = st.selectbox(
+                    "Application Type",
+                    options=["Management Information System", "Process Control", "Scientific", "Embedded", "Web Application", "Mobile Application"],
+                    index=0,
+                    help="Primary type of application being developed"
+                )
+                
+                functional_size = st.number_input(
+                    "Functional Size (Function Points)", 
+                    min_value=1, 
+                    max_value=10000, 
+                    value=100,
+                    help="Size of the application in function points"
+                )
+                
+                max_team_size = st.number_input(
+                    "Maximum Team Size", 
                     min_value=1, 
                     max_value=100, 
                     value=5,
-                    help="Number of full-time team members"
+                    help="Maximum number of people on the team during development"
                 )
                 
-                tech_complexity = st.slider(
-                    "Technology Stack Complexity (1-5)", 
-                    min_value=1, 
-                    max_value=5, 
-                    value=3,
-                    help="Higher values indicate more complex technology stack"
+                # Application group (radio buttons for mutually exclusive options)
+                st.subheader("Application Group")
+                application_group = st.radio(
+                    "Primary Application Category",
+                    options=["Business Application", "Infrastructure Software", "Mathematically Intensive", "Real-time Application"],
+                    index=0,
+                    help="Primary category that best describes your application"
+                )
+                
+                # Development type
+                development_type = st.radio(
+                    "Development Type",
+                    options=["New Development", "Re-development"],
+                    index=0,
+                    help="Whether this is new development or redevelopment of existing system"
+                )
+                
+                # Relative size
+                relative_size = st.selectbox(
+                    "Relative Project Size",
+                    options=["XXS (Extra Extra Small)", "XS (Extra Small)", "S (Small)", "M1 (Medium 1)", "M2 (Medium 2)", "L (Large)"],
+                    index=2,
+                    help="Relative size of the project compared to other projects in your organization"
                 )
 
-                st.header("Model Selection")
+        with tab2:
+            st.header("Technical Information")
+            
+            # Development platform
+            development_platform = st.selectbox(
+                "Development Platform",
+                options=["PC", "Multi-platform", "Mainframe (MR)", "Proprietary"],
+                index=0,
+                help="Primary development platform"
+            )
+            
+            # Programming language type
+            language_type = st.selectbox(
+                "Programming Language Type",
+                options=["3GL (Third Generation)", "4GL (Fourth Generation)", "5GL (Fifth Generation)"],
+                index=0,
+                help="Generation of primary programming language"
+            )
+            
+            # Primary programming language
+            primary_language = st.selectbox(
+                "Primary Programming Language",
+                options=["Java", "C", "C*", "JavaScript", "ABAP", "Oracle", "PL/I", "Proprietary Agile Platform"],
+                index=0,
+                help="Main programming language used in development"
+            )
+            
+            # Architecture
+            architecture = st.selectbox(
+                "System Architecture",
+                options=["Stand-alone", "Client-Server", "Multi-tier with Web Interface"],
+                index=1,
+                help="Primary system architecture"
+            )
+            
+            # Client-server
+            client_server = st.radio(
+                "Client-Server Architecture",
+                options=["Yes", "No"],
+                index=0,
+                help="Does the system use client-server architecture?"
+            )
+            
+            # Web development
+            web_development = st.radio(
+                "Web Development",
+                options=["Yes", "No"],
+                index=0,
+                help="Is this a web-based application?"
+            )
+            
+            # DBMS used
+            dbms_used = st.radio(
+                "Database Management System Used",
+                options=["Yes", "No"],
+                index=0,
+                help="Does the project use a database management system?"
+            )
+            
+            # Tools used
+            tools_used = st.slider(
+                "Development Tools Sophistication (1-5)", 
+                min_value=1, 
+                max_value=5, 
+                value=3,
+                help="Level of sophistication of development tools used"
+            )
+
+        with tab3:
+            st.header("Process & People")
+            
+            # Documentation
+            docs = st.slider(
+                "Documentation Level (1-5)", 
+                min_value=1, 
+                max_value=5, 
+                value=3,
+                help="Level of documentation required/produced"
+            )
+            
+            # Personnel changes
+            personnel_changes = st.slider(
+                "Personnel Changes (1-5)", 
+                min_value=1, 
+                max_value=5, 
+                value=2,
+                help="Expected level of personnel turnover during project"
+            )
+            
+            # Development methodology
+            development_methodology = st.selectbox(
+                "Development Methodology",
+                options=[
+                    "Agile Development/Iterative", 
+                    "Agile Development/Scrum",
+                    "Agile Development/JAD/Multifunctional Teams",
+                    "Agile Development/PSP/Unified Process",
+                    "Agile Development/Unified Process"
+                ],
+                index=1,
+                help="Primary development methodology used"
+            )
+            
+            # Team size group (automatically determined but can be overridden)
+            team_size_group_options = ["2", "3-4", "5-8", "9-14", "21-30", "41-50", "61-70", "Missing"]
+            
+            # Auto-determine team size group based on max_team_size
+            if max_team_size == 2:
+                default_team_group_idx = 0
+            elif 3 <= max_team_size <= 4:
+                default_team_group_idx = 1
+            elif 5 <= max_team_size <= 8:
+                default_team_group_idx = 2
+            elif 9 <= max_team_size <= 14:
+                default_team_group_idx = 3
+            elif 21 <= max_team_size <= 30:
+                default_team_group_idx = 4
+            elif 41 <= max_team_size <= 50:
+                default_team_group_idx = 5
+            elif 61 <= max_team_size <= 70:
+                default_team_group_idx = 6
+            else:
+                default_team_group_idx = 7  # Missing
+            
+            team_size_group = st.selectbox(
+                "Team Size Group",
+                options=team_size_group_options,
+                index=default_team_group_idx,
+                help="Categorical grouping of team size (auto-determined but can be overridden)"
+            )
+            
+            # Cost currency
+            cost_currency = st.selectbox(
+                "Cost Currency",
+                options=["US Dollar", "Canadian Dollar", "European Euro"],
+                index=0,
+                help="Currency used for project costing"
+            )
+            
+            st.header("Model Selection")
+            
+            # Check if we have any models available
+            if model_status["models_available"]:
+                # Get available models with display names
+                available_models = list_available_models()
                 
-                # Check if we have any models available
-                if model_status["models_available"]:
-                    # Get available models with display names
-                    available_models = list_available_models()
+                if available_models:
+                    # Create options mapping for selectbox (display_name -> technical_name)
+                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
                     
-                    if available_models:
-                        # Create options mapping for selectbox (display_name -> technical_name)
-                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                        
-                        # Select model using display names
-                        selected_display_name = st.selectbox(
-                            "Select Prediction Model", 
-                            options=list(model_options.keys()),
-                            help="Choose which trained model to use for estimation"
-                        )
-                        
-                        # Get the technical name for the selected display name
-                        selected_model = model_options[selected_display_name]
-                    else:
-                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
-                        selected_model = None
-                        selected_display_name = None
+                    # Select model using display names
+                    selected_display_name = st.selectbox(
+                        "Select Prediction Model", 
+                        options=list(model_options.keys()),
+                        help="Choose which trained model to use for estimation"
+                    )
+                    
+                    # Get the technical name for the selected display name
+                    selected_model = model_options[selected_display_name]
                 else:
-                    st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
+                    st.warning("No trained models found. Please add trained models to the 'models' directory.")
                     selected_model = None
                     selected_display_name = None
-                
-                # Buttons
-                col1, col2 = st.columns(2)
-                submit = col1.form_submit_button("Predict Man-Hours")
-                save_config = col2.form_submit_button("Save Config")
-        
-        with tab2:
-            st.header("Saved Configurations")
-            configs = load_saved_configurations()
+            else:
+                st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
+                selected_model = None
+                selected_display_name = None
             
-            if configs:
-                selected_config = st.selectbox(
-                    "Choose a saved configuration",
-                    options=list(configs.keys()),
-                    format_func=lambda x: f"{x} ({configs[x]['date']})"
-                )
-                
-                load_config = st.button("Load Selected Config")
-                if load_config and selected_config:
-                    st.session_state.config_to_load = selected_config
-                    st.rerun()
-            else:
-                st.info("No saved configurations found. You can save configurations in the Basic tab.")
-                
-            # Add model information
-            st.header("Model Information")
-            if model_status["models_available"]:
-                available_models = list_available_models()
-                model_display_names = [model['display_name'] for model in available_models]
-                st.success(f"Found {len(available_models)} trained models:")
-                for model in available_models:
-                    st.write(f"• {model['display_name']}")
-                
-                if model_status["scaler_available"]:
-                    st.info("Feature scaler is available for normalization.")
-                else:
-                    st.warning("No feature scaler found. Models will use raw feature values.")
-            else:
-                st.error("No trained models found. Please create sample models or add trained models to the 'models' directory.")
-                
-            # Option to view models folder
-            if st.button("Check for Required Models"):
-                st.session_state.check_models = True
+            # Buttons
+            col1, col2 = st.columns(2)
+            submit = col1.form_submit_button("Predict Man-Hours")
+            save_config = col2.form_submit_button("Save Config")
+        
+        # Additional tabs for configurations and model info
+        st.header("Saved Configurations")
+        configs = load_saved_configurations()
+        
+        if configs:
+            selected_config = st.selectbox(
+                "Choose a saved configuration",
+                options=list(configs.keys()),
+                format_func=lambda x: f"{x} ({configs[x]['date']})"
+            )
+            
+            load_config = st.button("Load Selected Config")
+            if load_config and selected_config:
+                st.session_state.config_to_load = selected_config
                 st.rerun()
+        else:
+            st.info("No saved configurations found. You can save configurations in the tabs above.")
+            
+        # Add model information
+        st.header("Model Information")
+        if model_status["models_available"]:
+            available_models = list_available_models()
+            model_display_names = [model['display_name'] for model in available_models]
+            st.success(f"Found {len(available_models)} trained models:")
+            for model in available_models:
+                st.write(f"• {model['display_name']}")
+            
+            if model_status["scaler_available"]:
+                st.info("Feature scaler is available for normalization.")
+            else:
+                st.warning("No feature scaler found. Models will use raw feature values.")
+        else:
+            st.error("No trained models found. Please create sample models or add trained models to the 'models' directory.")
+            
+        # Option to view models folder
+        if st.button("Check for Required Models"):
+            st.session_state.check_models = True
+            st.rerun()
+    
+    # Create feature dictionary for the model
+    user_inputs = create_feature_dict(
+        project_year, industry_sector, organisation_type, application_type,
+        functional_size, max_team_size, docs, tools_used, personnel_changes,
+        application_group, development_type, development_platform, language_type,
+        primary_language, relative_size, team_size_group, development_methodology,
+        architecture, client_server, web_development, dbms_used, cost_currency,
+        selected_model, submit
+    )
     
     # Handle loading saved configuration
     if hasattr(st.session_state, 'config_to_load'):
         config_name = st.session_state.config_to_load
         loaded_config = load_configuration(config_name)
         if loaded_config:
-            complexity = loaded_config.get('complexity', 3)
-            team_experience = loaded_config.get('team_experience', 3)
-            num_requirements = loaded_config.get('num_requirements', 20)
-            team_size = loaded_config.get('team_size', 5)
-            tech_complexity = loaded_config.get('tech_complexity', 3)
-            saved_model = loaded_config.get('selected_model')
-            
-            # Make sure the selected model is available
-            if model_status["models_available"]:
-                available_technical_names = [model['technical_name'] for model in list_available_models()]
-                if saved_model in available_technical_names:
-                    selected_model = saved_model
-                    selected_display_name = get_model_display_name(saved_model)
-                else:
-                    # Use first available model if saved model is not available
-                    available_models = list_available_models()
-                    if available_models:
-                        selected_model = available_models[0]['technical_name']
-                        selected_display_name = available_models[0]['display_name']
-                        st.warning(f"The model specified in the configuration is not available. Using {selected_display_name} instead.")
+            # Update user_inputs with loaded values
+            user_inputs.update(loaded_config)
             
             # Clear the session state to prevent reloading
             del st.session_state.config_to_load
@@ -204,15 +358,114 @@ def sidebar_inputs():
     
     # Handle saving configuration
     if save_config and selected_model:
-        save_current_configuration(
-            complexity, team_experience, num_requirements, 
-            team_size, tech_complexity, selected_model
-        )
+        save_current_configuration(user_inputs)
 
-    return complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model, submit
+    return user_inputs
 
-def save_current_configuration(complexity, team_experience, num_requirements, 
-                              team_size, tech_complexity, selected_model):
+def create_feature_dict(project_year, industry_sector, organisation_type, application_type,
+                       functional_size, max_team_size, docs, tools_used, personnel_changes,
+                       application_group, development_type, development_platform, language_type,
+                       primary_language, relative_size, team_size_group, development_methodology,
+                       architecture, client_server, web_development, dbms_used, cost_currency,
+                       selected_model, submit):
+    """Create a dictionary with all features required by the model."""
+    
+    # Initialize all features to 0 (for one-hot encoded features)
+    features = {
+        'project_prf_year_of_project': project_year,
+        'external_eef_industry_sector': industry_sector,
+        'external_eef_organisation_type': organisation_type,
+        'project_prf_application_type': application_type,
+        'project_prf_functional_size': functional_size,
+        'project_prf_max_team_size': max_team_size,
+        'process_pmf_docs': docs,
+        'tech_tf_tools_used': tools_used,
+        'people_prf_personnel_changes': personnel_changes,
+        
+        # Application group (one-hot encoded)
+        'project_prf_application_group_business_application': 1 if application_group == "Business Application" else 0,
+        'project_prf_application_group_infrastructure_software': 1 if application_group == "Infrastructure Software" else 0,
+        'project_prf_application_group_mathematically_intensive_application': 1 if application_group == "Mathematically Intensive" else 0,
+        'project_prf_application_group_real_time_application': 1 if application_group == "Real-time Application" else 0,
+        
+        # Development type (one-hot encoded)
+        'project_prf_development_type_new_development': 1 if development_type == "New Development" else 0,
+        'project_prf_development_type_re_development': 1 if development_type == "Re-development" else 0,
+        
+        # Development platform (one-hot encoded)
+        'tech_tf_development_platform_mr': 1 if development_platform == "Mainframe (MR)" else 0,
+        'tech_tf_development_platform_multi': 1 if development_platform == "Multi-platform" else 0,
+        'tech_tf_development_platform_pc': 1 if development_platform == "PC" else 0,
+        'tech_tf_development_platform_proprietary': 1 if development_platform == "Proprietary" else 0,
+        
+        # Language type (one-hot encoded)
+        'tech_tf_language_type_4GL': 1 if language_type == "4GL (Fourth Generation)" else 0,
+        'tech_tf_language_type_5GL': 1 if language_type == "5GL (Fifth Generation)" else 0,
+        
+        # Primary programming language (one-hot encoded)
+        'tech_tf_primary_programming_language_abap': 1 if primary_language == "ABAP" else 0,
+        'tech_tf_primary_programming_language*c*': 1 if primary_language == "C*" else 0,
+        'tech_tf_primary_programming_language_c': 1 if primary_language == "C" else 0,
+        'tech_tf_primary_programming_language_java': 1 if primary_language == "Java" else 0,
+        'tech_tf_primary_programming_language_javascript': 1 if primary_language == "JavaScript" else 0,
+        'tech_tf_primary_programming_language_oracle': 1 if primary_language == "Oracle" else 0,
+        'tech_tf_primary_programming_language_pl_i': 1 if primary_language == "PL/I" else 0,
+        'tech_tf_primary_programming_language_proprietary_agile_platform': 1 if primary_language == "Proprietary Agile Platform" else 0,
+        
+        # Relative size (one-hot encoded)
+        'project_prf_relative_size_l': 1 if relative_size.startswith("L") else 0,
+        'project_prf_relative_size_m1': 1 if relative_size.startswith("M1") else 0,
+        'project_prf_relative_size_m2': 1 if relative_size.startswith("M2") else 0,
+        'project_prf_relative_size_s': 1 if relative_size.startswith("S") else 0,
+        'project_prf_relative_size_xs': 1 if relative_size.startswith("XS") and not relative_size.startswith("XXS") else 0,
+        'project_prf_relative_size_xxs': 1 if relative_size.startswith("XXS") else 0,
+        
+        # Team size group (one-hot encoded)
+        'project_prf_team_size_group_2': 1 if team_size_group == "2" else 0,
+        'project_prf_team_size_group_21_30': 1 if team_size_group == "21-30" else 0,
+        'project_prf_team_size_group_3_4': 1 if team_size_group == "3-4" else 0,
+        'project_prf_team_size_group_41_50': 1 if team_size_group == "41-50" else 0,
+        'project_prf_team_size_group_5_8': 1 if team_size_group == "5-8" else 0,
+        'project_prf_team_size_group_61_70': 1 if team_size_group == "61-70" else 0,
+        'project_prf_team_size_group_9_14': 1 if team_size_group == "9-14" else 0,
+        'project_prf_team_size_group_Missing': 1 if team_size_group == "Missing" else 0,
+        
+        # Development methodologies (one-hot encoded)
+        'process_pmf_development_methodologies_agile_developmentiterative': 1 if development_methodology == "Agile Development/Iterative" else 0,
+        'process_pmf_development_methodologies_agile_developmentjoint_application_development_jadmultifunctional_teams': 1 if development_methodology == "Agile Development/JAD/Multifunctional Teams" else 0,
+        'process_pmf_development_methodologies_agile_developmentpersonal_software_process_pspunified_process': 1 if development_methodology == "Agile Development/PSP/Unified Process" else 0,
+        'process_pmf_development_methodologies_agile_developmentscrum': 1 if development_methodology == "Agile Development/Scrum" else 0,
+        'process_pmf_development_methodologies_agile_developmentunified_process': 1 if development_methodology == "Agile Development/Unified Process" else 0,
+        
+        # Architecture (one-hot encoded)
+        'tech_tf_architecture_client_server': 1 if architecture == "Client-Server" else 0,
+        'tech_tf_architecture_multi_tier_with_web_public_interface': 1 if architecture == "Multi-tier with Web Interface" else 0,
+        'tech_tf_architecture_stand_alone': 1 if architecture == "Stand-alone" else 0,
+        
+        # Client-server (one-hot encoded)
+        'tech_tf_client_server_no': 1 if client_server == "No" else 0,
+        'tech_tf_client_server_yes': 1 if client_server == "Yes" else 0,
+        
+        # Web development (one-hot encoded)
+        'tech_tf_web_development_tech_tf_web_development': 1 if web_development == "Yes" else 0,
+        'tech_tf_web_development_web': 1 if web_development == "Yes" else 0,
+        
+        # DBMS used (one-hot encoded)
+        'tech_tf_dbms_used_tech_tf_dbms_used': 1 if dbms_used == "Yes" else 0,
+        'tech_tf_dbms_used_yes': 1 if dbms_used == "Yes" else 0,
+        
+        # Cost currency (one-hot encoded)
+        'project_prf_cost_currency_canadadollar': 1 if cost_currency == "Canadian Dollar" else 0,
+        'project_prf_cost_currency_europeaneuro': 1 if cost_currency == "European Euro" else 0,
+        
+        # Model selection and submission
+        'selected_model': selected_model,
+        'submit': submit
+    }
+    
+    return features
+
+def save_current_configuration(user_inputs):
     """Save current configuration to a file."""
     config_name = st.text_input("Enter a name for this configuration:")
     
@@ -220,15 +473,10 @@ def save_current_configuration(complexity, team_experience, num_requirements,
         st.warning("Please enter a name for your configuration.")
         return
     
-    config = {
-        'complexity': complexity,
-        'team_experience': team_experience,
-        'num_requirements': num_requirements,
-        'team_size': team_size,
-        'tech_complexity': tech_complexity,
-        'selected_model': selected_model,  # Save technical name
-        'date': datetime.now().strftime("%Y-%m-%d %H:%M")
-    }
+    # Create a copy of user_inputs without the submit flag
+    config = user_inputs.copy()
+    config.pop('submit', None)  # Remove submit flag
+    config['date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     # Make sure the configs directory exists
     if not os.path.exists('configs'):
@@ -268,26 +516,29 @@ def load_configuration(config_name):
         st.error(f"Failed to load configuration '{config_name}'")
         return None
 
-def display_inputs(complexity, team_experience, num_requirements, team_size, tech_complexity, selected_model):
+def display_inputs(user_inputs, selected_model):
     """Display the input parameters in a formatted way."""
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.subheader("Input Parameters")
+        st.subheader("Input Parameters Summary")
         
-        # Create a more visually appealing display for inputs
-        input_df = pd.DataFrame({
-            "Parameter": ["Project Complexity", "Team Experience", "Number of Requirements", 
-                         "Team Size", "Technology Stack Complexity"],
-            "Value": [complexity, team_experience, num_requirements, team_size, tech_complexity],
-            "Description": [
-                "Higher value = more complex",
-                "Higher value = more experienced",
-                "Total count of requirements",
-                "Number of team members",
-                "Higher value = more complex tech"
-            ]
-        })
+        # Create a summary of key parameters
+        key_params = {
+            "Project Year": user_inputs.get('project_prf_year_of_project', 'N/A'),
+            "Functional Size": user_inputs.get('project_prf_functional_size', 'N/A'),
+            "Max Team Size": user_inputs.get('project_prf_max_team_size', 'N/A'),
+            "Industry Sector": user_inputs.get('external_eef_industry_sector', 'N/A'),
+            "Application Type": user_inputs.get('project_prf_application_type', 'N/A'),
+            "Documentation Level": user_inputs.get('process_pmf_docs', 'N/A'),
+            "Tools Used": user_inputs.get('tech_tf_tools_used', 'N/A'),
+            "Personnel Changes": user_inputs.get('people_prf_personnel_changes', 'N/A')
+        }
+        
+        # Create DataFrame for display
+        input_df = pd.DataFrame([
+            {"Parameter": k, "Value": v} for k, v in key_params.items()
+        ])
         
         # Format the table for better readability
         st.dataframe(input_df, use_container_width=True)
@@ -312,61 +563,75 @@ def show_feature_importance(selected_model, features_dict, st):
     if feature_importance is not None:
         st.subheader("Feature Importance")
         
-        # Get feature names from the features_dict keys
-        feature_names = list(features_dict.keys())
+        # Get feature names from the features_dict keys (exclude non-feature keys)
+        exclude_keys = {'selected_model', 'submit'}
+        feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
         
         # Map technical feature names to user-friendly names
         feature_name_mapping = {
-            "project_prf_complexity": "Project Complexity",
-            "project_prf_team_experience": "Team Experience",
-            "project_prf_num_requirements": "Number of Requirements",
-            "project_prf_max_team_size": "Team Size",
-            "tech_tf_tech_complexity": "Technology Stack Complexity"
+            "project_prf_year_of_project": "Project Year",
+            "project_prf_functional_size": "Functional Size",
+            "project_prf_max_team_size": "Max Team Size",
+            "external_eef_industry_sector": "Industry Sector",
+            "external_eef_organisation_type": "Organisation Type",
+            "project_prf_application_type": "Application Type",
+            "process_pmf_docs": "Documentation Level",
+            "tech_tf_tools_used": "Tools Used",
+            "people_prf_personnel_changes": "Personnel Changes",
+            "project_prf_application_group_business_application": "Business Application",
+            "project_prf_application_group_infrastructure_software": "Infrastructure Software",
+            "project_prf_development_type_new_development": "New Development",
+            "project_prf_development_type_re_development": "Re-development",
+            "tech_tf_development_platform_pc": "PC Platform",
+            "tech_tf_language_type_4GL": "4GL Language",
+            "tech_tf_primary_programming_language_java": "Java Language",
+            "project_prf_relative_size_m1": "Medium Size (M1)",
+            "process_pmf_development_methodologies_agile_developmentscrum": "Scrum Methodology"
         }
         
-        # Create friendly names list
-        friendly_names = [feature_name_mapping.get(name, name) for name in feature_names]
+        # Create friendly names list, keeping only top features
+        importance_data = []
+        for i, name in enumerate(feature_names[:min(len(feature_importance), 15)]):  # Show top 15 features
+            if i < len(feature_importance):
+                friendly_name = feature_name_mapping.get(name, name.replace('_', ' ').title())
+                importance_data.append({
+                    'Feature': friendly_name,
+                    'Importance': abs(feature_importance[i])
+                })
         
-        # Ensure we have the right number of importance values
-        if len(feature_importance) >= len(friendly_names):
-            importance_values = feature_importance[:len(friendly_names)]
+        if importance_data:
+            # Create a DataFrame for the feature importance values
+            importance_df = pd.DataFrame(importance_data)
+            
+            # Sort by importance
+            importance_df = importance_df.sort_values('Importance', ascending=False)
+            
+            # Create a horizontal bar chart
+            fig, ax = plt.subplots(figsize=(10, 8))
+            bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
+            
+            # Add value labels
+            for bar in bars:
+                width = bar.get_width()
+                if width > 0:  # Only add label if there's a value
+                    label_x_pos = width * 1.01
+                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
+                           va='center')
+            
+            ax.set_xlabel('Relative Importance')
+            ax.set_title(f'Top Feature Importance - {get_model_display_name(selected_model)}')
+            ax.grid(True, linestyle='--', alpha=0.3)
+            
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
+            
+            # Display the plot
+            st.pyplot(fig)
+            
+            # Display the data table
+            st.dataframe(importance_df.round(4), use_container_width=True)
         else:
-            # Pad with zeros if we have fewer importance values than features
-            importance_values = list(feature_importance) + [0] * (len(friendly_names) - len(feature_importance))
-        
-        # Create a DataFrame for the feature importance values
-        importance_df = pd.DataFrame({
-            'Feature': friendly_names,
-            'Importance': np.abs(importance_values)
-        })
-        
-        # Sort by importance
-        importance_df = importance_df.sort_values('Importance', ascending=False)
-        
-        # Create a horizontal bar chart
-        fig, ax = plt.subplots(figsize=(10, 6))
-        bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
-        
-        # Add value labels
-        for bar in bars:
-            width = bar.get_width()
-            if width > 0:  # Only add label if there's a value
-                label_x_pos = width * 1.01
-                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
-                       va='center')
-        
-        ax.set_xlabel('Relative Importance')
-        ax.set_title(f'Feature Importance - {get_model_display_name(selected_model)}')
-        ax.grid(True, linestyle='--', alpha=0.3)
-        
-        # Adjust layout to prevent label cutoff
-        plt.tight_layout()
-        
-        # Display the plot
-        st.pyplot(fig)
-        
-        # Display the data table
-        st.dataframe(importance_df.round(4), use_container_width=True)
+            st.info("No feature importance data available.")
     else:
         model_display_name = get_model_display_name(selected_model)
         st.info(f"Feature importance is not available for {model_display_name}. This might be because the model doesn't support feature importance or there was an error retrieving it.")
