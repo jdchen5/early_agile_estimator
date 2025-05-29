@@ -12,507 +12,254 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import os
+import yaml
 from datetime import datetime
-from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name, get_model_technical_name
+from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
+
+# --- Config Loader ---
+def load_feature_mapping_config(path="config/feature_mapping.yaml"):
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
+
+FEATURE_CONFIG = load_feature_mapping_config()
+
+# --- Sidebar and Form Logic ---
+def get_team_size_group(max_team_size):
+    if max_team_size == 2: return "2"
+    elif 3 <= max_team_size <= 4: return "3-4"
+    elif 5 <= max_team_size <= 8: return "5-8"
+    elif 9 <= max_team_size <= 14: return "9-14"
+    elif 21 <= max_team_size <= 30: return "21-30"
+    elif 41 <= max_team_size <= 50: return "41-50"
+    elif 61 <= max_team_size <= 70: return "61-70"
+    else: return "Missing"
 
 def sidebar_inputs():
-    """Create input form in the sidebar."""
-    # Check if we have any models available
     model_status = check_required_models()
-    
     with st.sidebar:
         st.title("Project Estimator")
-        
-        # Create tabs in the sidebar
         tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
-        
+
+        # --- Tab 1: Basic ---
         with tab1:
             with st.form("estimation_form"):
                 st.header("Project Information")
-                
-                # Basic project parameters
-                project_year = st.number_input(
-                    "Project Year", 
-                    min_value=2015, 
-                    max_value=2030, 
-                    value=2024,
-                    help="Year when the project is being developed"
-                )
-                
-                industry_sector = st.selectbox(
-                    "Industry Sector",
-                    options=["Banking", "Insurance", "Manufacturing", "Government", "Healthcare", "Telecommunications", "Other"],
-                    index=0,
-                    help="Industry sector of the organization"
-                )
-                
-                organisation_type = st.selectbox(
-                    "Organisation Type",
-                    options=["Commercial", "Government", "Non-Profit", "Academic"],
-                    index=0,
-                    help="Type of organization developing the project"
-                )
-                
-                application_type = st.selectbox(
-                    "Application Type",
-                    options=["Management Information System", "Process Control", "Scientific", "Embedded", "Web Application", "Mobile Application"],
-                    index=0,
-                    help="Primary type of application being developed"
-                )
-                
-                functional_size = st.number_input(
-                    "Functional Size (Function Points)", 
-                    min_value=1, 
-                    max_value=10000, 
-                    value=100,
-                    help="Size of the application in function points"
-                )
-                
-                max_team_size = st.number_input(
-                    "Maximum Team Size", 
-                    min_value=1, 
-                    max_value=100, 
-                    value=5,
-                    help="Maximum number of people on the team during development"
-                )
-                
-                # Application group (radio buttons for mutually exclusive options)
+                project_year = st.number_input("Project Year", 2015, 2030, 2024)
+                industry_sector = st.selectbox("Industry Sector",
+                    FEATURE_CONFIG["categorical_features"]["external_eef_industry_sector"]["options"])
+                organisation_type = st.selectbox("Organisation Type",
+                    FEATURE_CONFIG["categorical_features"]["external_eef_organisation_type"]["options"])
+                application_type = st.selectbox("Application Type",
+                    FEATURE_CONFIG["categorical_features"]["project_prf_application_type"]["options"])
+                functional_size = st.number_input("Functional Size (Function Points)", 1, 10000, 100)
+                max_team_size = st.number_input("Maximum Team Size", 1, 100, 5)
                 st.subheader("Application Group")
-                application_group = st.radio(
-                    "Primary Application Category",
-                    options=["Business Application", "Infrastructure Software", "Mathematically Intensive", "Real-time Application"],
-                    index=0,
-                    help="Primary category that best describes your application"
-                )
-                
-                # Development type
-                development_type = st.radio(
-                    "Development Type",
-                    options=["New Development", "Re-development"],
-                    index=0,
-                    help="Whether this is new development or redevelopment of existing system"
-                )
-                
-                # Relative size
-                relative_size = st.selectbox(
-                    "Relative Project Size",
-                    options=["XXS (Extra Extra Small)", "XS (Extra Small)", "S (Small)", "M1 (Medium 1)", "M2 (Medium 2)", "L (Large)"],
-                    index=2,
-                    help="Relative size of the project compared to other projects in your organization"
-                )
+                application_group = st.radio("Primary Application Category",
+                    list(FEATURE_CONFIG["one_hot_features"]["application_group"]["mapping"].keys()))
+                development_type = st.radio("Development Type",
+                    list(FEATURE_CONFIG["one_hot_features"]["development_type"]["mapping"].keys()))
+                relative_size = st.selectbox("Relative Project Size",
+                    list(FEATURE_CONFIG["one_hot_features"]["relative_size"]["mapping"].keys()), 2)
 
+        # --- Tab 2: Technical ---
         with tab2:
             st.header("Technical Information")
-            
-            # Development platform
-            development_platform = st.selectbox(
-                "Development Platform",
-                options=["PC", "Multi-platform", "Mainframe (MR)", "Proprietary"],
-                index=0,
-                help="Primary development platform"
-            )
-            
-            # Programming language type
-            language_type = st.selectbox(
-                "Programming Language Type",
-                options=["3GL (Third Generation)", "4GL (Fourth Generation)", "5GL (Fifth Generation)"],
-                index=0,
-                help="Generation of primary programming language"
-            )
-            
-            # Primary programming language
-            primary_language = st.selectbox(
-                "Primary Programming Language",
-                options=["Java", "C", "C*", "JavaScript", "ABAP", "Oracle", "PL/I", "Proprietary Agile Platform"],
-                index=0,
-                help="Main programming language used in development"
-            )
-            
-            # Architecture
-            architecture = st.selectbox(
-                "System Architecture",
-                options=["Stand-alone", "Client-Server", "Multi-tier with Web Interface"],
-                index=1,
-                help="Primary system architecture"
-            )
-            
-            # Client-server
-            client_server = st.radio(
-                "Client-Server Architecture",
-                options=["Yes", "No"],
-                index=0,
-                help="Does the system use client-server architecture?"
-            )
-            
-            # Web development
-            web_development = st.radio(
-                "Web Development",
-                options=["Yes", "No"],
-                index=0,
-                help="Is this a web-based application?"
-            )
-            
-            # DBMS used
-            dbms_used = st.radio(
-                "Database Management System Used",
-                options=["Yes", "No"],
-                index=0,
-                help="Does the project use a database management system?"
-            )
-            
-            # Tools used
-            tools_used = st.slider(
-                "Development Tools Sophistication (1-5)", 
-                min_value=1, 
-                max_value=5, 
-                value=3,
-                help="Level of sophistication of development tools used"
-            )
+            development_platform = st.selectbox("Development Platform",
+                list(FEATURE_CONFIG["one_hot_features"]["development_platform"]["mapping"].keys()))
+            language_type = st.selectbox("Programming Language Type",
+                ["3GL (Third Generation)"] +
+                list(FEATURE_CONFIG["one_hot_features"]["language_type"]["mapping"].keys()))
+            primary_language = st.selectbox("Primary Programming Language",
+                list(FEATURE_CONFIG["one_hot_features"]["primary_language"]["mapping"].keys()))
+            architecture = st.selectbox("System Architecture",
+                list(FEATURE_CONFIG["one_hot_features"]["architecture"]["mapping"].keys()), 1)
+            client_server = st.radio("Client-Server Architecture",
+                list(FEATURE_CONFIG["one_hot_features"]["client_server"]["mapping"].keys()))
+            web_development = st.radio("Web Development",
+                list(FEATURE_CONFIG["one_hot_features"]["web_development"]["mapping"].keys()))
+            dbms_used = st.radio("Database Management System Used",
+                list(FEATURE_CONFIG["one_hot_features"]["dbms_used"]["mapping"].keys()))
+            tools_used = st.slider("Development Tools Sophistication (1-5)", 1, 5, 3)
 
+        # --- Tab 3: Process & People ---
         with tab3:
             st.header("Process & People")
-            
-            # Documentation
-            docs = st.slider(
-                "Documentation Level (1-5)", 
-                min_value=1, 
-                max_value=5, 
-                value=3,
-                help="Level of documentation required/produced"
-            )
-            
-            # Personnel changes
-            personnel_changes = st.slider(
-                "Personnel Changes (1-5)", 
-                min_value=1, 
-                max_value=5, 
-                value=2,
-                help="Expected level of personnel turnover during project"
-            )
-            
-            # Development methodology
-            development_methodology = st.selectbox(
-                "Development Methodology",
-                options=[
-                    "Agile Development/Iterative", 
-                    "Agile Development/Scrum",
-                    "Agile Development/JAD/Multifunctional Teams",
-                    "Agile Development/PSP/Unified Process",
-                    "Agile Development/Unified Process"
-                ],
-                index=1,
-                help="Primary development methodology used"
-            )
-            
-            # Team size group (automatically determined but can be overridden)
-            team_size_group_options = ["2", "3-4", "5-8", "9-14", "21-30", "41-50", "61-70", "Missing"]
-            
-            # Auto-determine team size group based on max_team_size
-            if max_team_size == 2:
-                default_team_group_idx = 0
-            elif 3 <= max_team_size <= 4:
-                default_team_group_idx = 1
-            elif 5 <= max_team_size <= 8:
-                default_team_group_idx = 2
-            elif 9 <= max_team_size <= 14:
-                default_team_group_idx = 3
-            elif 21 <= max_team_size <= 30:
-                default_team_group_idx = 4
-            elif 41 <= max_team_size <= 50:
-                default_team_group_idx = 5
-            elif 61 <= max_team_size <= 70:
-                default_team_group_idx = 6
-            else:
-                default_team_group_idx = 7  # Missing
-            
-            team_size_group = st.selectbox(
-                "Team Size Group",
-                options=team_size_group_options,
-                index=default_team_group_idx,
-                help="Categorical grouping of team size (auto-determined but can be overridden)"
-            )
-            
-            # Cost currency
-            cost_currency = st.selectbox(
-                "Cost Currency",
-                options=["US Dollar", "Canadian Dollar", "European Euro"],
-                index=0,
-                help="Currency used for project costing"
-            )
-            
+            docs = st.slider("Documentation Level (1-5)", 1, 5, 3)
+            personnel_changes = st.slider("Personnel Changes (1-5)", 1, 5, 2)
+            development_methodology = st.selectbox("Development Methodology",
+                list(FEATURE_CONFIG["special_cases"]["development_methodology"]["mapping"].keys()))
+            team_size_group = st.selectbox("Team Size Group",
+                FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
+                index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
+            cost_currency = st.selectbox("Cost Currency",
+                list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
             st.header("Model Selection")
-            
-            # Check if we have any models available
+            selected_model = None
+            selected_display_name = None
             if model_status["models_available"]:
-                # Get available models with display names
                 available_models = list_available_models()
-                
                 if available_models:
-                    # Create options mapping for selectbox (display_name -> technical_name)
                     model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                    
-                    # Select model using display names
-                    selected_display_name = st.selectbox(
-                        "Select Prediction Model", 
-                        options=list(model_options.keys()),
-                        help="Choose which trained model to use for estimation"
-                    )
-                    
-                    # Get the technical name for the selected display name
+                    selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
                     selected_model = model_options[selected_display_name]
                 else:
                     st.warning("No trained models found. Please add trained models to the 'models' directory.")
-                    selected_model = None
-                    selected_display_name = None
             else:
-                st.warning("No trained models found. Please create sample models or add trained models to the 'models' directory.")
-                selected_model = None
-                selected_display_name = None
-            
-            # Buttons
+                st.warning("No trained models found. Please create or add trained models.")
             col1, col2 = st.columns(2)
             submit = col1.form_submit_button("Predict Man-Hours")
             save_config = col2.form_submit_button("Save Config")
-        
-        # Additional tabs for configurations and model info
+
+        # --- Save raw inputs in a dict for config-driven feature mapping ---
+        user_inputs = dict(
+            project_prf_year_of_project=project_year,
+            external_eef_industry_sector=industry_sector,
+            external_eef_organisation_type=organisation_type,
+            project_prf_application_type=application_type,
+            project_prf_functional_size=functional_size,
+            project_prf_max_team_size=max_team_size,
+            process_pmf_docs=docs,
+            tech_tf_tools_used=tools_used,
+            people_prf_personnel_changes=personnel_changes,
+            application_group=application_group,
+            development_type=development_type,
+            development_platform=development_platform,
+            language_type=language_type,
+            primary_language=primary_language,
+            relative_size=relative_size,
+            team_size_group=team_size_group,
+            development_methodology=development_methodology,
+            architecture=architecture,
+            client_server=client_server,
+            web_development=web_development,
+            dbms_used=dbms_used,
+            cost_currency=cost_currency,
+            selected_model=selected_model,
+            submit=submit
+        )
+
+        # Config loading/saving (as before)
         st.header("Saved Configurations")
         configs = load_saved_configurations()
-        
         if configs:
-            selected_config = st.selectbox(
-                "Choose a saved configuration",
-                options=list(configs.keys()),
-                format_func=lambda x: f"{x} ({configs[x]['date']})"
-            )
-            
+            selected_config = st.selectbox("Choose a saved configuration", list(configs.keys()),
+                                           format_func=lambda x: f"{x} ({configs[x]['date']})")
             load_config = st.button("Load Selected Config")
             if load_config and selected_config:
                 st.session_state.config_to_load = selected_config
                 st.rerun()
         else:
-            st.info("No saved configurations found. You can save configurations in the tabs above.")
-            
-        # Add model information
+            st.info("No saved configurations found. You can save configurations above.")
+
         st.header("Model Information")
         if model_status["models_available"]:
             available_models = list_available_models()
-            model_display_names = [model['display_name'] for model in available_models]
             st.success(f"Found {len(available_models)} trained models:")
             for model in available_models:
                 st.write(f"• {model['display_name']}")
-            
-            if model_status["scaler_available"]:
-                st.info("Feature scaler is available for normalization.")
-            else:
-                st.warning("No feature scaler found. Models will use raw feature values.")
+            st.info("Feature scaler is available for normalization." if model_status["scaler_available"] else
+                    "No feature scaler found. Models will use raw feature values.")
         else:
-            st.error("No trained models found. Please create sample models or add trained models to the 'models' directory.")
-            
-        # Option to view models folder
+            st.error("No trained models found. Please create or add trained models.")
+
         if st.button("Check for Required Models"):
             st.session_state.check_models = True
             st.rerun()
-    
-    # Create feature dictionary for the model
-    user_inputs = create_feature_dict(
-        project_year, industry_sector, organisation_type, application_type,
-        functional_size, max_team_size, docs, tools_used, personnel_changes,
-        application_group, development_type, development_platform, language_type,
-        primary_language, relative_size, team_size_group, development_methodology,
-        architecture, client_server, web_development, dbms_used, cost_currency,
-        selected_model, submit
-    )
-    
-    # Handle loading saved configuration
-    if hasattr(st.session_state, 'config_to_load'):
-        config_name = st.session_state.config_to_load
-        loaded_config = load_configuration(config_name)
-        if loaded_config:
-            # Update user_inputs with loaded values
-            user_inputs.update(loaded_config)
-            
-            # Clear the session state to prevent reloading
-            del st.session_state.config_to_load
-            
-            # Show success message
-            st.success(f"Configuration '{config_name}' loaded successfully!")
-    
-    # Check if models should be displayed
-    if hasattr(st.session_state, 'check_models'):
-        st.subheader("Available Models")
-        if model_status["models_available"]:
-            available_models = list_available_models()
-            for model in available_models:
-                st.write(f"✅ {model['display_name']} ({model['technical_name']})")
-        else:
-            st.error("No models found in the 'models' directory.")
-        
-        # Display scaler information
-        if model_status["scaler_available"]:
-            st.write("✅ Feature scaler available")
-        else:
-            st.write("❌ No feature scaler found")
-        
-        # Remove flag from session state
-        del st.session_state.check_models
-    
-    # Handle saving configuration
-    if save_config and selected_model:
-        save_current_configuration(user_inputs)
 
-    return user_inputs
+        # Config handling (save, load, model check)
+        if hasattr(st.session_state, 'config_to_load'):
+            config_name = st.session_state.config_to_load
+            loaded_config = load_configuration(config_name)
+            if loaded_config:
+                user_inputs.update(loaded_config)
+                del st.session_state.config_to_load
+                st.success(f"Configuration '{config_name}' loaded successfully!")
 
-def create_feature_dict(project_year, industry_sector, organisation_type, application_type,
-                       functional_size, max_team_size, docs, tools_used, personnel_changes,
-                       application_group, development_type, development_platform, language_type,
-                       primary_language, relative_size, team_size_group, development_methodology,
-                       architecture, client_server, web_development, dbms_used, cost_currency,
-                       selected_model, submit):
-    """Create a dictionary with all features required by the model."""
-    
-    # Initialize all features to 0 (for one-hot encoded features)
-    features = {
-        'project_prf_year_of_project': project_year,
-        'external_eef_industry_sector': industry_sector,
-        'external_eef_organisation_type': organisation_type,
-        'project_prf_application_type': application_type,
-        'project_prf_functional_size': functional_size,
-        'project_prf_max_team_size': max_team_size,
-        'process_pmf_docs': docs,
-        'tech_tf_tools_used': tools_used,
-        'people_prf_personnel_changes': personnel_changes,
-        
-        # Application group (one-hot encoded)
-        'project_prf_application_group_business_application': 1 if application_group == "Business Application" else 0,
-        'project_prf_application_group_infrastructure_software': 1 if application_group == "Infrastructure Software" else 0,
-        'project_prf_application_group_mathematically_intensive_application': 1 if application_group == "Mathematically Intensive" else 0,
-        'project_prf_application_group_real_time_application': 1 if application_group == "Real-time Application" else 0,
-        
-        # Development type (one-hot encoded)
-        'project_prf_development_type_new_development': 1 if development_type == "New Development" else 0,
-        'project_prf_development_type_re_development': 1 if development_type == "Re-development" else 0,
-        
-        # Development platform (one-hot encoded)
-        'tech_tf_development_platform_mr': 1 if development_platform == "Mainframe (MR)" else 0,
-        'tech_tf_development_platform_multi': 1 if development_platform == "Multi-platform" else 0,
-        'tech_tf_development_platform_pc': 1 if development_platform == "PC" else 0,
-        'tech_tf_development_platform_proprietary': 1 if development_platform == "Proprietary" else 0,
-        
-        # Language type (one-hot encoded)
-        'tech_tf_language_type_4GL': 1 if language_type == "4GL (Fourth Generation)" else 0,
-        'tech_tf_language_type_5GL': 1 if language_type == "5GL (Fifth Generation)" else 0,
-        
-        # Primary programming language (one-hot encoded)
-        'tech_tf_primary_programming_language_abap': 1 if primary_language == "ABAP" else 0,
-        'tech_tf_primary_programming_language*c*': 1 if primary_language == "C*" else 0,
-        'tech_tf_primary_programming_language_c': 1 if primary_language == "C" else 0,
-        'tech_tf_primary_programming_language_java': 1 if primary_language == "Java" else 0,
-        'tech_tf_primary_programming_language_javascript': 1 if primary_language == "JavaScript" else 0,
-        'tech_tf_primary_programming_language_oracle': 1 if primary_language == "Oracle" else 0,
-        'tech_tf_primary_programming_language_pl_i': 1 if primary_language == "PL/I" else 0,
-        'tech_tf_primary_programming_language_proprietary_agile_platform': 1 if primary_language == "Proprietary Agile Platform" else 0,
-        
-        # Relative size (one-hot encoded)
-        'project_prf_relative_size_l': 1 if relative_size.startswith("L") else 0,
-        'project_prf_relative_size_m1': 1 if relative_size.startswith("M1") else 0,
-        'project_prf_relative_size_m2': 1 if relative_size.startswith("M2") else 0,
-        'project_prf_relative_size_s': 1 if relative_size.startswith("S") else 0,
-        'project_prf_relative_size_xs': 1 if relative_size.startswith("XS") and not relative_size.startswith("XXS") else 0,
-        'project_prf_relative_size_xxs': 1 if relative_size.startswith("XXS") else 0,
-        
-        # Team size group (one-hot encoded)
-        'project_prf_team_size_group_2': 1 if team_size_group == "2" else 0,
-        'project_prf_team_size_group_21_30': 1 if team_size_group == "21-30" else 0,
-        'project_prf_team_size_group_3_4': 1 if team_size_group == "3-4" else 0,
-        'project_prf_team_size_group_41_50': 1 if team_size_group == "41-50" else 0,
-        'project_prf_team_size_group_5_8': 1 if team_size_group == "5-8" else 0,
-        'project_prf_team_size_group_61_70': 1 if team_size_group == "61-70" else 0,
-        'project_prf_team_size_group_9_14': 1 if team_size_group == "9-14" else 0,
-        'project_prf_team_size_group_Missing': 1 if team_size_group == "Missing" else 0,
-        
-        # Development methodologies (one-hot encoded)
-        'process_pmf_development_methodologies_agile_developmentiterative': 1 if development_methodology == "Agile Development/Iterative" else 0,
-        'process_pmf_development_methodologies_agile_developmentjoint_application_development_jadmultifunctional_teams': 1 if development_methodology == "Agile Development/JAD/Multifunctional Teams" else 0,
-        'process_pmf_development_methodologies_agile_developmentpersonal_software_process_pspunified_process': 1 if development_methodology == "Agile Development/PSP/Unified Process" else 0,
-        'process_pmf_development_methodologies_agile_developmentscrum': 1 if development_methodology == "Agile Development/Scrum" else 0,
-        'process_pmf_development_methodologies_agile_developmentunified_process': 1 if development_methodology == "Agile Development/Unified Process" else 0,
-        
-        # Architecture (one-hot encoded)
-        'tech_tf_architecture_client_server': 1 if architecture == "Client-Server" else 0,
-        'tech_tf_architecture_multi_tier_with_web_public_interface': 1 if architecture == "Multi-tier with Web Interface" else 0,
-        'tech_tf_architecture_stand_alone': 1 if architecture == "Stand-alone" else 0,
-        
-        # Client-server (one-hot encoded)
-        'tech_tf_client_server_no': 1 if client_server == "No" else 0,
-        'tech_tf_client_server_yes': 1 if client_server == "Yes" else 0,
-        
-        # Web development (one-hot encoded)
-        'tech_tf_web_development_tech_tf_web_development': 1 if web_development == "Yes" else 0,
-        'tech_tf_web_development_web': 1 if web_development == "Yes" else 0,
-        
-        # DBMS used (one-hot encoded)
-        'tech_tf_dbms_used_tech_tf_dbms_used': 1 if dbms_used == "Yes" else 0,
-        'tech_tf_dbms_used_yes': 1 if dbms_used == "Yes" else 0,
-        
-        # Cost currency (one-hot encoded)
-        'project_prf_cost_currency_canadadollar': 1 if cost_currency == "Canadian Dollar" else 0,
-        'project_prf_cost_currency_europeaneuro': 1 if cost_currency == "European Euro" else 0,
-        
-        # Model selection and submission
-        'selected_model': selected_model,
-        'submit': submit
-    }
-    
+        if hasattr(st.session_state, 'check_models'):
+            st.subheader("Available Models")
+            if model_status["models_available"]:
+                for model in list_available_models():
+                    st.write(f"✅ {model['display_name']} ({model['technical_name']})")
+            else:
+                st.error("No models found in the 'models' directory.")
+            st.write("✅ Feature scaler available" if model_status["scaler_available"] else "❌ No feature scaler found")
+            del st.session_state.check_models
+
+        if save_config and selected_model:
+            save_current_configuration(user_inputs)
+
+    return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
+
+# --- Config-driven feature dict creation ---
+def create_feature_dict_from_config(user_inputs, config):
+    features = {}
+    # Numeric features
+    for key in config.get("numeric_features", []):
+        features[key] = user_inputs.get(key, 0)
+
+    # Categorical features (use value as-is)
+    for key, meta in config.get("categorical_features", {}).items():
+        features[key] = user_inputs.get(key, "")
+
+    # One-hot features
+    for group, mapping in config.get("one_hot_features", {}).items():
+        input_value = user_inputs.get(mapping["input_key"], "")
+        for label, feat_key in mapping["mapping"].items():
+            features[feat_key] = int(input_value == label)
+
+    # Special cases (e.g. team_size_group)
+    for group, spec in config.get("special_cases", {}).items():
+        input_value = user_inputs.get(spec["input_key"], "")
+        # mapping (one-hot)
+        if "mapping" in spec:
+            for label, feat_key in spec["mapping"].items():
+                features[feat_key] = int(input_value == label)
+        # output_keys (team_size_group)
+        if "output_keys" in spec:
+            for label, feat_key in spec["output_keys"].items():
+                features[feat_key] = int(input_value == label)
+
+    features["selected_model"] = user_inputs.get("selected_model")
+    features["submit"] = user_inputs.get("submit", False)
     return features
 
+# --- Config/State Save-Load Logic ---
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def save_current_configuration(user_inputs):
-    """Save current configuration to a file."""
     config_name = st.text_input("Enter a name for this configuration:")
-    
     if not config_name:
         st.warning("Please enter a name for your configuration.")
         return
-    
-    # Create a copy of user_inputs without the submit flag
     config = user_inputs.copy()
-    config.pop('submit', None)  # Remove submit flag
+    config.pop('submit', None)
     config['date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
-    
-    # Make sure the configs directory exists
-    if not os.path.exists('configs'):
-        os.makedirs('configs')
-    
-    # Save to file
+    ensure_dir('configs')
     with open(f'configs/{config_name}.json', 'w') as f:
         json.dump(config, f)
-    
     st.success(f"Configuration '{config_name}' saved successfully!")
 
 def load_saved_configurations():
-    """Load all saved configurations."""
     configs = {}
-    
     if not os.path.exists('configs'):
         return configs
-    
     for filename in os.listdir('configs'):
         if filename.endswith('.json'):
             config_name = os.path.splitext(filename)[0]
             try:
                 with open(f'configs/{filename}', 'r') as f:
-                    config = json.load(f)
-                configs[config_name] = config
-            except:
+                    configs[config_name] = json.load(f)
+            except Exception:
                 pass
-    
     return configs
 
 def load_configuration(config_name):
-    """Load a specific configuration by name."""
     try:
         with open(f'configs/{config_name}.json', 'r') as f:
             return json.load(f)
-    except:
+    except Exception:
         st.error(f"Failed to load configuration '{config_name}'")
         return None
 
