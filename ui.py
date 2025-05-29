@@ -16,6 +16,23 @@ import yaml
 from datetime import datetime
 from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
 
+# --- Reduce vertical gap between fields in sidebar forms ---
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] .stForm .stFormItem, 
+div[data-testid="stForm"] > div > div {
+    margin-bottom: 0.2rem !important;
+    padding-bottom: 0 !important;
+}
+section[data-testid="stSidebar"] .stForm label, 
+section[data-testid="stSidebar"] .stForm .stRadio, 
+section[data-testid="stSidebar"] .stForm .stSelectbox, 
+section[data-testid="stSidebar"] .stForm .stNumberInput {
+    margin-bottom: 0.1rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # --- Config Loader ---
 def load_feature_mapping_config(path="config/feature_mapping.yaml"):
     with open(path, "r") as f:
@@ -89,7 +106,7 @@ def sidebar_inputs():
                     index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
                 cost_currency = st.selectbox("Cost Currency",
                     list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
-        
+
             # AFTER all tabs, always visible:
             st.markdown("---")
             st.header("Model Selection")
