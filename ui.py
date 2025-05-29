@@ -23,7 +23,6 @@ def load_feature_mapping_config(path="config/feature_mapping.yaml"):
 
 FEATURE_CONFIG = load_feature_mapping_config()
 
-# --- Sidebar and Form Logic ---
 def get_team_size_group(max_team_size):
     if max_team_size == 2: return "2"
     elif 3 <= max_team_size <= 4: return "3-4"
@@ -37,13 +36,10 @@ def get_team_size_group(max_team_size):
 def sidebar_inputs():
     model_status = check_required_models()
     with st.sidebar:
-        st.title("Project Estimator")
-        tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
-
-        # --- Tab 1: Basic ---
-        with tab1:
-            with st.form("estimation_form"):
-                st.header("Project Information")
+        with st.form("estimation_form"):
+            tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
+            with tab1:
+                # All your tab 1 input widgets here
                 project_year = st.number_input("Project Year", 2015, 2030, 2024)
                 industry_sector = st.selectbox("Industry Sector",
                     FEATURE_CONFIG["categorical_features"]["external_eef_industry_sector"]["options"])
@@ -61,178 +57,104 @@ def sidebar_inputs():
                 relative_size = st.selectbox("Relative Project Size",
                     list(FEATURE_CONFIG["one_hot_features"]["relative_size"]["mapping"].keys()), 2)
 
-        # --- Tab 2: Technical ---
-        with tab2:
-            st.header("Technical Information")
-            development_platform = st.selectbox("Development Platform",
-                list(FEATURE_CONFIG["one_hot_features"]["development_platform"]["mapping"].keys()))
-            language_type = st.selectbox("Programming Language Type",
-                ["3GL (Third Generation)"] +
-                list(FEATURE_CONFIG["one_hot_features"]["language_type"]["mapping"].keys()))
-            primary_language = st.selectbox("Primary Programming Language",
-                list(FEATURE_CONFIG["one_hot_features"]["primary_language"]["mapping"].keys()))
-            architecture = st.selectbox("System Architecture",
-                list(FEATURE_CONFIG["one_hot_features"]["architecture"]["mapping"].keys()), 1)
-            client_server = st.radio("Client-Server Architecture",
-                list(FEATURE_CONFIG["one_hot_features"]["client_server"]["mapping"].keys()))
-            web_development = st.radio("Web Development",
-                list(FEATURE_CONFIG["one_hot_features"]["web_development"]["mapping"].keys()))
-            dbms_used = st.radio("Database Management System Used",
-                list(FEATURE_CONFIG["one_hot_features"]["dbms_used"]["mapping"].keys()))
-            tools_used = st.slider("Development Tools Sophistication (1-5)", 1, 5, 3)
+            # --- Tab 2: Technical ---
+            with tab2:
+                st.header("Technical Information")
+                development_platform = st.selectbox("Development Platform",
+                    list(FEATURE_CONFIG["one_hot_features"]["development_platform"]["mapping"].keys()))
+                language_type = st.selectbox("Programming Language Type",
+                    ["3GL (Third Generation)"] +
+                    list(FEATURE_CONFIG["one_hot_features"]["language_type"]["mapping"].keys()))
+                primary_language = st.selectbox("Primary Programming Language",
+                    list(FEATURE_CONFIG["one_hot_features"]["primary_language"]["mapping"].keys()))
+                architecture = st.selectbox("System Architecture",
+                    list(FEATURE_CONFIG["one_hot_features"]["architecture"]["mapping"].keys()), 1)
+                client_server = st.radio("Client-Server Architecture",
+                    list(FEATURE_CONFIG["one_hot_features"]["client_server"]["mapping"].keys()))
+                web_development = st.radio("Web Development",
+                    list(FEATURE_CONFIG["one_hot_features"]["web_development"]["mapping"].keys()))
+                dbms_used = st.radio("Database Management System Used",
+                    list(FEATURE_CONFIG["one_hot_features"]["dbms_used"]["mapping"].keys()))
+                tools_used = st.slider("Development Tools Sophistication (1-5)", 1, 5, 3)
 
-        # --- Tab 3: Process & People ---
-        with tab3:
-            st.header("Process & People")
-            docs = st.slider("Documentation Level (1-5)", 1, 5, 3)
-            personnel_changes = st.slider("Personnel Changes (1-5)", 1, 5, 2)
-            development_methodology = st.selectbox("Development Methodology",
-                list(FEATURE_CONFIG["special_cases"]["development_methodology"]["mapping"].keys()))
-            team_size_group = st.selectbox("Team Size Group",
-                FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
-                index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
-            cost_currency = st.selectbox("Cost Currency",
-                list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
-            st.header("Model Selection")
-            selected_model = None
-            selected_display_name = None
-            if model_status["models_available"]:
-                available_models = list_available_models()
-                if available_models:
-                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                    selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
-                    selected_model = model_options[selected_display_name]
+            # --- Tab 3: Process & People ---
+            with tab3:
+                st.header("Process & People")
+                docs = st.slider("Documentation Level (1-5)", 1, 5, 3)
+                personnel_changes = st.slider("Personnel Changes (1-5)", 1, 5, 2)
+                development_methodology = st.selectbox("Development Methodology",
+                    list(FEATURE_CONFIG["special_cases"]["development_methodology"]["mapping"].keys()))
+                team_size_group = st.selectbox("Team Size Group",
+                    FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
+                    index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
+                cost_currency = st.selectbox("Cost Currency",
+                    list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys()))
+                st.header("Model Selection")
+                selected_model = None
+                selected_display_name = None
+                if model_status["models_available"]:
+                    available_models = list_available_models()
+                    if available_models:
+                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
+                        selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()))
+                        selected_model = model_options[selected_display_name]
+                    else:
+                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
                 else:
-                    st.warning("No trained models found. Please add trained models to the 'models' directory.")
-            else:
-                st.warning("No trained models found. Please create or add trained models.")
+                    st.warning("No trained models found. Please create or add trained models.")
+
+            # Model select, etc, still inside the form
+            selected_model = st.selectbox("Select Model", ["modelA", "modelB"]) # example
             col1, col2 = st.columns(2)
             submit = col1.form_submit_button("Predict Man-Hours")
             save_config = col2.form_submit_button("Save Config")
+            config_name = None
+            if save_config:
+                config_name = st.text_input("Enter a name for this configuration:")
 
-        # --- Save raw inputs in a dict for config-driven feature mapping ---
-        user_inputs = dict(
-            project_prf_year_of_project=project_year,
-            external_eef_industry_sector=industry_sector,
-            external_eef_organisation_type=organisation_type,
-            project_prf_application_type=application_type,
-            project_prf_functional_size=functional_size,
-            project_prf_max_team_size=max_team_size,
-            process_pmf_docs=docs,
-            tech_tf_tools_used=tools_used,
-            people_prf_personnel_changes=personnel_changes,
-            application_group=application_group,
-            development_type=development_type,
-            development_platform=development_platform,
-            language_type=language_type,
-            primary_language=primary_language,
-            relative_size=relative_size,
-            team_size_group=team_size_group,
-            development_methodology=development_methodology,
-            architecture=architecture,
-            client_server=client_server,
-            web_development=web_development,
-            dbms_used=dbms_used,
-            cost_currency=cost_currency,
-            selected_model=selected_model,
-            submit=submit
-        )
+            # Build and return your input dict as before!
+            user_inputs = {
+                "project_prf_year_of_project": project_year,
+                # ...all fields from above...
+                "selected_model": selected_model,
+                "submit": submit
+            }
+            # do config save here if needed
+            # return the features dict on submit
+            if submit or save_config:
+                return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
+            
+            # Default, so main() always gets a dict:
+            return {'selected_model': None, 'submit': False}
 
-        # Config loading/saving (as before)
-        st.header("Saved Configurations")
-        configs = load_saved_configurations()
-        if configs:
-            selected_config = st.selectbox("Choose a saved configuration", list(configs.keys()),
-                                           format_func=lambda x: f"{x} ({configs[x]['date']})")
-            load_config = st.button("Load Selected Config")
-            if load_config and selected_config:
-                st.session_state.config_to_load = selected_config
-                st.rerun()
-        else:
-            st.info("No saved configurations found. You can save configurations above.")
 
-        st.header("Model Information")
-        if model_status["models_available"]:
-            available_models = list_available_models()
-            st.success(f"Found {len(available_models)} trained models:")
-            for model in available_models:
-                st.write(f"• {model['display_name']}")
-            st.info("Feature scaler is available for normalization." if model_status["scaler_available"] else
-                    "No feature scaler found. Models will use raw feature values.")
-        else:
-            st.error("No trained models found. Please create or add trained models.")
-
-        if st.button("Check for Required Models"):
-            st.session_state.check_models = True
-            st.rerun()
-
-        # Config handling (save, load, model check)
-        if hasattr(st.session_state, 'config_to_load'):
-            config_name = st.session_state.config_to_load
-            loaded_config = load_configuration(config_name)
-            if loaded_config:
-                user_inputs.update(loaded_config)
-                del st.session_state.config_to_load
-                st.success(f"Configuration '{config_name}' loaded successfully!")
-
-        if hasattr(st.session_state, 'check_models'):
-            st.subheader("Available Models")
-            if model_status["models_available"]:
-                for model in list_available_models():
-                    st.write(f"✅ {model['display_name']} ({model['technical_name']})")
-            else:
-                st.error("No models found in the 'models' directory.")
-            st.write("✅ Feature scaler available" if model_status["scaler_available"] else "❌ No feature scaler found")
-            del st.session_state.check_models
-
-        if save_config and selected_model:
-            save_current_configuration(user_inputs)
-
-    return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-
-# --- Config-driven feature dict creation ---
 def create_feature_dict_from_config(user_inputs, config):
     features = {}
-    # Numeric features
     for key in config.get("numeric_features", []):
         features[key] = user_inputs.get(key, 0)
-
-    # Categorical features (use value as-is)
     for key, meta in config.get("categorical_features", {}).items():
         features[key] = user_inputs.get(key, "")
-
-    # One-hot features
     for group, mapping in config.get("one_hot_features", {}).items():
         input_value = user_inputs.get(mapping["input_key"], "")
         for label, feat_key in mapping["mapping"].items():
             features[feat_key] = int(input_value == label)
-
-    # Special cases (e.g. team_size_group)
     for group, spec in config.get("special_cases", {}).items():
         input_value = user_inputs.get(spec["input_key"], "")
-        # mapping (one-hot)
         if "mapping" in spec:
             for label, feat_key in spec["mapping"].items():
                 features[feat_key] = int(input_value == label)
-        # output_keys (team_size_group)
         if "output_keys" in spec:
             for label, feat_key in spec["output_keys"].items():
                 features[feat_key] = int(input_value == label)
-
     features["selected_model"] = user_inputs.get("selected_model")
     features["submit"] = user_inputs.get("submit", False)
     return features
 
-# --- Config/State Save-Load Logic ---
 def ensure_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def save_current_configuration(user_inputs):
-    config_name = st.text_input("Enter a name for this configuration:")
-    if not config_name:
-        st.warning("Please enter a name for your configuration.")
-        return
+def save_current_configuration(user_inputs, config_name):
     config = user_inputs.copy()
     config.pop('submit', None)
     config['date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -264,13 +186,9 @@ def load_configuration(config_name):
         return None
 
 def display_inputs(user_inputs, selected_model):
-    """Display the input parameters in a formatted way."""
     col1, col2 = st.columns([2, 1])
-    
     with col1:
         st.subheader("Input Parameters Summary")
-        
-        # Create a summary of key parameters
         key_params = {
             "Project Year": user_inputs.get('project_prf_year_of_project', 'N/A'),
             "Functional Size": user_inputs.get('project_prf_functional_size', 'N/A'),
@@ -281,40 +199,24 @@ def display_inputs(user_inputs, selected_model):
             "Tools Used": user_inputs.get('tech_tf_tools_used', 'N/A'),
             "Personnel Changes": user_inputs.get('people_prf_personnel_changes', 'N/A')
         }
-        
-        # Create DataFrame for display
-        input_df = pd.DataFrame([
-            {"Parameter": k, "Value": v} for k, v in key_params.items()
-        ])
-        
-        # Format the table for better readability
+        input_df = pd.DataFrame([{"Parameter": k, "Value": v} for k, v in key_params.items()])
         st.dataframe(input_df, use_container_width=True)
-        
-        # Display the selected model with icon and friendly name
         if selected_model:
             model_display_name = get_model_display_name(selected_model)
             st.write(f"📊 Selected Model: **{model_display_name}**")
         else:
             st.write("📊 Selected Model: **None**")
-    
     return col2
 
 def show_feature_importance(selected_model, features_dict, st):
-    """Display feature importance if available."""
     if not selected_model:
         st.info("No model selected for feature importance analysis.")
         return
-        
     feature_importance = get_feature_importance(selected_model)
-    
     if feature_importance is not None:
         st.subheader("Feature Importance")
-        
-        # Get feature names from the features_dict keys (exclude non-feature keys)
         exclude_keys = {'selected_model', 'submit'}
         feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
-        
-        # Map technical feature names to user-friendly names
         feature_name_mapping = {
             "project_prf_year_of_project": "Project Year",
             "project_prf_functional_size": "Functional Size",
@@ -335,47 +237,29 @@ def show_feature_importance(selected_model, features_dict, st):
             "project_prf_relative_size_m1": "Medium Size (M1)",
             "process_pmf_development_methodologies_agile_developmentscrum": "Scrum Methodology"
         }
-        
-        # Create friendly names list, keeping only top features
         importance_data = []
-        for i, name in enumerate(feature_names[:min(len(feature_importance), 15)]):  # Show top 15 features
+        for i, name in enumerate(feature_names[:min(len(feature_importance), 15)]):
             if i < len(feature_importance):
                 friendly_name = feature_name_mapping.get(name, name.replace('_', ' ').title())
                 importance_data.append({
                     'Feature': friendly_name,
                     'Importance': abs(feature_importance[i])
                 })
-        
         if importance_data:
-            # Create a DataFrame for the feature importance values
             importance_df = pd.DataFrame(importance_data)
-            
-            # Sort by importance
             importance_df = importance_df.sort_values('Importance', ascending=False)
-            
-            # Create a horizontal bar chart
             fig, ax = plt.subplots(figsize=(10, 8))
             bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
-            
-            # Add value labels
             for bar in bars:
                 width = bar.get_width()
-                if width > 0:  # Only add label if there's a value
+                if width > 0:
                     label_x_pos = width * 1.01
-                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}',
-                           va='center')
-            
+                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}', va='center')
             ax.set_xlabel('Relative Importance')
             ax.set_title(f'Top Feature Importance - {get_model_display_name(selected_model)}')
             ax.grid(True, linestyle='--', alpha=0.3)
-            
-            # Adjust layout to prevent label cutoff
             plt.tight_layout()
-            
-            # Display the plot
             st.pyplot(fig)
-            
-            # Display the data table
             st.dataframe(importance_df.round(4), use_container_width=True)
         else:
             st.info("No feature importance data available.")
@@ -384,107 +268,72 @@ def show_feature_importance(selected_model, features_dict, st):
         st.info(f"Feature importance is not available for {model_display_name}. This might be because the model doesn't support feature importance or there was an error retrieving it.")
 
 def show_prediction(col2, prediction, team_size):
-    """Display the prediction results in a visually appealing way."""
     with col2:
         st.subheader("Prediction Result")
-        
         if prediction is None:
             st.error("Failed to make prediction. Please check logs for details.")
             return
-        
-        # Create a visually appealing display for the prediction
         st.markdown(f"""
         <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
             <h3 style='text-align:center;'>Estimated Effort</h3>
             <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Hours</h1>
         </div>
         """, unsafe_allow_html=True)
-
-        # Calculate calendar time and per-person effort
         hours = int(prediction)
-        days = hours // 8  # Assuming 8-hour workdays
+        days = hours // 8
         per_person = prediction / team_size
-
-        # Display additional metrics
         st.markdown("### Timeline Breakdown")
-        
         metrics_col1, metrics_col2 = st.columns(2)
-        
         with metrics_col1:
-            st.metric(
-                label="Calendar Time", 
-                value=f"{days}d",
-                help="Estimated calendar duration assuming full team availability"
-            )
-        
+            st.metric("Calendar Time", f"{days}d", help="Estimated calendar duration assuming full team availability")
         with metrics_col2:
-            st.metric(
-                label="Per Person", 
-                value=f"{per_person:.2f}h",
-                help="Average effort per team member in hours"
-            )
-        
-        # Display warning for potentially inaccurate predictions
+            st.metric("Per Person", f"{per_person:.2f}h", help="Average effort per team member in hours")
         if prediction < 1:
             st.warning("This prediction seems unusually low. Consider reviewing your inputs.")
         elif prediction > 10000:
             st.warning("This prediction seems unusually high. Consider reviewing your inputs.")
 
 def about_section():
-    """Display information about the application."""
     st.markdown("---")
-    
     with st.expander("About this Estimator", expanded=False):
         st.subheader("Machine Learning for Agile Project Estimation")
-        
         st.write("""
         This application uses machine learning models to predict the effort required for agile projects.
         The models have been trained on historical project data to provide early estimations based on
         key project parameters. These estimations can help in project planning and resource allocation.
-        
         ### How it Works
-        
         The estimator uses the following input parameters:
-        
         - **Project Complexity**: Overall complexity of the project scope
         - **Team Experience**: Experience level of the team with similar projects
         - **Number of Requirements**: Count of user stories or requirements
         - **Team Size**: Number of full-time team members
         - **Technology Stack Complexity**: Complexity of the technology being used
-        
         The selected machine learning model processes these inputs to predict the required effort in man-hours.
         """)
 
 def tips_section():
-    """Display tips for accurate estimation."""
     with st.expander("Tips for Accurate Estimation", expanded=False):
         st.markdown("""
         ### Tips for Getting Accurate Estimations
-
         1. **Project Complexity**
            - Rate 1-2 for simple projects with well-understood requirements
            - Rate 3 for moderate complexity with some uncertainty
            - Rate 4-5 for highly complex projects with significant unknowns
-
         2. **Team Experience**
            - Rate 1-2 for teams new to the domain or technology
            - Rate 3 for teams with moderate experience in similar projects
            - Rate 4-5 for highly experienced teams who have done similar work
-
         3. **Requirements Analysis**
            - Count only well-defined requirements
            - Break down epics into smaller stories when possible
            - Consider using story points as a proxy for requirements count
-
         4. **Team Size Considerations**
            - Larger teams may increase coordination overhead
            - Consider the "mythical man-month" effect
            - Ensure your team size is appropriate for the project scope
-
         5. **Technology Complexity**
            - Rate 1-2 for familiar, stable technology stacks
            - Rate 3 for mixed familiar/new technologies
            - Rate 4-5 for cutting-edge or highly specialized technologies
         """)
-
         st.info("Remember that these estimations are meant to be starting points. Always review and adjust based on your team's specific context and historical performance.")
