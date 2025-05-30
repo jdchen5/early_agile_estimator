@@ -21,16 +21,16 @@ st.markdown("""
 <style>
 section[data-testid="stSidebar"] .stForm .stFormItem, 
 div[data-testid="stForm"] > div > div {
-    margin-bottom: 0.2rem !important;
+    margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
 section[data-testid="stSidebar"] .stForm label, 
 section[data-testid="stSidebar"] .stForm .stRadio, 
 section[data-testid="stSidebar"] .stForm .stSelectbox, 
 section[data-testid="stSidebar"] .stForm .stNumberInput {
-    margin-bottom: 0.1rem !important;
+    margin-bottom: 0 !important;
 }
-.main .block-container { padding-top: 1.5rem !important; }
+.main .block-container { padding-top: 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
