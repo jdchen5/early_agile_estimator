@@ -1,0 +1,60 @@
+Column: external_eef_industry_sector (n_unique = 10)
+['banking' 'government' 'service industry' 'manufacturing' 'education' nan
+ 'medical & health care' 'financial' 'electronics & computers'
+ 'wholesale & retail' 'utilities']
+----------------------------------------
+Column: external_eef_organisation_type (n_unique = 23)
+['All industry organization types' 'Aerospace / Automotive' 'Banking' 'Biotech' 'Communications' 'Community Services' 'Consumer Foods' 'Education Institution' 'Electricity, Gas, Water' 'Energy' 'Financial, Property & Business Services' 'Food Processing' 'Government' 'High Tech' 'IEEE' 'Information Technology' 'Institutions eg. Kindergartens' 'Medical & Healthcare' 'Public Administration' 'Public Sector' 'Surveillance Security' 'Transport Storage' 'Wholesale & Retail Trade']
+----------------------------------------
+Column: project_prf_application_group (n_unique = 4)
+['Business Application' nan 'Mathematically-intensive Application'
+ 'Real-time Application' 'Infrastructure Software']
+----------------------------------------
+Column: project_prf_application_type (n_unique = 31)
+['Airport Management' 'Analysis Management' 'Auditing Management' 'Automated Data Acquisition' 'Business Application' 'Catalogue_Register Of Things Or Events' 'Clinical Archive' 'Complex Process Control' 'Content Management System' 'Course Management' 'Customer Billing' 'Customer Billing_Relationship Management' 'Customer Relationship Management' 'Data Or Database Management' 'Data Warehouse System' 'Dynamic Website' 'Electronic Data Interchange' 'Financial Transaction Process_Accounting' 'Hospital Information System' 'Identify Management' 'Logistic/Supply Planning_Control' 'Management / Performance Reporting' 'Mathematical Modelling_Finance / Eng' 'Online Analysis & Reporting' 'Project Management' 'Promotions' 'Proposal Builder' 'Software Development Tool' 'Security_Authentication' 'Security Controls' 'Student_Tests Management' 'Surveillance & Security' 'Web-Based Application' 'Workflow Support_Management']
+----------------------------------------
+Column: project_prf_development_type (n_unique = 3)
+['Enhancement' 'New Development' 'Re-development']
+----------------------------------------
+Column: tech_tf_development_platform (n_unique = 4)
+['PC' nan 'Multi' 'Proprietary' 'MR']
+----------------------------------------
+Column: tech_tf_language_type (n_unique = 3)
+['2GL' '3GL' '4GL' '5GL' 'Application Generator' 'Other']
+----------------------------------------
+Column: tech_tf_primary_programming_language (n_unique = 9)
+['ABAP' 'Agile platform' 'JAVA' 'Javascript' 'C' 'C++' 'PL/i' 'Natural' 'Cobol' 'Oracle'  'Other'  'Proprietary Agile Platform']
+----------------------------------------
+Column: project_prf_relative_size (n_unique = 7)
+['XXS' 'XS' 'S' 'M1' 'M2' nan 'L' 'XL' 'XXL' 'XXXL']
+----------------------------------------
+Column: project_prf_team_size_group (n_unique = 8)
+['1' '2' '3-4' '5-8' nan '9-14' '15-20' '21-30' '30-40' '41-50' '51-60' '61-70' '71-80', '81-90' '91-100' '100+']
+----------------------------------------
+Column: project_prf_case_tool_used (n_unique = 2)
+[nan 'no' 'yes']
+----------------------------------------
+Column: process_pmf_development_methodologies (n_unique = 7)
+['Agile Development' 'Iterative' 'Joint Application Development (jad)' 'Multifunctional Teams' 'Personal Software Process (psp)' 'Scrum' 'Unified Process']
+----------------------------------------
+Column: process_pmf_prototyping_used (n_unique = 1)
+[nan 'yes']
+----------------------------------------
+Column: tech_tf_architecture (n_unique = 3)
+['Stand-alone' nan 'Client-Server' 'Multi-tier with web public interface']
+----------------------------------------
+Column: tech_tf_client_server (n_unique = 2)
+[nan 'yes' 'no']
+----------------------------------------
+Column: tech_tf_client_roles (n_unique = 10)
+[nan
+ 'business logic or rule processing' 'data entry & validation' 'data retrieval & presentation' 'database server' 'device/equipment interface' 'run a computer-human interface' 'security' 'web/html browser' 'web public interface']
+----------------------------------------
+Column: tech_tf_server_roles (n_unique = 11)
+[nan 'business logic + integration to 30 other systems' 'data acquisation' 'database server' 'file &/or print server' 'ftp server' 'html/web server' 'multi-user legacy application' 'security/authentication' 'mail server' 'messaging server' 'object/component server']
+----------------------------------------
+Column: tech_tf_web_development (n_unique = 1)
+[nan 'web']
+----------------------------------------
+Column: tech_tf_dbms_used (n_unique = 1)
+['yes' nan]
