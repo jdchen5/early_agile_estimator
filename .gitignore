@@ -1,4 +1,5 @@
-#"__pycache__/\n*.pyc\n.env\n.vscode\nmodels/*.pkl" 
+# Ignore Python bytecode files
+
 # Ignore Python cache
 __pycache__/
 *.pyc
@@ -8,8 +9,8 @@ __pycache__/
 # Ignore virtual environment
 venv/
 
-# Ignore model files if they are generated
-models/*.pkl
+# Ignore all pickle files in any folder
+*.pkl
 
 # Ignore VS Code settings (optional)
 .vscode/
