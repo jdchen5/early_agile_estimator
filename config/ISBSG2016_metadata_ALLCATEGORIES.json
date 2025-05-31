@@ -1,0 +1,161 @@
+{
+    "columns": {
+        "isbsg_project_id": {
+            "sdtype": "id"
+        },
+        "external_eef_data_quality_rating": {
+            "sdtype": "categorical"
+        },
+        "project_prf_year_of_project": {
+            "sdtype": "numerical"
+        },
+        "external_eef_industry_sector": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_primary_programming_language": {
+            "sdtype": "categorical"
+        },
+        "project_prf_functional_size": {
+            "sdtype": "numerical"
+        },
+        "project_prf_relative_size": {
+            "sdtype": "categorical"
+        },
+        "project_prf_normalised_work_effort_level_1": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_work_effort": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_level_1_pdr_ufp": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_pdr_ufp": {
+            "sdtype": "numerical"
+        },
+        "project_prf_defect_density": {
+            "sdtype": "numerical"
+        },
+        "project_prf_speed_of_delivery": {
+            "sdtype": "numerical"
+        },
+        "project_prf_manpower_delivery_rate": {
+            "sdtype": "numerical"
+        },
+        "project_prf_project_elapsed_time": {
+            "sdtype": "numerical"
+        },
+        "project_prf_team_size_group": {
+            "sdtype": "categorical"
+        },
+        "project_prf_max_team_size": {
+            "sdtype": "numerical"
+        },
+        "project_prf_case_tool_used": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_prototyping_used": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_docs": {
+            "sdtype": "numerical"
+        },
+        "tech_tf_architecture": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server": {
+            "sdtype": "numerical"
+        },
+        "tech_tf_client/server_description": {
+            "sdtype": "numerical"
+        },
+        "tech_tf_web_development": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_tools_used": {
+            "sdtype": "numerical"
+        },
+        "people_prf_project_user_involvement": {
+            "sdtype": "numerical"
+        },
+        "people_prf_ba_team_experience_less_than_1_yr": {
+            "sdtype": "categorical"
+        },
+        "people_prf_ba_team_experience_1_to_3_yr": {
+            "sdtype": "categorical"
+        },
+        "people_prf_ba_team_experience_great_than_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_less_than_1_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_1_to_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_great_than_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_less_than_3_yr": {
+            "sdtype": "categorical"
+        },
+        "people_prf_it_experience_3_to_9_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_great_than_9_yr": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_manage_experience": {
+            "sdtype": "numerical"
+        },
+        "people_prf_project_manage_changes": {
+            "sdtype": "categorical"
+        },
+        "people_prf_personnel_changes": {
+            "sdtype": "categorical"
+        },
+        "project_prf_total_project_cost": {
+            "sdtype": "numerical"
+        },
+        "project_prf_cost_currency": {
+            "sdtype": "categorical"
+        },
+        "project_prf_currency_multiple": {
+            "sdtype": "categorical"
+        }
+    },
+    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1"
+}

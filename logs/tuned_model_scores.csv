@@ -1,4 +1,4 @@
 Model,MAE,RMSE,R2
-DecisionTreeRegressor,,,
-OrthogonalMatchingPursuit,,,
-AdaBoostRegressor,,,
+GradientBoostingRegressor,,,
+ExtraTreesRegressor,,,
+RandomForestRegressor,,,

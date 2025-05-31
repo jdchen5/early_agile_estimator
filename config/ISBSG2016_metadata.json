@@ -96,9 +96,6 @@
         "tech_tf_type_of_server": {
             "sdtype": "numerical"
         },
-        "tech_tf_type_of_server.1": {
-            "sdtype": "numerical"
-        },
         "tech_tf_client/server_description": {
             "sdtype": "numerical"
         },
