@@ -3,31 +3,10 @@
         "isbsg_project_id": {
             "sdtype": "id"
         },
-        "external_eef_data_quality_rating": {
-            "sdtype": "categorical"
-        },
         "project_prf_year_of_project": {
             "sdtype": "numerical"
         },
         "external_eef_industry_sector": {
-            "sdtype": "categorical"
-        },
-        "external_eef_organisation_type": {
-            "sdtype": "categorical"
-        },
-        "project_prf_application_group": {
-            "sdtype": "categorical"
-        },
-        "project_prf_application_type": {
-            "sdtype": "categorical"
-        },
-        "project_prf_development_type": {
-            "sdtype": "categorical"
-        },
-        "tech_tf_development_platform": {
-            "sdtype": "categorical"
-        },
-        "tech_tf_language_type": {
             "sdtype": "categorical"
         },
         "tech_tf_primary_programming_language": {
@@ -35,9 +14,6 @@
         },
         "project_prf_functional_size": {
             "sdtype": "numerical"
-        },
-        "project_prf_relative_size": {
-            "sdtype": "categorical"
         },
         "project_prf_normalised_work_effort_level_1": {
             "sdtype": "numerical"
@@ -51,13 +27,7 @@
         "project_prf_normalised_pdr_ufp": {
             "sdtype": "numerical"
         },
-        "project_prf_defect_density": {
-            "sdtype": "numerical"
-        },
         "project_prf_speed_of_delivery": {
-            "sdtype": "numerical"
-        },
-        "project_prf_manpower_delivery_rate": {
             "sdtype": "numerical"
         },
         "project_prf_project_elapsed_time": {
@@ -69,23 +39,11 @@
         "project_prf_max_team_size": {
             "sdtype": "numerical"
         },
-        "project_prf_case_tool_used": {
-            "sdtype": "categorical"
-        },
         "process_pmf_development_methodologies": {
-            "sdtype": "categorical"
-        },
-        "process_pmf_prototyping_used": {
             "sdtype": "categorical"
         },
         "process_pmf_docs": {
             "sdtype": "numerical"
-        },
-        "tech_tf_architecture": {
-            "sdtype": "categorical"
-        },
-        "tech_tf_client_server": {
-            "sdtype": "categorical"
         },
         "tech_tf_client_roles": {
             "sdtype": "categorical"
@@ -93,67 +51,430 @@
         "tech_tf_server_roles": {
             "sdtype": "categorical"
         },
-        "tech_tf_type_of_server": {
-            "sdtype": "numerical"
-        },
-        "tech_tf_client/server_description": {
-            "sdtype": "numerical"
-        },
-        "tech_tf_web_development": {
-            "sdtype": "categorical"
-        },
-        "tech_tf_dbms_used": {
-            "sdtype": "categorical"
-        },
         "tech_tf_tools_used": {
-            "sdtype": "numerical"
-        },
-        "people_prf_project_user_involvement": {
-            "sdtype": "numerical"
-        },
-        "people_prf_ba_team_experience_less_than_1_yr": {
-            "sdtype": "categorical"
-        },
-        "people_prf_ba_team_experience_1_to_3_yr": {
-            "sdtype": "categorical"
-        },
-        "people_prf_ba_team_experience_great_than_3_yr": {
-            "sdtype": "numerical"
-        },
-        "people_prf_it_experience_less_than_1_yr": {
-            "sdtype": "numerical"
-        },
-        "people_prf_it_experience_1_to_3_yr": {
-            "sdtype": "numerical"
-        },
-        "people_prf_it_experience_great_than_3_yr": {
-            "sdtype": "numerical"
-        },
-        "people_prf_it_experience_less_than_3_yr": {
-            "sdtype": "categorical"
-        },
-        "people_prf_it_experience_3_to_9_yr": {
-            "sdtype": "numerical"
-        },
-        "people_prf_it_experience_great_than_9_yr": {
-            "sdtype": "categorical"
-        },
-        "people_prf_project_manage_experience": {
-            "sdtype": "numerical"
-        },
-        "people_prf_project_manage_changes": {
-            "sdtype": "categorical"
-        },
-        "people_prf_personnel_changes": {
-            "sdtype": "categorical"
-        },
-        "project_prf_total_project_cost": {
             "sdtype": "numerical"
         },
         "project_prf_cost_currency": {
             "sdtype": "categorical"
         },
-        "project_prf_currency_multiple": {
+        "project_prf_application_group_business_application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_infrastructure_software": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_mathematically_intensive_application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_real_time_application": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_browser_server_architecture": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_client_presentation": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_client_presentation_processing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_client_server_architecture": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_client_server_architecture_p2p": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_server_processing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_stand_alone": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description_web": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_a": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_b": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_c_lang": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_d": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_enhancement": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_new_development": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_other": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_poc": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_porting": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_re_development": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_mf": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_mr": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_multi": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_pc": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_proprietary": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_2gl": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_3gl": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_4gl": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_5gl": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_apg": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_l": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_m1": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_m2": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_s": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_xl": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_xs": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_xxl": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_xxs": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_don_t_know": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_no": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_yes": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_prototyping_used_nan": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_prototyping_used_yes": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_multi_tier": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_multi_tier_with_web_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_multi_tier_with_web_public_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_stand_alone": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_standalone": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_don_t_know": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_no": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_yes": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_back_end": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_lan_based": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_mainframe": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_multi_tier_with_web_public_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_standalone": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_unix": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_webserver": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_web_development_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_web_development_web": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_nan": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_no": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_yes": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_best": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_don_t_know": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_low": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_nan": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_no": {
+            "sdtype": "categorical"
+        },
+        "people_prf_project_user_involvement_yes": {
+            "sdtype": "categorical"
+        },
+        "project_prf_currency_multiple_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_currency_multiple_no": {
+            "sdtype": "categorical"
+        },
+        "project_prf_currency_multiple_yes_1_000": {
+            "sdtype": "categorical"
+        },
+        "project_prf_currency_multiple_yes_10_000": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_insurance": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_medical and health care": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_manufacturing": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_telecommunications": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_government": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_nan": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_communications": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_banking": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_computers & software": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_defence": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_public administration": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_aerospace / automotive": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_transport & storage": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_financial, property & business services": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_education institution": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_community services": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_electricity, gas, water": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_logistics": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_wholesale & retail trade": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_top_telecommunication": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_other": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_financial transaction process/accounting": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_not recorded": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_nan": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_unknown": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_customer relationship management": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_relatively complex application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_workflow support & management": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_business application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_embedded system/real_time application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_online. esales": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_management of licences and permits": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_online analysis and reporting": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_catalogue/register of things or events": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_software for machine control": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_document management": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_electronic data interchange": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_management information system": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_data warehouse system": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_stock control & order processing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_management or performance reporting": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_other": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_clientserver_description": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_not_defined": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_hand_held": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_xxxl": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_multi_tier_client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_not_applicable": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_type_of_server_proprietary_midrange": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_transaction/production system": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_financial application area": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_client-server": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type_top_customer billing/relationship management": {
             "sdtype": "categorical"
         }
     },
