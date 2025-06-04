@@ -16,29 +16,6 @@ import yaml
 from datetime import datetime
 from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
 
-# --- Helper functions ---
-def safe_import_pipeline_function(func_name):
-    """Safely import pipeline functions with fallbacks"""
-    try:
-        from pipeline import load_preprocessing_pipeline, validate_pipeline_compatibility
-        if func_name == 'load_preprocessing_pipeline':
-            return load_preprocessing_pipeline
-        elif func_name == 'validate_pipeline_compatibility':
-            return validate_pipeline_compatibility
-        else:
-            return None
-    except ImportError:
-        return None
-
-def get_pipeline_status():
-    """Get pipeline status with safe imports"""
-    load_pipeline_func = safe_import_pipeline_function('load_preprocessing_pipeline')
-    if load_pipeline_func is None:
-        return None
-    return load_pipeline_func()
-
-
-
 # --- Compact sidebar CSS ---
 st.markdown("""
 <style>
@@ -54,17 +31,248 @@ section[data-testid="stSidebar"] .stForm .stNumberInput {
     margin-bottom: 0 !important;
 }
 .main .block-container { padding-top: 0 !important; }
+
+/* Ultra compact tabs styling with negative margins */
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-list"] {
+    gap: 0px !important;
+    margin-bottom: -5px !important;
+}
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab"] {
+    height: 30px !important;
+    padding: 2px 6px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: -2px !important;
+}
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] {
+    padding-top: 02 !important;
+    margin-top: -3px !important;
+}
+
+/* NEGATIVE MARGINS FOR TAB CONTENT - Overlap fields inside tabs */
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .element-container {
+    margin-bottom: -2px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput {
+    margin-bottom: -3px !important;
+    margin-top: -2px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox > div,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect > div,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput > div,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider > div,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput > div {
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox label,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect label,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio label,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput label,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider label,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput label {
+    font-size: 0.75rem !important;
+    margin-bottom: -2px !important;
+    margin-top: -1px !important;
+    line-height: 1.0 !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Negative spacing radio buttons inside tabs */
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio > div {
+    gap: -1px !important;
+    margin-top: -2px !important;
+    margin-bottom: -2px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio > div > label {
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    padding: 0 !important;
+    line-height: 1.0 !important;
+}
+
+/* Remove ALL spacing between consecutive form elements in tabs with negatives */
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stSelectbox,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stMultiSelect,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stRadio,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stNumberInput,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect + .stSelectbox,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio + .stSelectbox,
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput + .stSelectbox {
+    margin-top: -3px !important;
+    padding-top: 0 !important;
+}
+
+/* Ultra compact form elements with negative margins */
+section[data-testid="stSidebar"] .element-container {
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stSelectbox,
+section[data-testid="stSidebar"] .stMultiSelect,
+section[data-testid="stSidebar"] .stRadio,
+section[data-testid="stSidebar"] .stNumberInput,
+section[data-testid="stSidebar"] .stSlider,
+section[data-testid="stSidebar"] .stTextInput {
+    margin-bottom: -2px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stSelectbox label,
+section[data-testid="stSidebar"] .stMultiSelect label,
+section[data-testid="stSidebar"] .stRadio label,
+section[data-testid="stSidebar"] .stNumberInput label,
+section[data-testid="stSidebar"] .stSlider label,
+section[data-testid="stSidebar"] .stTextInput label {
+    font-size: 0.75rem !important;
+    margin-bottom: -1px !important;
+    margin-top: 0 !important;
+    line-height: 1.1 !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stSelectbox > div,
+section[data-testid="stSidebar"] .stMultiSelect > div,
+section[data-testid="stSidebar"] .stNumberInput > div,
+section[data-testid="stSidebar"] .stSlider > div,
+section[data-testid="stSidebar"] .stTextInput > div {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Negative spacing radio buttons */
+section[data-testid="stSidebar"] .stRadio > div {
+    gap: -1px !important;
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stRadio > div > label {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+}
+
+/* Negative spacing headers */
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    margin-top: -2px !important;
+    margin-bottom: -1px !important;
+    font-size: 0.9rem !important;
+    line-height: 1.1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Negative spacing buttons */
+section[data-testid="stSidebar"] .stButton > button {
+    height: 2rem !important;
+    padding: 0.2rem 0.4rem !important;
+    font-size: 0.75rem !important;
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+}
+
+/* Zero spacing text input */
+section[data-testid="stSidebar"] .stTextInput > div > div > input {
+    height: 2rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+}
+
+/* Zero spacing selectbox */
+section[data-testid="stSidebar"] .stSelectbox > div > div > div {
+    height: 2rem !important;
+    font-size: 0.75rem !important;
+}
+
+/* Remove ALL extra spacing with negatives */
+section[data-testid="stSidebar"] .stMarkdown {
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stDivider {
+    margin: -2px 0 !important;
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stCaption {
+    margin-bottom: -1px !important;
+    margin-top: -1px !important;
+    font-size: 0.7rem !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    line-height: 1.0 !important;
+}
+
+/* Negative gaps in columns */
+section[data-testid="stSidebar"] .stColumn {
+    padding: 0 !important;
+    margin: -1px 0 !important;
+}
+
+/* Negative spacing number input */
+section[data-testid="stSidebar"] .stNumberInput > div > div > div > div {
+    gap: -1px !important;
+}
+
+section[data-testid="stSidebar"] .stNumberInput input {
+    height: 2rem !important;
+    font-size: 0.75rem !important;
+}
+
+section[data-testid="stSidebar"] .stNumberInput button {
+    height: 2rem !important;
+    width: 2rem !important;
+    font-size: 0.7rem !important;
+    margin: -1px !important;
+}
+
+/* WARNING: Monitor for overlapping issues */
+/* If elements overlap too much, reduce these negative values */
 </style>
 """, unsafe_allow_html=True)
 
-# --- Config Loaders ---
+# --- Config Loader ---
 def load_yaml_config(path):
-    """Load any YAML configuration file"""
+    """Load YAML configuration file with error handling"""
     try:
         with open(path, "r") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        st.error(f"Configuration file not found: {path}")
+        st.warning(f"Configuration file not found: {path}")
         return {}
     except yaml.YAMLError as e:
         st.error(f"Error parsing YAML file {path}: {e}")
@@ -148,7 +356,7 @@ def get_ui_behavior():
     })
 
 def render_field(field_name, config_section, config_data):
-    """Dynamically render form fields based on YAML config"""
+    """Dynamically render form fields based on YAML config with compact styling"""
     label = get_field_label(field_name)
     ui_behavior = get_ui_behavior()
     
@@ -157,27 +365,27 @@ def render_field(field_name, config_section, config_data):
         input_type = field_config.get("input_type", "number_input")
         
         if input_type == "slider":
-            return st.slider(label, field_config["min"], field_config["max"], field_config["default"])
+            return st.slider(label, field_config["min"], field_config["max"], field_config["default"], help=None)
         else:
-            return st.number_input(label, field_config["min"], field_config["max"], field_config["default"])
+            return st.number_input(label, field_config["min"], field_config["max"], field_config["default"], help=None)
     
     elif config_section == "categorical_features":
         options = config_data.get("options", [])
         if len(options) > ui_behavior["multiselect_threshold"]:
-            return st.multiselect(label, options)
+            return st.multiselect(label, options, help=None)
         else:
-            return st.selectbox(label, options)
+            return st.selectbox(label, options, help=None)
     
     elif config_section == "one_hot_features":
         mapping = config_data.get("mapping", {})
         options = list(mapping.keys())
         
         if len(options) <= ui_behavior["radio_threshold"]:
-            return st.radio(label, options)
+            return st.radio(label, options, help=None)
         elif len(options) <= ui_behavior["selectbox_threshold"]:
-            return st.selectbox(label, options)
+            return st.selectbox(label, options, help=None)
         else:
-            return st.multiselect(label, options)
+            return st.multiselect(label, options, help=None)
     
     elif config_section == "special_cases":
         if field_name == "project_prf_team_size_group":
@@ -185,12 +393,12 @@ def render_field(field_name, config_section, config_data):
             return None
         else:
             options = config_data.get("options", [])
-            return st.selectbox(label, options)
+            return st.selectbox(label, options, help=None)
     
     elif config_section == "binary_features":
         mapping = config_data.get("mapping", {})
         options = list(mapping.keys())
-        return st.radio(label, options)
+        return st.radio(label, options, help=None)
     
     return None
 
@@ -204,11 +412,15 @@ def sidebar_inputs():
             # Create tabs dynamically
             tabs = st.tabs(list(tab_organization.keys()))
             
+            # Variables to track across tabs
+            selected_model = None
+            submit = False
+            save_config = False
+            config_name = ""
+            
             for tab_idx, (tab_name, field_list) in enumerate(tab_organization.items()):
                 with tabs[tab_idx]:
-                    if tab_name != "Advanced":
-                        st.header(f"{tab_name} Information")
-                    
+                    # Process fields for this tab
                     for field_name in field_list:
                         # Find field in config
                         field_found = False
@@ -241,7 +453,7 @@ def sidebar_inputs():
                                         max_team_size = user_inputs.get("project_prf_max_team_size", 5)
                                         team_size_group = get_team_size_group_from_config(max_team_size)
                                         user_inputs[field_name] = team_size_group
-                                        st.write(f"**{get_field_label(field_name)}:** {team_size_group}")
+                                        st.caption(f"**{get_field_label(field_name)}:** {team_size_group}")
                                     else:
                                         user_inputs[field_name] = render_field(field_name, "special_cases", group_config)
                                     field_found = True
@@ -255,44 +467,60 @@ def sidebar_inputs():
                                     field_found = True
                                     break
             
-            # Model Selection (always in Advanced tab)
-            with tabs[-1]:  # Last tab (Advanced)
-                st.header("Model Selection")
-                selected_model = None
-                if model_status["models_available"]:
-                    available_models = list_available_models()
-                    if available_models:
-                        model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                        selected_display_name = st.selectbox("Select Prediction Model", list(model_options.keys()), key="model_selectbox")
-                        selected_model = model_options[selected_display_name]
-                    else:
-                        st.warning("No trained models found. Please add trained models to the 'models' directory.")
+            # MOVE ALL FORM CONTROLS OUTSIDE THE TABS - This is the key fix!
+            st.divider()  # More compact than markdown ---
+            
+            # Model selection in a more compact format
+            if model_status["models_available"]:
+                available_models = list_available_models()
+                if available_models:
+                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
+                    selected_display_name = st.selectbox(
+                        "🤖 Model", 
+                        list(model_options.keys()),
+                        help=None
+                    )
+                    selected_model = model_options[selected_display_name]
                 else:
-                    st.warning("No trained models found. Please create or add trained models.")
-
+                    st.caption("⚠️ No trained models found")
+            else:
+                st.caption("⚠️ No trained models found")
+            
+            # More compact action section
             col1, col2 = st.columns(2)
-            submit = col1.form_submit_button("Predict Man-Hours")
-            save_config = col2.form_submit_button("Save Config")
-            config_name = None
-            if save_config:
-                config_name = st.text_input("Enter a name for this configuration:")
+            with col1:
+                submit = st.form_submit_button("🔮 Predict", use_container_width=True)
+            with col2:
+                save_config = st.form_submit_button("💾 Save", use_container_width=True)
+            
+            # Compact configuration name input
+            config_name = st.text_input(
+                "Config name", 
+                placeholder="Save as...",
+                help=None,
+                label_visibility="collapsed"
+            )
 
+            # Store final values
             user_inputs["selected_model"] = selected_model
             user_inputs["submit"] = submit
+            user_inputs["save_config"] = save_config
+            user_inputs["config_name"] = config_name
 
             # Save config logic
-            if save_config and selected_model:
-                if config_name:
-                    save_current_configuration(user_inputs, config_name)
-                else:
-                    st.warning("Please enter a name for your configuration above and resubmit.")
+            if save_config and selected_model and config_name and config_name.strip():
+                save_current_configuration(user_inputs, config_name.strip())
+            elif save_config and (not config_name or not config_name.strip()):
+                st.warning("Please enter a configuration name to save.")
+            elif save_config and not selected_model:
+                st.warning("Please select a model before saving configuration.")
 
             if submit or save_config:
                 return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-            return {'selected_model': None, 'submit': False}
-
+            return {'selected_model': selected_model, 'submit': False}
+        
+# -- Feature dict creation (supports multi-hot) --
 def create_feature_dict_from_config(user_inputs, config):
-    """Create feature dictionary dynamically from config"""
     features = {}
     
     # Process numeric features

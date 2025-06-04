@@ -33,20 +33,20 @@ tab_organization:
     - external_eef_industry_sector
     - external_eef_organisation_type
     - project_prf_application_type
-    - project_prf_functional_size
-    - project_prf_max_team_size
     - project_prf_application_group
     - project_prf_development_type
+    - project_prf_functional_size
     - project_prf_relative_size
+    - project_prf_max_team_size
   Technical:
     - tech_tf_development_platform
     - tech_tf_language_type
     - tech_tf_primary_language
     - tech_tf_architecture
     - tech_tf_client_server
-    - tech_tf_web_development
     - tech_tf_client_roles
     - tech_tf_server_roles
+    - tech_tf_web_development
     - tech_tf_dbms_used
     - tech_tf_tools_used
   Advanced:
@@ -74,17 +74,17 @@ numeric_field_config:
     input_type: "number_input"
   process_pmf_docs:
     min: 1
-    max: 5
+    max: 100
     default: 3
     input_type: "slider"
   tech_tf_tools_used:
     min: 1
-    max: 5
+    max: 100
     default: 3
     input_type: "slider"
   people_prf_personnel_changes:
     min: 1
-    max: 5
+    max: 100
     default: 2
     input_type: "slider"
 
