@@ -16,6 +16,29 @@ import yaml
 from datetime import datetime
 from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
 
+# --- Helper functions ---
+def safe_import_pipeline_function(func_name):
+    """Safely import pipeline functions with fallbacks"""
+    try:
+        from pipeline import load_preprocessing_pipeline, validate_pipeline_compatibility
+        if func_name == 'load_preprocessing_pipeline':
+            return load_preprocessing_pipeline
+        elif func_name == 'validate_pipeline_compatibility':
+            return validate_pipeline_compatibility
+        else:
+            return None
+    except ImportError:
+        return None
+
+def get_pipeline_status():
+    """Get pipeline status with safe imports"""
+    load_pipeline_func = safe_import_pipeline_function('load_preprocessing_pipeline')
+    if load_pipeline_func is None:
+        return None
+    return load_pipeline_func()
+
+
+
 # --- Compact sidebar CSS ---
 st.markdown("""
 <style>
@@ -34,117 +57,206 @@ section[data-testid="stSidebar"] .stForm .stNumberInput {
 </style>
 """, unsafe_allow_html=True)
 
-# --- Config Loader ---
-def load_feature_mapping_config(path="config/feature_mapping.yaml"):
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-FEATURE_CONFIG = load_feature_mapping_config()
+# --- Config Loaders ---
+def load_yaml_config(path):
+    """Load any YAML configuration file"""
+    try:
+        with open(path, "r") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        st.error(f"Configuration file not found: {path}")
+        return {}
+    except yaml.YAMLError as e:
+        st.error(f"Error parsing YAML file {path}: {e}")
+        return {}
 
-def get_team_size_group(max_team_size):
-    # You may want to adjust this based on your grouping rules.
-    if max_team_size == 1: return "1"
-    elif max_team_size == 2: return "2"
-    elif 3 <= max_team_size <= 4: return "3-4"
-    elif 5 <= max_team_size <= 8: return "5-8"
-    elif 9 <= max_team_size <= 14: return "9-14"
-    elif 15 <= max_team_size <= 20: return "15-20"
-    elif 21 <= max_team_size <= 30: return "21-30"
-    elif 31 <= max_team_size <= 40: return "31-40"
-    elif 41 <= max_team_size <= 50: return "41-50"
-    elif 61 <= max_team_size <= 70: return "61-70"
-    elif 71 <= max_team_size <= 80: return "71-80"
-    elif 81 <= max_team_size <= 90: return "81-90"
-    elif 91 <= max_team_size <= 100: return "91-100"
-    elif 101 <= max_team_size: return "100+"
-    else: return "Missing"
+def load_configs():
+    """Load all configuration files"""
+    # Try to load UI config first to get paths
+    ui_config = load_yaml_config("config/ui_config.yaml")
+    
+    # Get paths from UI config or use defaults
+    feature_config_path = ui_config.get("app_settings", {}).get("default_config_path", "config/feature_mapping.yaml")
+    
+    feature_config = load_yaml_config(feature_config_path)
+    
+    return feature_config, ui_config
+
+FEATURE_CONFIG, UI_CONFIG = load_configs()
+
+def get_team_size_group_from_config(max_team_size):
+    """Dynamically determine team size group based on YAML config options"""
+    team_size_config = FEATURE_CONFIG.get("special_cases", {}).get("team_size_group", {})
+    options = team_size_config.get("options", [])
+    
+    # Parse the options to create ranges
+    for option in options:
+        if option == "Missing":
+            continue
+        elif option.isdigit():
+            if max_team_size == int(option):
+                return option
+        elif "-" in option:
+            try:
+                start, end = map(int, option.split("-"))
+                if start <= max_team_size <= end:
+                    return option
+            except ValueError:
+                continue
+        elif option.endswith("+"):
+            try:
+                threshold = int(option[:-1])
+                if max_team_size >= threshold:
+                    return option
+            except ValueError:
+                continue
+    
+    return "Missing"
+
+def get_numeric_field_config(field_name):
+    """Get configuration for numeric fields from UI config"""
+    numeric_configs = UI_CONFIG.get("numeric_field_config", {})
+    
+    # Return specific config if exists, otherwise default
+    if field_name in numeric_configs:
+        return numeric_configs[field_name]
+    
+    # Fallback defaults
+    return {"min": 1, "max": 10, "default": 1, "input_type": "number_input"}
+
+def get_field_label(field_name):
+    """Get human-readable labels from UI config"""
+    field_labels = UI_CONFIG.get("field_labels", {})
+    
+    # Return configured label or generate from field name
+    return field_labels.get(field_name, field_name.replace('_', ' ').title())
+
+def get_tab_organization():
+    """Get tab organization from UI config"""
+    return UI_CONFIG.get("tab_organization", {
+        "Basic": [],
+        "Technical": [],
+        "Advanced": []
+    })
+
+def get_ui_behavior():
+    """Get UI behavior settings from config"""
+    return UI_CONFIG.get("ui_behavior", {
+        "multiselect_threshold": 10,
+        "radio_threshold": 4,
+        "selectbox_threshold": 8
+    })
+
+def render_field(field_name, config_section, config_data):
+    """Dynamically render form fields based on YAML config"""
+    label = get_field_label(field_name)
+    ui_behavior = get_ui_behavior()
+    
+    if config_section == "numeric_features":
+        field_config = get_numeric_field_config(field_name)
+        input_type = field_config.get("input_type", "number_input")
+        
+        if input_type == "slider":
+            return st.slider(label, field_config["min"], field_config["max"], field_config["default"])
+        else:
+            return st.number_input(label, field_config["min"], field_config["max"], field_config["default"])
+    
+    elif config_section == "categorical_features":
+        options = config_data.get("options", [])
+        if len(options) > ui_behavior["multiselect_threshold"]:
+            return st.multiselect(label, options)
+        else:
+            return st.selectbox(label, options)
+    
+    elif config_section == "one_hot_features":
+        mapping = config_data.get("mapping", {})
+        options = list(mapping.keys())
+        
+        if len(options) <= ui_behavior["radio_threshold"]:
+            return st.radio(label, options)
+        elif len(options) <= ui_behavior["selectbox_threshold"]:
+            return st.selectbox(label, options)
+        else:
+            return st.multiselect(label, options)
+    
+    elif config_section == "special_cases":
+        if field_name == "project_prf_team_size_group":
+            # This will be auto-calculated, just display it
+            return None
+        else:
+            options = config_data.get("options", [])
+            return st.selectbox(label, options)
+    
+    elif config_section == "binary_features":
+        mapping = config_data.get("mapping", {})
+        options = list(mapping.keys())
+        return st.radio(label, options)
+    
+    return None
 
 def sidebar_inputs():
     model_status = check_required_models()
+    tab_organization = get_tab_organization()
+    user_inputs = {}
+    
     with st.sidebar:
         with st.form("estimation_form"):
-            tab1, tab2, tab3 = st.tabs(["Basic", "Technical", "Advanced"])
-            # ---- BASIC tab ----
-            with tab1:
-                project_year = st.number_input("Project Year", 2015, 2030, 2024)
-                industry_sector = st.selectbox(
-                    "Industry Sector",
-                    FEATURE_CONFIG["categorical_features"]["external_eef_industry_sector"]["options"])
-                # MULTISELECT for organisation_type
-                organisation_types = st.multiselect(
-                    "Organisation Type",
-                    FEATURE_CONFIG["categorical_features"]["external_eef_organisation_type"]["options"])
-                # MULTISELECT for application_type
-                application_types = st.multiselect(
-                    "Application Type",
-                    FEATURE_CONFIG["categorical_features"]["project_prf_application_type"]["options"])
-                functional_size = st.number_input("Functional Size (Function Points)", 1, 10000, 100)
-                max_team_size = st.number_input("Maximum Team Size", 1, 100, 5)
-                st.subheader("Application Group")
-                # Handles both selectbox/radio (assume single value)
-                application_group = st.radio(
-                    "Primary Application Category",
-                    list(FEATURE_CONFIG["one_hot_features"]["project_prf_application_group"]["mapping"].keys()))
-                development_type = st.radio(
-                    "Development Type",
-                    list(FEATURE_CONFIG["one_hot_features"]["development_type"]["mapping"].keys()))
-                # Relative size (e.g., XXS, XS, S, ..., XXL, XXXL)
-                relative_size = st.selectbox(
-                    "Relative Project Size",
-                    list(FEATURE_CONFIG["one_hot_features"]["project_prf_relative_size"]["mapping"].keys()), 2)
-
-            # ---- TECHNICAL tab ----
-            with tab2:
-                st.header("Technical Information")
-                development_platform = st.selectbox(
-                    "Development Platform",
-                    list(FEATURE_CONFIG["one_hot_features"]["development_platform"]["mapping"].keys()))
-                language_type = st.selectbox(
-                    "Programming Language Type",
-                    list(FEATURE_CONFIG["one_hot_features"]["language_type"]["mapping"].keys()))
-                primary_language = st.selectbox(
-                    "Primary Programming Language",
-                    list(FEATURE_CONFIG["one_hot_features"]["primary_language"]["mapping"].keys()))
-                architecture = st.selectbox(
-                    "System Architecture",
-                    list(FEATURE_CONFIG["one_hot_features"]["architecture"]["mapping"].keys()), 1)
-                # BINARY (radio)
-                client_server = st.radio(
-                    "Client-Server Architecture",
-                    list(FEATURE_CONFIG["binary_features"]["client_server"]["mapping"].keys()))
-                web_development = st.radio(
-                    "Web Development",
-                    list(FEATURE_CONFIG["binary_features"]["web_development"]["mapping"].keys()))
-                # MULTISELECT for tech_tf_client_roles
-                client_roles = st.multiselect(
-                    "Client Roles",
-                    FEATURE_CONFIG["categorical_features"]["tech_tf_client_roles"]["options"])
-                # MULTISELECT for tech_tf_server_roles
-                server_roles = st.multiselect(
-                    "Server Roles",
-                    FEATURE_CONFIG["categorical_features"]["tech_tf_server_roles"]["options"])
-                dbms_used = st.radio(
-                    "Database Management System Used",
-                    list(FEATURE_CONFIG["binary_features"]["dbms_used"]["mapping"].keys()))
-                tools_used = st.slider("Development Tools Sophistication (1-5)", 1, 5, 3)
-
-            # ---- ADVANCED tab ----
-            with tab3:
-                st.header("Process & People")
-                docs = st.slider("Documentation Level (1-5)", 1, 5, 3)
-                personnel_changes = st.slider("Personnel Changes (1-5)", 1, 5, 2)
-                # MULTISELECT for process_pmf_development_methodologies
-                development_methodologies = st.multiselect(
-                    "Development Methodologies",
-                    list(FEATURE_CONFIG["one_hot_features"]["process_pmf_development_methodologies"]["mapping"].keys())
-                )
-                team_size_group = st.selectbox(
-                    "Team Size Group",
-                    FEATURE_CONFIG["special_cases"]["team_size_group"]["options"],
-                    index=FEATURE_CONFIG["special_cases"]["team_size_group"]["options"].index(get_team_size_group(max_team_size)))
-                cost_currency = st.selectbox(
-                    "Cost Currency",
-                    list(FEATURE_CONFIG["one_hot_features"]["cost_currency"]["mapping"].keys())
-                )
+            # Create tabs dynamically
+            tabs = st.tabs(list(tab_organization.keys()))
+            
+            for tab_idx, (tab_name, field_list) in enumerate(tab_organization.items()):
+                with tabs[tab_idx]:
+                    if tab_name != "Advanced":
+                        st.header(f"{tab_name} Information")
+                    
+                    for field_name in field_list:
+                        # Find field in config
+                        field_found = False
+                        
+                        # Check numeric features
+                        if field_name in FEATURE_CONFIG.get("numeric_features", []):
+                            user_inputs[field_name] = render_field(field_name, "numeric_features", {})
+                            field_found = True
+                        
+                        # Check categorical features
+                        elif field_name in FEATURE_CONFIG.get("categorical_features", {}):
+                            config_data = FEATURE_CONFIG["categorical_features"][field_name]
+                            user_inputs[field_name] = render_field(field_name, "categorical_features", config_data)
+                            field_found = True
+                        
+                        # Check one-hot features
+                        else:
+                            for group_name, group_config in FEATURE_CONFIG.get("one_hot_features", {}).items():
+                                if group_config.get("input_key") == field_name:
+                                    user_inputs[field_name] = render_field(field_name, "one_hot_features", group_config)
+                                    field_found = True
+                                    break
+                        
+                        # Check special cases
+                        if not field_found:
+                            for group_name, group_config in FEATURE_CONFIG.get("special_cases", {}).items():
+                                if group_config.get("input_key") == field_name:
+                                    if field_name == "project_prf_team_size_group":
+                                        # Auto-calculate based on max team size
+                                        max_team_size = user_inputs.get("project_prf_max_team_size", 5)
+                                        team_size_group = get_team_size_group_from_config(max_team_size)
+                                        user_inputs[field_name] = team_size_group
+                                        st.write(f"**{get_field_label(field_name)}:** {team_size_group}")
+                                    else:
+                                        user_inputs[field_name] = render_field(field_name, "special_cases", group_config)
+                                    field_found = True
+                                    break
+                        
+                        # Check binary features
+                        if not field_found:
+                            for group_name, group_config in FEATURE_CONFIG.get("binary_features", {}).items():
+                                if group_config.get("input_key") == field_name:
+                                    user_inputs[field_name] = render_field(field_name, "binary_features", group_config)
+                                    field_found = True
+                                    break
+            
+            # Model Selection (always in Advanced tab)
+            with tabs[-1]:  # Last tab (Advanced)
                 st.header("Model Selection")
                 selected_model = None
                 if model_status["models_available"]:
@@ -165,37 +277,10 @@ def sidebar_inputs():
             if save_config:
                 config_name = st.text_input("Enter a name for this configuration:")
 
-            # Assemble user_inputs
-            user_inputs = {
-                "project_prf_year_of_project": project_year,
-                "external_eef_industry_sector": industry_sector,
-                "external_eef_organisation_type": organisation_types,
-                "project_prf_application_type": application_types,
-                "project_prf_functional_size": functional_size,
-                "project_prf_max_team_size": max_team_size,
-                "process_pmf_docs": docs,
-                "tech_tf_tools_used": tools_used,
-                "people_prf_personnel_changes": personnel_changes,
-                "project_prf_application_group": application_group,
-                "project_prf_development_type": development_type,
-                "project_prf_relative_size": relative_size,
-                "development_platform": development_platform,
-                "language_type": language_type,
-                "primary_language": primary_language,
-                "architecture": architecture,
-                "client_server": client_server,
-                "web_development": web_development,
-                "dbms_used": dbms_used,
-                "client_roles": client_roles,
-                "server_roles": server_roles,
-                "process_pmf_development_methodologies": development_methodologies,
-                "team_size_group": team_size_group,
-                "cost_currency": cost_currency,
-                "selected_model": selected_model,
-                "submit": submit
-            }
+            user_inputs["selected_model"] = selected_model
+            user_inputs["submit"] = submit
 
-            # Save config logic (if needed)
+            # Save config logic
             if save_config and selected_model:
                 if config_name:
                     save_current_configuration(user_inputs, config_name)
@@ -204,50 +289,53 @@ def sidebar_inputs():
 
             if submit or save_config:
                 return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-            return {'selected_model': None, 'submit': False}  # Default to avoid NoneType errors
+            return {'selected_model': None, 'submit': False}
 
-# -- Feature dict creation (supports multi-hot) --
 def create_feature_dict_from_config(user_inputs, config):
+    """Create feature dictionary dynamically from config"""
     features = {}
-    # Numeric
+    
+    # Process numeric features
     for key in config.get("numeric_features", []):
         features[key] = user_inputs.get(key, 0)
-    # Categorical (single select)
+    
+    # Process categorical features
     for key, meta in config.get("categorical_features", {}).items():
         val = user_inputs.get(key, None)
-        # If user selected multiple, just join with ';' (if needed)
         if isinstance(val, list):
-            features[key] = ";".join(val)
+            features[key] = ";".join(val) if val else ""
         else:
-            features[key] = val
-    # One-hot and multi-hot
+            features[key] = val if val else ""
+    
+    # Process one-hot features
     for group, mapping in config.get("one_hot_features", {}).items():
-        input_value = user_inputs.get(mapping["input_key"], [])
+        input_key = mapping["input_key"]
+        input_value = user_inputs.get(input_key, [])
+        
         if isinstance(input_value, list):
             selected_values = set(input_value)
         else:
-            selected_values = {input_value}
+            selected_values = {input_value} if input_value else set()
+        
         for label, feat_key in mapping["mapping"].items():
             features[feat_key] = int(label in selected_values)
-    # Special cases (multi-hot/binary etc)
+    
+    # Process special cases
     for group, spec in config.get("special_cases", {}).items():
-        input_value = user_inputs.get(spec["input_key"], [])
-        if "mapping" in spec:
-            # Handle multi-hot for special cases
-            if isinstance(input_value, list):
-                selected_values = set(input_value)
-            else:
-                selected_values = {input_value}
-            for label, feat_key in spec["mapping"].items():
-                features[feat_key] = int(label in selected_values)
+        input_key = spec["input_key"]
+        input_value = user_inputs.get(input_key, "")
+        
         if "output_keys" in spec:
             for label, feat_key in spec["output_keys"].items():
                 features[feat_key] = int(input_value == label)
-    # Binary features
+    
+    # Process binary features
     for group, mapping in config.get("binary_features", {}).items():
-        input_value = user_inputs.get(mapping["input_key"], "")
+        input_key = mapping["input_key"]
+        input_value = user_inputs.get(input_key, "")
         for label, feat_key in mapping["mapping"].items():
             features[feat_key] = int(input_value == label)
+    
     features["selected_model"] = user_inputs.get("selected_model")
     features["submit"] = user_inputs.get("submit", False)
     return features
@@ -260,28 +348,33 @@ def save_current_configuration(user_inputs, config_name):
     config = user_inputs.copy()
     config.pop('submit', None)
     config['date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
-    ensure_dir('configs')
-    with open(f'configs/{config_name}.json', 'w') as f:
-        json.dump(config, f)
+    
+    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
+    ensure_dir(configs_dir)
+    
+    with open(f'{configs_dir}/{config_name}.json', 'w') as f:
+        json.dump(config, f, default=str)
     st.success(f"Configuration '{config_name}' saved successfully!")
 
 def load_saved_configurations():
+    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
     configs = {}
-    if not os.path.exists('configs'):
+    if not os.path.exists(configs_dir):
         return configs
-    for filename in os.listdir('configs'):
+    for filename in os.listdir(configs_dir):
         if filename.endswith('.json'):
             config_name = os.path.splitext(filename)[0]
             try:
-                with open(f'configs/{filename}', 'r') as f:
+                with open(f'{configs_dir}/{filename}', 'r') as f:
                     configs[config_name] = json.load(f)
             except Exception:
                 pass
     return configs
 
 def load_configuration(config_name):
+    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
     try:
-        with open(f'configs/{config_name}.json', 'r') as f:
+        with open(f'{configs_dir}/{config_name}.json', 'r') as f:
             return json.load(f)
     except Exception:
         st.error(f"Failed to load configuration '{config_name}'")
@@ -291,18 +384,19 @@ def display_inputs(user_inputs, selected_model):
     col1, col2 = st.columns([2, 1])
     with col1:
         st.subheader("Input Parameters Summary")
-        key_params = {
-            "Project Year": user_inputs.get('project_prf_year_of_project', 'N/A'),
-            "Functional Size": user_inputs.get('project_prf_functional_size', 'N/A'),
-            "Max Team Size": user_inputs.get('project_prf_max_team_size', 'N/A'),
-            "Industry Sector": user_inputs.get('external_eef_industry_sector', 'N/A'),
-            "Application Type": user_inputs.get('project_prf_application_type', 'N/A'),
-            "Documentation Level": user_inputs.get('process_pmf_docs', 'N/A'),
-            "Tools Used": user_inputs.get('tech_tf_tools_used', 'N/A'),
-            "Personnel Changes": user_inputs.get('people_prf_personnel_changes', 'N/A')
-        }
+        
+        # Get key parameters from config
+        display_config = UI_CONFIG.get("display_config", {})
+        key_param_fields = display_config.get("key_parameters_for_summary", [])
+        
+        key_params = {}
+        for field in key_param_fields:
+            label = get_field_label(field)
+            key_params[label] = user_inputs.get(field, 'N/A')
+        
         input_df = pd.DataFrame([{"Parameter": k, "Value": v} for k, v in key_params.items()])
         st.dataframe(input_df, use_container_width=True)
+        
         if selected_model:
             model_display_name = get_model_display_name(selected_model)
             st.write(f"📊 Selected Model: **{model_display_name}**")
@@ -310,59 +404,79 @@ def display_inputs(user_inputs, selected_model):
             st.write("📊 Selected Model: **None**")
     return col2
 
+def create_feature_name_mapping():
+    """Dynamically create feature name mapping from config"""
+    mapping = {}
+    
+    # Add numeric features
+    for feature in FEATURE_CONFIG.get("numeric_features", []):
+        mapping[feature] = get_field_label(feature)
+    
+    # Add one-hot features
+    for group, config in FEATURE_CONFIG.get("one_hot_features", {}).items():
+        for label, feat_key in config.get("mapping", {}).items():
+            # Create more descriptive names
+            base_name = group.replace('_', ' ').title()
+            mapping[feat_key] = f"{base_name}: {label}"
+    
+    # Add special case features
+    for group, config in FEATURE_CONFIG.get("special_cases", {}).items():
+        if "output_keys" in config:
+            base_name = group.replace('_', ' ').title()
+            for label, feat_key in config["output_keys"].items():
+                mapping[feat_key] = f"{base_name}: {label}"
+    
+    return mapping
+
 def show_feature_importance(selected_model, features_dict, st):
     if not selected_model:
         st.info("No model selected for feature importance analysis.")
         return
+    
     feature_importance = get_feature_importance(selected_model)
     if feature_importance is not None:
         st.subheader("Feature Importance")
         exclude_keys = {'selected_model', 'submit'}
         feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
-        feature_name_mapping = {
-            "project_prf_year_of_project": "Project Year",
-            "project_prf_functional_size": "Functional Size",
-            "project_prf_max_team_size": "Max Team Size",
-            "external_eef_industry_sector": "Industry Sector",
-            "external_eef_organisation_type": "Organisation Type",
-            "project_prf_application_type": "Application Type",
-            "process_pmf_docs": "Documentation Level",
-            "tech_tf_tools_used": "Tools Used",
-            "people_prf_personnel_changes": "Personnel Changes",
-            "project_prf_application_group_business_application": "Business Application",
-            "project_prf_application_group_infrastructure_software": "Infrastructure Software",
-            "project_prf_development_type_new_development": "New Development",
-            "project_prf_development_type_re_development": "Re-development",
-            "tech_tf_development_platform_pc": "PC Platform",
-            "tech_tf_language_type_4GL": "4GL Language",
-            "tech_tf_primary_programming_language_java": "Java Language",
-            "project_prf_relative_size_m1": "Medium Size (M1)",
-            "process_pmf_development_methodologies_agile_developmentscrum": "Scrum Methodology"
-        }
+        
+        # Use dynamic feature name mapping
+        feature_name_mapping = create_feature_name_mapping()
+        
+        # Get display config
+        importance_config = UI_CONFIG.get("feature_importance_display", {})
+        max_features = importance_config.get("max_features_shown", 15)
+        chart_size = importance_config.get("chart_size", {"width": 10, "height": 8})
+        precision = importance_config.get("precision_decimals", 3)
+        
         importance_data = []
-        for i, name in enumerate(feature_names[:min(len(feature_importance), 15)]):
+        for i, name in enumerate(feature_names[:min(len(feature_importance), max_features)]):
             if i < len(feature_importance):
                 friendly_name = feature_name_mapping.get(name, name.replace('_', ' ').title())
                 importance_data.append({
                     'Feature': friendly_name,
                     'Importance': abs(feature_importance[i])
                 })
+        
         if importance_data:
             importance_df = pd.DataFrame(importance_data)
             importance_df = importance_df.sort_values('Importance', ascending=False)
-            fig, ax = plt.subplots(figsize=(10, 8))
+            
+            fig, ax = plt.subplots(figsize=(chart_size["width"], chart_size["height"]))
             bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
+            
             for bar in bars:
                 width = bar.get_width()
                 if width > 0:
                     label_x_pos = width * 1.01
-                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'{width:.3f}', va='center')
+                    format_str = f'{{:.{precision}f}}'
+                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, format_str.format(width), va='center')
+            
             ax.set_xlabel('Relative Importance')
             ax.set_title(f'Top Feature Importance - {get_model_display_name(selected_model)}')
             ax.grid(True, linestyle='--', alpha=0.3)
             plt.tight_layout()
             st.pyplot(fig)
-            st.dataframe(importance_df.round(4), use_container_width=True)
+            st.dataframe(importance_df.round(precision), use_container_width=True)
         else:
             st.info("No feature importance data available.")
     else:
@@ -370,6 +484,9 @@ def show_feature_importance(selected_model, features_dict, st):
         st.info(f"Feature importance is not available for {model_display_name}. This might be because the model doesn't support feature importance or there was an error retrieving it.")
 
 def show_prediction(col2, prediction, team_size):
+    # Get prediction thresholds from config
+    thresholds = UI_CONFIG.get("prediction_thresholds", {"low_prediction_warning": 1, "high_prediction_warning": 10000})
+    
     with col2:
         st.subheader("Prediction Result")
         if prediction is None:
@@ -383,59 +500,57 @@ def show_prediction(col2, prediction, team_size):
         """, unsafe_allow_html=True)
         hours = int(prediction)
         days = hours // 8
-        per_person = prediction / team_size
+        per_person = prediction / team_size if team_size > 0 else prediction
         st.markdown("### Timeline Breakdown")
         metrics_col1, metrics_col2 = st.columns(2)
         with metrics_col1:
             st.metric("Calendar Time", f"{days}d", help="Estimated calendar duration assuming full team availability")
         with metrics_col2:
             st.metric("Per Person", f"{per_person:.2f}h", help="Average effort per team member in hours")
-        if prediction < 1:
+        
+        # Use configurable thresholds
+        if prediction < thresholds["low_prediction_warning"]:
             st.warning("This prediction seems unusually low. Consider reviewing your inputs.")
-        elif prediction > 10000:
+        elif prediction > thresholds["high_prediction_warning"]:
             st.warning("This prediction seems unusually high. Consider reviewing your inputs.")
 
 def about_section():
     st.markdown("---")
     with st.expander("About this Estimator", expanded=False):
-        st.subheader("Machine Learning for Agile Project Estimation")
+        st.subheader("Machine Learning for Project Estimation")
         st.write("""
-        This application uses machine learning models to predict the effort required for agile projects.
+        This application uses machine learning models to predict the effort required for projects.
         The models have been trained on historical project data to provide early estimations based on
         key project parameters. These estimations can help in project planning and resource allocation.
+        
         ### How it Works
-        The estimator uses the following input parameters:
-        - **Project Complexity**: Overall complexity of the project scope
-        - **Team Experience**: Experience level of the team with similar projects
-        - **Number of Requirements**: Count of user stories or requirements
-        - **Team Size**: Number of full-time team members
-        - **Technology Stack Complexity**: Complexity of the technology being used
-        The selected machine learning model processes these inputs to predict the required effort in man-hours.
+        The estimator dynamically processes input parameters based on the configured feature mapping
+        and uses the selected machine learning model to predict the required effort in man-hours.
+        
+        ### Input Categories
+        The system organizes inputs into configurable categories based on the UI configuration file.
+        All field labels, organization, and behavior can be customized through YAML configuration files.
         """)
 
 def tips_section():
     with st.expander("Tips for Accurate Estimation", expanded=False):
         st.markdown("""
         ### Tips for Getting Accurate Estimations
-        1. **Project Complexity**
-           - Rate 1-2 for simple projects with well-understood requirements
-           - Rate 3 for moderate complexity with some uncertainty
-           - Rate 4-5 for highly complex projects with significant unknowns
-        2. **Team Experience**
-           - Rate 1-2 for teams new to the domain or technology
-           - Rate 3 for teams with moderate experience in similar projects
-           - Rate 4-5 for highly experienced teams who have done similar work
-        3. **Requirements Analysis**
-           - Count only well-defined requirements
-           - Break down epics into smaller stories when possible
-           - Consider using story points as a proxy for requirements count
-        4. **Team Size Considerations**
-           - Larger teams may increase coordination overhead
-           - Consider the "mythical man-month" effect
-           - Ensure your team size is appropriate for the project scope
-        5. **Technology Complexity**
-           - Rate 1-2 for familiar, stable technology stacks
-           - Rate 3 for mixed familiar/new technologies
-           - Rate 4-5 for cutting-edge or highly specialized technologies
+        
+        1. **Provide Complete Information**
+           - Fill out all relevant fields for the most accurate predictions
+           - Use realistic values based on your project's actual requirements
+        
+        2. **Consider Project Context**
+           - Factor in your team's specific experience and capabilities
+           - Account for any unique constraints or requirements
+        
+        3. **Review and Validate**
+           - Compare estimates with historical data from similar projects
+           - Use estimates as starting points, not absolute values
+        
+        4. **Iterative Refinement**
+           - Update estimates as project requirements become clearer
+           - Consider re-estimating at key project milestones
         """)
         st.info("Remember that these estimations are meant to be starting points. Always review and adjust based on your team's specific context and historical performance.")
