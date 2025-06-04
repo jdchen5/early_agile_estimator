@@ -8,7 +8,7 @@ numeric_features:
 
 categorical_features:
   external_eef_industry_sector:
-    options: ["Banking", "Education", "Electronics Computers", "Financial", "Government", "Insurance","Insurance", "Manufacturing",  "Medical Healthcare",  "Service Industry", "Telecommunications", "Utilisties", "Wholesale Retail", "Other"]
+    options: ["Banking", "Construction", "Defence", "Education", "Electronics Computers", "Financial", "Government", "Insurance","Insurance", "Logistics", "Manufacturing",  "Mining", "Medical Healthcare",  "Professional Services", "Service Industry", "Telecommunications", "Utilities", "Wholesale Retail", "Other"]
   external_eef_organisation_type:
     options:
       - All industry organization types
@@ -41,7 +41,7 @@ categorical_features:
       - Auditing Management
       - Automated Data Acquisition
       - Business Application
-      - Catalogue_Register Of Things Or Events
+      - Catalogue/Register Of Things Or Events
       - Clinical Archive
       - Complex Process Control
       - Content Management System
@@ -53,12 +53,16 @@ categorical_features:
       - Data Warehouse System
       - Dynamic Website
       - Electronic Data Interchange
-      - Financial Transaction Process_Accounting
+      - Embedded System/Real-time Application
+      - Financial Transaction Process/Accounting
       - Hospital Information System
       - Identify Management
       - Logistic/Supply Planning_Control
-      - Management / Performance Reporting
-      - Mathematical Modelling_Finance / Eng
+      - Management/Performance Reporting
+      - Management of Licenses & Permits
+      - Management Information System
+      - Mathematical Modelling Finance/Eng
+      - Online eSales
       - Online Analysis & Reporting
       - Project Management
       - Promotions
@@ -66,7 +70,7 @@ categorical_features:
       - Software Development Tool
       - Security_Authentication
       - Security Controls
-      - Student_Tests Management
+      - Student/Tests Management
       - Surveillance & Security
       - Web-Based Application
       - Workflow Support_Management
@@ -222,7 +226,7 @@ special_cases:
       "71-80": project_prf_team_size_group_71_80
       "81-90": project_prf_team_size_group_81_90
       "91-100": project_prf_team_size_group_91_100
-      "100+": project_prf_team_size_group_100plus
+      "101+": project_prf_team_size_group_101plus
       "Missing": project_prf_team_size_group_Missing
 
 
