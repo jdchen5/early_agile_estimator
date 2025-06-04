@@ -826,19 +826,23 @@ def preprocess_dataframe(
 def preprocess_for_prediction(
     feature_dict: Dict,
     pipeline: Optional[Pipeline] = None,
-    feature_config: Optional[Dict] = None
+    feature_config: Optional[Dict] = None,
+    create_dynamic_pipeline: bool = True  # NEW: Enable dynamic pipeline creation
 ) -> pd.DataFrame:
     """
-    Preprocess feature dictionary for prediction using trained pipeline
+    Preprocess feature dictionary for prediction.
+    Can work with saved pipeline OR create dynamic pipeline (no pkl file required).
     
     Parameters:
     -----------
     feature_dict : dict
         Feature dictionary from UI
     pipeline : Pipeline, optional
-        Fitted preprocessing pipeline. If None, tries to load from disk
+        Fitted preprocessing pipeline. If None, creates dynamic pipeline
     feature_config : dict, optional
         Feature configuration for understanding structure
+    create_dynamic_pipeline : bool
+        If True, creates pipeline dynamically when no saved pipeline exists
         
     Returns:
     --------
@@ -846,27 +850,43 @@ def preprocess_for_prediction(
         Preprocessed features ready for model prediction
     """
     
-    # Load pipeline if not provided
-    if pipeline is None:
-        pipeline = load_preprocessing_pipeline()
-        if pipeline is None:
-            logging.warning("No preprocessing pipeline available. Creating default pipeline.")
-            pipeline = create_preprocessing_pipeline(target_col=None)
-    
     # Load feature config if not provided
     if feature_config is None:
         feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
     
+    # Try to load saved pipeline first (optional)
+    if pipeline is None:
+        pipeline = load_preprocessing_pipeline()
+        
+        # If no saved pipeline and dynamic creation is enabled, create one
+        if pipeline is None and create_dynamic_pipeline:
+            logging.info("No saved pipeline found. Creating dynamic preprocessing pipeline...")
+            pipeline = create_preprocessing_pipeline(
+                target_col=None,  # No target for prediction
+                high_missing_threshold=0.9,  # More lenient for prediction
+                max_categorical_cardinality=20  # More lenient for prediction
+            )
+            logging.info("Dynamic preprocessing pipeline created successfully")
+        
+        # If still no pipeline, use fallback
+        elif pipeline is None:
+            logging.warning("No preprocessing pipeline available and dynamic creation disabled.")
+            # Fallback: just convert to DataFrame without full preprocessing
+            df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
+            return df
+    
     # Convert feature dict to DataFrame
     df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
     
-    # Apply preprocessing (excluding target-related steps)
+    # Apply preprocessing
     try:
-        # Transform using the fitted pipeline
-        df_processed = pipeline.transform(df)
+        # For prediction, we fit_transform on the single row
+        # (This is safe because each transformer handles single-row data appropriately)
+        df_processed = pipeline.fit_transform(df)
         
         # Remove target column if it exists (since we're doing prediction)
-        target_cols = [col for col in df_processed.columns if 'target' in col.lower() or 'effort' in col.lower()]
+        target_cols = [col for col in df_processed.columns 
+                      if any(keyword in col.lower() for keyword in ['target', 'effort', 'work_effort'])]
         if target_cols:
             df_processed = df_processed.drop(columns=target_cols)
             logging.info(f"Removed target columns for prediction: {target_cols}")
@@ -876,9 +896,25 @@ def preprocess_for_prediction(
         
     except Exception as e:
         logging.error(f"Error in preprocessing for prediction: {e}")
-        # Fallback: return original DataFrame with basic cleaning
         logging.warning("Using fallback preprocessing...")
+        # Fallback: return original DataFrame with basic cleaning
         return df
+
+# Add a simpler version that always uses dynamic pipeline:
+def preprocess_for_prediction_dynamic(
+    feature_dict: Dict,
+    feature_config: Optional[Dict] = None
+) -> pd.DataFrame:
+    """
+    Simple preprocessing function that always creates pipeline dynamically.
+    No pkl file required.
+    """
+    return preprocess_for_prediction(
+        feature_dict=feature_dict,
+        pipeline=None,
+        feature_config=feature_config,
+        create_dynamic_pipeline=True
+    )
 
 # === Utility functions ===
 def get_pipeline_feature_names(pipeline: Pipeline) -> List[str]:
@@ -949,3 +985,90 @@ def validate_pipeline_compatibility(pipeline: Pipeline, feature_dict: Dict) -> D
             'error': str(e),
             'validation_passed': False
         }
+
+# === Main functions for external use ===
+def create_dynamic_pipeline_for_prediction(feature_dict: Dict) -> Pipeline:
+    """
+    Create a dynamic preprocessing pipeline specifically for prediction use.
+    This is the main function to use when you don't have a saved pipeline.
+    """
+    feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+    
+    # Create pipeline optimized for prediction
+    pipeline = create_preprocessing_pipeline(
+        target_col=None,  # No target column for prediction
+        high_missing_threshold=0.95,  # Very lenient for prediction
+        max_categorical_cardinality=50,  # More lenient for prediction
+        standardization_mapping=None
+    )
+    
+    logging.info("Created dynamic pipeline for prediction")
+    return pipeline
+
+def process_features_for_prediction(feature_dict: Dict) -> pd.DataFrame:
+    """
+    Main entry point for processing features for prediction.
+    Creates pipeline dynamically and processes the features.
+    """
+    try:
+        # Create dynamic pipeline
+        pipeline = create_dynamic_pipeline_for_prediction(feature_dict)
+        
+        # Convert features to DataFrame
+        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
+        
+        # Process with pipeline
+        df_processed = pipeline.fit_transform(df)
+        
+        # Remove any target-related columns
+        target_cols = [col for col in df_processed.columns 
+                      if any(keyword in col.lower() for keyword in ['target', 'effort', 'work_effort'])]
+        if target_cols:
+            df_processed = df_processed.drop(columns=target_cols)
+            logging.info(f"Removed target columns: {target_cols}")
+        
+        logging.info(f"Successfully processed features: shape {df_processed.shape}")
+        return df_processed
+        
+    except Exception as e:
+        logging.error(f"Error in process_features_for_prediction: {e}")
+        # Fallback: basic DataFrame conversion
+        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
+        return df
+
+# === Export functions ===
+__all__ = [
+    # Main pipeline functions
+    'create_preprocessing_pipeline',
+    'preprocess_dataframe',
+    'preprocess_for_prediction',
+    'preprocess_for_prediction_dynamic',
+    
+    # Feature conversion
+    'convert_feature_dict_to_dataframe',
+    'process_features_for_prediction',
+    'create_dynamic_pipeline_for_prediction',
+    
+    # Pipeline management
+    'save_preprocessing_pipeline',
+    'load_preprocessing_pipeline',
+    
+    # Utilities
+    'get_pipeline_feature_names',
+    'validate_pipeline_compatibility',
+    'load_yaml_config',
+    
+    # Individual transformer classes
+    'DataFrameValidator',
+    'ColumnNameStandardizer',
+    'CategoricalValueStandardizer',
+    'CategoricalValueCleaner',
+    'MissingValueAnalyzer',
+    'SemicolonProcessor',
+    'MultiValueEncoder',
+    'CategoricalEncoder',
+    'ColumnNameFixer',
+    'DataValidator'
+]

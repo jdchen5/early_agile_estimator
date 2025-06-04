@@ -14,8 +14,7 @@ import json
 import os
 import yaml
 from datetime import datetime
-from models import list_available_models, get_feature_importance, check_required_models, get_model_display_name
-
+from models import *
 # --- Compact sidebar CSS ---
 st.markdown("""
 <style>
@@ -782,3 +781,20 @@ def tips_section():
            - Consider re-estimating at key project milestones
         """)
         st.info("Remember that these estimations are meant to be starting points. Always review and adjust based on your team's specific context and historical performance.")
+
+def add_model_diagnostics_to_ui():
+    """Add model diagnostics section to Streamlit UI"""
+    if st.button("🔧 Diagnose Model Loading Issues"):
+        with st.spinner("Running model diagnostics..."):
+            fix_model_loading_issues()
+            st.success("Diagnostics completed! Check the logs for details.")
+    
+    if st.button("🧪 Create Test Model"):
+        with st.spinner("Creating test model..."):
+            if create_test_model_file():
+                st.success("Test model created successfully!")
+                st.info("Try selecting 'test_model' from the dropdown and making a prediction.")
+            else:
+                st.error("Failed to create test model. Check logs for details.")
+
+     

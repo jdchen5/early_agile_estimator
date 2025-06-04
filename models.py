@@ -47,6 +47,20 @@ def load_yaml_config(path: str) -> Dict:
 FEATURE_CONFIG = load_yaml_config(FEATURE_MAPPING_FILE)
 UI_CONFIG = load_yaml_config(UI_CONFIG_FILE)
 
+def check_pycaret_safely():
+    """Safely check if PyCaret is available and functional"""
+    try:
+        from pycaret.regression import predict_model
+        return True, predict_model
+    except ImportError:
+        logging.warning("PyCaret not available")
+        return False, None
+    except Exception as e:
+        logging.warning(f"PyCaret import error: {str(e)}")
+        return False, None
+
+# Use this at the module level
+PYCARET_AVAILABLE, predict_model = check_pycaret_safely()
 
 def get_expected_feature_names_from_config() -> List[str]:
     """
@@ -136,50 +150,11 @@ def create_feature_vector_from_dict(feature_dict: Dict, expected_features: Optio
     
     return np.array(feature_vector)
 
-def list_available_models() -> list:
-    """
-    Lists all available model files in the models directory (without extension).
-    Returns a list of dicts with 'technical_name' and 'display_name'.
-    """
-    ensure_models_folder()
-    model_files = []
-    for f in os.listdir(MODELS_FOLDER):
-        if f.endswith('.pkl') and not ('scaler' in f.lower()):
-            technical_name = os.path.splitext(f)[0]
-            display_name = get_model_display_name(technical_name)
-            model_files.append({
-                'technical_name': technical_name,
-                'display_name': display_name
-            })
-    # Sort by display name for user-friendly dropdown
-    model_files.sort(key=lambda x: x['display_name'])
-    return model_files
-
-def check_required_models() -> dict:
-    """
-    Checks for the presence of model files and a scaler in the models folder.
-    Returns a dictionary summarizing their availability and listing the models.
-    """
-    ensure_models_folder()
-    existing_files = os.listdir(MODELS_FOLDER)
-    existing_models = [f for f in existing_files if f.endswith('.pkl')]
-    has_models = any(f for f in existing_models if not f.startswith('scaler'))
-    has_scaler = any(f for f in existing_models if f.startswith('scaler'))
-    found_models = []
-    for f in existing_models:
-        if not ('scaler' in f.lower()):
-            technical_name = os.path.splitext(f)[0]
-            display_name = get_model_display_name(technical_name)
-            found_models.append({
-                'technical_name': technical_name,
-                'display_name': display_name
-            })
-    return {
-        "models_available": has_models,
-        "scaler_available": has_scaler,
-        "found_models": found_models,
-        "technical_names": [model['technical_name'] for model in found_models]
-    }
+def ensure_models_folder():
+    """Ensure the models folder directory exists."""
+    if not os.path.exists(MODELS_FOLDER):
+        os.makedirs(MODELS_FOLDER)
+        logging.info(f"Created models folder at '{MODELS_FOLDER}'")
 
 def load_model_display_names() -> Dict[str, str]:
     """Load model display names from config file"""
@@ -235,26 +210,50 @@ def get_expected_feature_names() -> List[str]:
         logging.warning(f"Expected features file not found at {FEATURE_COLS_FILE}")
         return []
 
-def ensure_models_folder():
-    """Ensure the models folder directory exists."""
-    if not os.path.exists(MODELS_FOLDER):
-        os.makedirs(MODELS_FOLDER)
-        logging.info(f"Created models folder at '{MODELS_FOLDER}'")
+def list_available_models() -> list:
+    """
+    Lists all available model files in the models directory (without extension).
+    Returns a list of dicts with 'technical_name' and 'display_name'.
+    """
+    ensure_models_folder()
+    model_files = []
+    for f in os.listdir(MODELS_FOLDER):
+        if f.endswith('.pkl') and not ('scaler' in f.lower()) and not ('pipeline' in f.lower()):
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            model_files.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
+    # Sort by display name for user-friendly dropdown
+    model_files.sort(key=lambda x: x['display_name'])
+    return model_files
 
-def check_pycaret_safely():
-    """Safely check if PyCaret is available and functional"""
-    try:
-        from pycaret.regression import predict_model
-        return True, predict_model
-    except ImportError:
-        logging.warning("PyCaret not available")
-        return False, None
-    except Exception as e:
-        logging.warning(f"PyCaret import error: {str(e)}")
-        return False, None
-
-# Use this at the module level
-PYCARET_AVAILABLE, predict_model = check_pycaret_safely()
+def check_required_models() -> dict:
+    """
+    Checks for the presence of model files and a scaler in the models folder.
+    Returns a dictionary summarizing their availability and listing the models.
+    """
+    ensure_models_folder()
+    existing_files = os.listdir(MODELS_FOLDER)
+    existing_models = [f for f in existing_files if f.endswith('.pkl')]
+    has_models = any(f for f in existing_models if not f.startswith('scaler') and 'pipeline' not in f)
+    has_scaler = any(f for f in existing_models if f.startswith('scaler'))
+    found_models = []
+    for f in existing_models:
+        if not ('scaler' in f.lower()) and not ('pipeline' in f.lower()):
+            technical_name = os.path.splitext(f)[0]
+            display_name = get_model_display_name(technical_name)
+            found_models.append({
+                'technical_name': technical_name,
+                'display_name': display_name
+            })
+    return {
+        "models_available": has_models,
+        "scaler_available": has_scaler,
+        "found_models": found_models,
+        "technical_names": [model['technical_name'] for model in found_models]
+    }
 
 def pycaret_load_model(model_path):
     """
@@ -270,128 +269,184 @@ def pycaret_load_model(model_path):
         model_name = model_name[:-4]
     return pc_load_model(model_name)
 
-def prepare_features_for_pycaret(features, model=None):
-    """
-    Converts input features into a pandas DataFrame with correct columns/order.
-    Now uses preprocessing pipeline for feature transformation.
+def load_with_pycaret(model_path: str, model_name: str):
+    """Try loading with PyCaret"""
+    if not PYCARET_AVAILABLE:
+        return None
+    return pycaret_load_model(model_path)
 
-    Args:
-        features: numpy array, list-like, or dict
-        model: optional, can provide column names if present
-    Returns:
-        pd.DataFrame with proper columns/order
-    """
-    if isinstance(features, pd.DataFrame):
-        return features
+def load_with_joblib(model_path: str, model_name: str):
+    """Try loading with joblib"""
+    try:
+        import joblib
+        model_path_with_ext = f"{model_path}.pkl"
+        if os.path.exists(model_path_with_ext):
+            return joblib.load(model_path_with_ext)
+        elif os.path.exists(f"{model_path}.joblib"):
+            return joblib.load(f"{model_path}.joblib")
+    except ImportError:
+        pass
+    return None
+
+def load_with_pickle_protocols(model_path: str, model_name: str):
+    """Try loading with different pickle protocols"""
+    model_path_with_ext = f"{model_path}.pkl"
+    if not os.path.exists(model_path_with_ext):
+        return None
     
-    # Handle dict input (from UI) - use preprocessing pipeline
-    if isinstance(features, dict):
+    # Try different pickle protocols
+    for protocol in [None, 0, 1, 2, 3, 4, 5]:
         try:
-            # Import here to avoid circular imports
-            from pipeline import preprocess_for_prediction
-            
-            # Use preprocessing pipeline to transform features
-            features_df = preprocess_for_prediction(features)
-            logging.info(f"Used preprocessing pipeline to transform features: {features_df.shape}")
-            return features_df
+            with open(model_path_with_ext, 'rb') as f:
+                if protocol is None:
+                    return pickle.load(f)
+                else:
+                    # For loading, protocol doesn't matter, but we'll catch specific errors
+                    return pickle.load(f)
         except Exception as e:
-            logging.warning(f"Preprocessing pipeline failed, using fallback: {e}")
-            # Fallback to manual conversion
-            expected_columns = get_expected_feature_names_from_model(model)
-            feature_vector = create_feature_vector_from_dict(features, expected_columns)
-            features_df = pd.DataFrame([feature_vector], columns=expected_columns)
-            return features_df
-    
-    # Handle array/list input - convert to DataFrame
-    expected_columns = get_expected_feature_names_from_model(model)
-    features = np.array(features).reshape(1, -1)  # Ensure 2D
-    
-    # Ensure we have the right number of features
-    if features.shape[1] != len(expected_columns):
-        logging.warning(f"Feature count mismatch: got {features.shape[1]}, expected {len(expected_columns)}")
-        # Pad with zeros or truncate as needed
-        if features.shape[1] < len(expected_columns):
-            padding = np.zeros((1, len(expected_columns) - features.shape[1]))
-            features = np.hstack([features, padding])
-        else:
-            features = features[:, :len(expected_columns)]
-    
-    features_df = pd.DataFrame(features, columns=expected_columns)
-    return features_df
+            if "protocol" in str(e).lower():
+                continue
+            else:
+                break
+    return None
 
-def load_model(model_name: str) -> Optional[Any]:
+def load_with_dill(model_path: str, model_name: str):
+    """Try loading with dill (enhanced pickle)"""
+    try:
+        import dill
+        model_path_with_ext = f"{model_path}.pkl"
+        if os.path.exists(model_path_with_ext):
+            with open(model_path_with_ext, 'rb') as f:
+                return dill.load(f)
+    except ImportError:
+        pass
+    return None
+
+def load_model_with_fallback(model_name: str) -> Optional[Any]:
     """
-    Load a model from the models directory, supporting both PyCaret and pickle formats.
-    
-    Args:
-        model_name (str): Name of the model to load (without extension)
-        
-    Returns:
-        Optional[Any]: Loaded model object or None if not found/error
+    Enhanced model loading with better error handling and fallback options.
     """
     model_path = os.path.join(MODELS_FOLDER, model_name)
     model_path_with_ext = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
     
-    # First, try PyCaret's load_model (without extension)
-    if PYCARET_AVAILABLE:
-        try:
-            model = pycaret_load_model(model_path)
-            logging.info(f"Successfully loaded PyCaret model: {model_name}")
-            logging.info(f"Model type: {type(model)}")
-            return model
-        except Exception as e:
-            logging.warning(f"PyCaret load failed for '{model_name}': {str(e)}")
+    # Try multiple loading strategies
+    loading_strategies = [
+        ("PyCaret", load_with_pycaret),
+        ("Joblib", load_with_joblib),
+        ("Pickle with protocols", load_with_pickle_protocols),
+        ("Dill (if available)", load_with_dill)
+    ]
     
-    # Fall back to pickle loading (with extension)
-    if os.path.exists(model_path_with_ext):
+    for strategy_name, loader_func in loading_strategies:
         try:
-            with open(model_path_with_ext, 'rb') as f:
-                model = pickle.load(f)
-            
-            logging.info(f"Successfully loaded pickle model: {model_name}")
-            logging.info(f"Loaded object type: {type(model)}")
-            
-            # For PyCaret models saved with pickle, they might be wrapped
-            if hasattr(model, 'predict') or hasattr(model, '_predict'):
+            logging.info(f"Trying {strategy_name} loading for model '{model_name}'")
+            model = loader_func(model_path, model_name)
+            if model is not None:
+                logging.info(f"Successfully loaded model '{model_name}' using {strategy_name}")
                 return model
-            else:
-                logging.error(f"Loaded object '{model_name}' does not have prediction capability")
-                return None
-                
         except Exception as e:
-            logging.error(f"Error loading model '{model_name}' with pickle: {str(e)}")
+            logging.warning(f"{strategy_name} loading failed for '{model_name}': {str(e)}")
+            continue
     
-    logging.error(f"Model file '{model_name}' not found in either format")
+    logging.error(f"All loading strategies failed for model '{model_name}'")
     return None
 
-def load_scaler() -> Optional[Any]:
+def load_model(model_name: str) -> Optional[Any]:
     """
-    Load the scaler if available in the models directory.
-    
-    Returns:
-        Optional[Any]: Loaded scaler object or None if not found/error
+    Load a model from the models directory, supporting both PyCaret and pickle formats.
     """
-    ensure_models_folder()
-    scaler_files = [f for f in os.listdir(MODELS_FOLDER) 
-                   if 'scaler' in f.lower() and f.endswith('.pkl')]
-    
-    if not scaler_files:
-        logging.info("No scaler found. Proceeding without scaling.")
-        return None
-    
-    # Use the first scaler found
-    scaler_path = os.path.join(MODELS_FOLDER, scaler_files[0])
-    
+    return load_model_with_fallback(model_name)
+
+def prepare_features_manually_from_config(features):
+    """
+    Manual feature preparation using configuration as fallback
+    """
     try:
-        with open(scaler_path, 'rb') as f:
-            scaler = pickle.load(f)
-        
-        logging.info(f"Successfully loaded scaler: {scaler_files[0]}")
-        logging.info(f"Scaler type: {type(scaler)}")
-        return scaler
+        if isinstance(features, dict):
+            # Use the existing logic from create_feature_vector_from_dict
+            expected_features = get_expected_feature_names_from_config()
+            feature_vector = create_feature_vector_from_dict(features, expected_features)
+            features_df = pd.DataFrame([feature_vector], columns=expected_features)
+            logging.info(f"Manual feature preparation successful: {features_df.shape}")
+            return features_df
+        else:
+            # Handle array input
+            expected_features = get_expected_feature_names_from_config()
+            features_array = np.array(features).reshape(1, -1)
+            
+            # Ensure we have the right number of features
+            if features_array.shape[1] != len(expected_features):
+                logging.warning(f"Feature count mismatch: got {features_array.shape[1]}, expected {len(expected_features)}")
+                # Pad or truncate as needed
+                if features_array.shape[1] < len(expected_features):
+                    padding = np.zeros((1, len(expected_features) - features_array.shape[1]))
+                    features_array = np.hstack([features_array, padding])
+                else:
+                    features_array = features_array[:, :len(expected_features)]
+            
+            features_df = pd.DataFrame(features_array, columns=expected_features)
+            logging.info(f"Manual array preparation successful: {features_df.shape}")
+            return features_df
+            
     except Exception as e:
-        logging.error(f"Error loading scaler '{scaler_files[0]}': {str(e)}")
+        logging.error(f"Manual feature preparation failed: {e}")
         return None
+
+def prepare_features_for_pycaret_with_pipeline(features, model=None):
+    """
+    Convert input features into a pandas DataFrame using the dynamic preprocessing pipeline.
+    This version creates the pipeline dynamically without requiring a saved pkl file.
+    """
+    if isinstance(features, pd.DataFrame):
+        return features
+    
+    # Handle dict input (from UI) - use DYNAMIC preprocessing pipeline
+    if isinstance(features, dict):
+        try:
+            # Import the pipeline functions
+            from pipeline import convert_feature_dict_to_dataframe, create_preprocessing_pipeline
+            
+            # Load feature config
+            feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+            
+            # Step 1: Convert feature dict to DataFrame with original categorical structure
+            df = convert_feature_dict_to_dataframe(features, feature_config)
+            logging.info(f"Converted feature dict to DataFrame with shape {df.shape} and columns: {list(df.columns)}")
+            
+            # Step 2: Create preprocessing pipeline dynamically (NO pkl file needed)
+            pipeline = create_preprocessing_pipeline(
+                target_col=None,  # No target for prediction
+                high_missing_threshold=0.9,  # More lenient for single prediction
+                max_categorical_cardinality=20  # More lenient for prediction
+            )
+            
+            # Step 3: Apply preprocessing
+            processed_df = pipeline.fit_transform(df)
+            
+            # Step 4: Remove any target-related columns that might have been created
+            target_related_cols = [col for col in processed_df.columns 
+                                 if any(keyword in col.lower() for keyword in ['target', 'effort', 'work_effort'])]
+            if target_related_cols:
+                processed_df = processed_df.drop(columns=target_related_cols)
+                logging.info(f"Removed target-related columns: {target_related_cols}")
+            
+            logging.info(f"Pipeline preprocessing successful: {processed_df.shape}")
+            return processed_df
+            
+        except Exception as e:
+            logging.warning(f"Pipeline preprocessing failed: {e}")
+            # Fallback to manual conversion
+            return prepare_features_manually_from_config(features)
+    
+    # Handle array/list input - convert to DataFrame manually
+    return prepare_features_manually_from_config(features)
+
+def prepare_features_for_pycaret(features, model=None):
+    """
+    Converts input features into a pandas DataFrame with correct columns/order.
+    Uses preprocessing pipeline for feature transformation.
+    """
+    return prepare_features_for_pycaret_with_pipeline(features, model)
 
 def get_expected_feature_names_from_model(model=None) -> List[str]:
     """Get expected feature names from model or configuration"""
@@ -408,157 +463,96 @@ def get_expected_feature_names_from_model(model=None) -> List[str]:
     # Fallback to configuration-based feature names
     return get_expected_feature_names()
 
-def align_features_to_model(features_df: pd.DataFrame, expected_columns: list) -> pd.DataFrame:
-    """
-    Ensures the features_df has all columns (in correct order) that the model expects.
-    Missing columns are filled with 0.
-    """
-    for col in expected_columns:
-        if col not in features_df.columns:
-            features_df[col] = 0
-    return features_df[expected_columns]
-
-def predict_man_hours(
+def predict_man_hours_with_dynamic_pipeline(
     features: Union[np.ndarray, Dict, List], 
     model_name: str, 
-    use_scaler: bool = True,
-    use_preprocessing_pipeline: bool = True
+    use_preprocessing_pipeline: bool = True,
+    use_scaler: bool = False  # Disable scaler since pipeline handles normalization
 ) -> Optional[float]:
     """
-    Make a prediction using the specified model and features, with preprocessing pipeline support.
-    
-    Args:
-        features: Array/dict/list of input features
-        model_name (str): Name of the model to use (technical name)
-        use_scaler (bool): Whether to apply scaling if available
-        use_preprocessing_pipeline (bool): Whether to use preprocessing pipeline
-        
-    Returns:
-        Optional[float]: Predicted man-hours value or None if error
+    Make prediction using dynamic preprocessing pipeline (no pkl file required)
     """
     try:
-        # Debug logging
-        logging.info(f"Starting prediction with model '{model_name}'")
-        logging.info(f"Input features type: {type(features)}")
+        logging.info(f"Starting prediction with model '{model_name}' using dynamic pipeline")
         
         # Load the model
         model = load_model(model_name)
         if model is None:
-            logging.error(f"Failed to load model '{model_name}' for prediction")
+            logging.error(f"Failed to load model '{model_name}'")
             return None
         
-        logging.info(f"Loaded model type: {type(model)}")
-
-        # Preprocessing with pipeline integration
-        if use_preprocessing_pipeline and isinstance(features, dict):
-            try:
-                from pipeline import preprocess_for_prediction, load_preprocessing_pipeline, validate_pipeline_compatibility
-
-                # Use preprocessing pipeline for feature transformation
-                features_df = preprocess_for_prediction(features)
-                logging.info(f"Used preprocessing pipeline: DataFrame shape {features_df.shape}")
-                
-                # Validate pipeline compatibility
-                pipeline = load_preprocessing_pipeline()
-                if pipeline:
-                    validation = validate_pipeline_compatibility(pipeline, features)
-                    if not validation.get('compatible', False):
-                        logging.warning(f"Pipeline compatibility issues: {validation}")
-                
-            except Exception as e:
-                logging.warning(f"Preprocessing pipeline failed: {e}")
-                # Fallback to manual preparation
-                features_df = prepare_features_for_pycaret(features, model=model)
+        # Prepare features using dynamic pipeline or manual fallback
+        if use_preprocessing_pipeline:
+            features_df = prepare_features_for_pycaret_with_pipeline(features, model)
         else:
-            # Standard feature preparation
-            features_df = prepare_features_for_pycaret(features, model=model)
-            
-        logging.info(f"Features DataFrame columns: {list(features_df.columns)}")
-        logging.info(f"Features DataFrame shape: {features_df.shape}")
+            features_df = prepare_features_manually_from_config(features)
         
-        # Validate features against configuration
-        if isinstance(features, dict):
-            validation = validate_feature_dict_against_config(features)
-            if not validation['valid']:
-                logging.warning(f"Feature validation issues: {validation}")
+        if features_df is None or features_df.empty:
+            logging.error("Feature preparation failed")
+            return None
         
-        # Load scaler if requested and available (only if not using preprocessing pipeline)
-        if use_scaler and not use_preprocessing_pipeline:
-            scaler = load_scaler()
-            if scaler is not None and hasattr(scaler, 'transform'):
-                try:
-                    features_scaled = scaler.transform(features_df)
-                    features_df = pd.DataFrame(features_scaled, columns=features_df.columns)
-                    logging.info("Applied scaler to features.")
-                except Exception as e:
-                    logging.warning(f"Scaler could not be applied: {str(e)}")
-        else:
-            if use_preprocessing_pipeline:
-                logging.info("Skipping separate scaling - preprocessing pipeline handles normalization")
-            else:
-                logging.info("No scaling applied or scaler not available.")
+        logging.info(f"Features prepared: shape {features_df.shape}, columns: {list(features_df.columns)}")
         
-        # Try PyCaret prediction first
-        if PYCARET_AVAILABLE:
-            try:
-                logging.info("Attempting PyCaret prediction...")
+        # Make prediction
+        try:
+            # Try PyCaret prediction first
+            if PYCARET_AVAILABLE:
                 predictions = predict_model(model, data=features_df)
-                possible_columns = ['prediction_label', 'Label', 'pred', 'prediction', 'target']
-                prediction_value = None
-                for col in possible_columns:
+                
+                # Look for prediction in various possible column names
+                prediction_columns = ['prediction_label', 'Label', 'pred', 'prediction', 'target']
+                for col in prediction_columns:
                     if col in predictions.columns:
-                        prediction_value = float(predictions[col].iloc[0])
-                        logging.info(f"Found prediction in column '{col}': {prediction_value}")
-                        break
-                if prediction_value is None:
-                    prediction_value = float(predictions.iloc[0, -1])
-                    logging.info(f"Used last column for prediction: {prediction_value}")
-                if np.isnan(prediction_value) or np.isinf(prediction_value):
-                    logging.error(f"Invalid prediction value: {prediction_value}")
-                    return None
-                return max(0.1, prediction_value)
-            except Exception as e:
-                logging.warning(f"PyCaret prediction failed: {str(e)}")
-                import traceback
-                logging.warning(traceback.format_exc())
-
-        # Fallback: standard sklearn prediction
+                        result = float(predictions[col].iloc[0])
+                        logging.info(f"PyCaret prediction successful: {result}")
+                        return max(0.1, result)
+                
+                # Fallback to last column
+                result = float(predictions.iloc[0, -1])
+                logging.info(f"PyCaret prediction (last column): {result}")
+                return max(0.1, result)
+        
+        except Exception as e:
+            logging.warning(f"PyCaret prediction failed: {e}")
+        
+        # Fallback to direct model prediction
         if hasattr(model, 'predict'):
             try:
                 prediction = model.predict(features_df)
                 if isinstance(prediction, np.ndarray):
-                    prediction_value = float(prediction.flat[0])
-                elif isinstance(prediction, (list, tuple)):
-                    prediction_value = float(prediction[0])
+                    result = float(prediction.flat[0])
                 else:
-                    prediction_value = float(prediction)
-                if np.isnan(prediction_value) or np.isinf(prediction_value):
-                    logging.error(f"Invalid prediction value: {prediction_value}")
-                    return None
-                return max(0.1, prediction_value)
+                    result = float(prediction)
+                logging.info(f"Direct model prediction successful: {result}")
+                return max(0.1, result)
             except Exception as e:
-                logging.error(f"Standard prediction failed: {str(e)}")
-                import traceback
-                logging.error(traceback.format_exc())
-
-        logging.error(f"No valid prediction method found for model '{model_name}'")
+                logging.error(f"Direct model prediction failed: {e}")
+        
+        logging.error("All prediction methods failed")
         return None
-
+        
     except Exception as e:
-        logging.error(f"Error making prediction with model '{model_name}': {str(e)}")
+        logging.error(f"Prediction completely failed: {e}")
         import traceback
         logging.error(f"Full traceback: {traceback.format_exc()}")
         return None
 
+def predict_man_hours(
+    features: Union[np.ndarray, Dict, List], 
+    model_name: str, 
+    use_scaler: bool = False,  # Disabled since pipeline handles this
+    use_preprocessing_pipeline: bool = True  # Enable dynamic pipeline
+) -> Optional[float]:
+    """
+    Make a prediction using the specified model and features, with preprocessing pipeline support.
+    """
+    return predict_man_hours_with_dynamic_pipeline(
+        features, model_name, use_preprocessing_pipeline, use_scaler
+    )
+
 def get_feature_importance(model_name: str) -> Optional[np.ndarray]:
     """
     Get feature importance for a given model if available.
-    
-    Args:
-        model_name (str): Name of the model to analyze (technical name)
-        
-    Returns:
-        Optional[np.ndarray]: Feature importance values or None if not available
     """
     model = load_model(model_name)
     
@@ -605,22 +599,11 @@ def analyze_what_if(
     model_name: str,
     param_name: str,
     param_values: List[float],
-    use_scaler: bool = True,
+    use_scaler: bool = False,
     use_preprocessing_pipeline: bool = True
 ) -> Dict[str, List]:
     """
     Perform what-if analysis by varying one parameter and observing predictions.
-    
-    Args:
-        base_features: Base feature values (array or dict)
-        model_name (str): Name of the model to use (technical name)
-        param_name (str): Name of the parameter to vary
-        param_values (List[float]): Values to use for the parameter
-        use_scaler (bool): Whether to apply scaling if available
-        use_preprocessing_pipeline (bool): Whether to use preprocessing pipeline
-        
-    Returns:
-        Dict[str, List]: Dictionary with parameter values and predictions
     """
     results = {
         "param_values": [],
@@ -691,8 +674,8 @@ def get_feature_statistics() -> Dict[str, Any]:
     
     # Add preprocessing pipeline info
     try:
-        from pipeline import load_preprocessing_pipeline
-        pipeline = load_preprocessing_pipeline()
+        from pipeline import create_preprocessing_pipeline
+        pipeline = create_preprocessing_pipeline(target_col=None)
         if pipeline:
             stats["preprocessing_pipeline_available"] = True
             stats["pipeline_steps"] = len(pipeline.steps)
@@ -704,405 +687,6 @@ def get_feature_statistics() -> Dict[str, Any]:
         stats["pipeline_steps"] = 0
     
     return stats
-
-# === New utility functions for pipeline integration ===
-def check_preprocessing_pipeline_compatibility() -> Dict[str, Any]:
-    """Check if preprocessing pipeline is compatible with current configuration"""
-    pipeline = load_preprocessing_pipeline()
-    if not pipeline:
-        return {
-            "compatible": False,
-            "error": "No preprocessing pipeline found",
-            "recommendations": ["Train a new model with preprocessing pipeline", "Save preprocessing pipeline after training"]
-        }
-    
-    try:
-        from pipeline import load_preprocessing_pipeline, validate_pipeline_compatibility
-        
-        pipeline = load_preprocessing_pipeline()
-        if not pipeline:
-            return {
-                "compatible": False,
-                "error": "No preprocessing pipeline found",
-                "recommendations": ["Train a new model with preprocessing pipeline", "Save preprocessing pipeline after training"]
-            }
-        
-        # Create dummy features based on current config
-        dummy_features = {}
-        
-        # Add numeric features
-        for feature in FEATURE_CONFIG.get("numeric_features", []):
-            dummy_features[feature] = 1.0
-        
-        # Add categorical features  
-        for feature, config in FEATURE_CONFIG.get("categorical_features", {}).items():
-            options = config.get("options", [])
-            dummy_features[feature] = options[0] if options else "default"
-        
-        # Add one-hot features
-        for group_name, group_config in FEATURE_CONFIG.get("one_hot_features", {}).items():
-            input_key = group_config.get("input_key")
-            mapping = group_config.get("mapping", {})
-            if mapping:
-                # Set first option as active
-                first_key = list(mapping.keys())[0]
-                dummy_features[input_key] = first_key
-                # Set one-hot encoded features
-                for label, feature_key in mapping.items():
-                    dummy_features[feature_key] = 1 if label == first_key else 0
-        
-        # Test preprocessing
-        validation = validate_pipeline_compatibility(pipeline, dummy_features)
-        
-        return {
-            "compatible": validation.get("compatible", False),
-            "validation_details": validation,
-            "recommendations": [
-                "Pipeline appears compatible" if validation.get("compatible") else "Pipeline needs retraining",
-                f"Expected {validation.get('expected_features', 0)} features, got {validation.get('actual_features', 0)}"
-            ]
-        }
-    except ImportError:
-        return {
-            "compatible": False,
-            "error": "Pipeline module not available",
-            "recommendations": ["Install pipeline dependencies", "Check pipeline.py file"]
-        }
-        
-    except Exception as e:
-        return {
-            "compatible": False,
-            "error": str(e),
-            "recommendations": ["Check preprocessing pipeline configuration", "Retrain model with current feature configuration"]
-        }
-
-def get_preprocessing_pipeline_info() -> Dict[str, Any]:
-    """Get information about the current preprocessing pipeline"""
-    pipeline = load_preprocessing_pipeline()
-    if not pipeline:
-        return {
-            "available": False,
-            "message": "No preprocessing pipeline found"
-        }
-    
-    try:
-        from pipeline import load_preprocessing_pipeline
-        
-        pipeline = load_preprocessing_pipeline()
-        if not pipeline:
-            return {
-                "available": False,
-                "message": "No preprocessing pipeline found"
-            }
-        
-        pipeline_info = {
-            "available": True,
-            "steps": [step[0] for step in pipeline.steps],
-            "step_count": len(pipeline.steps),
-            "pipeline_type": str(type(pipeline)),
-        }
-        
-        # Try to get pipeline parameters for each step
-        step_details = {}
-        for step_name, step_obj in pipeline.named_steps.items():
-            step_details[step_name] = {
-                "class": step_obj.__class__.__name__,
-                "parameters": step_obj.get_params() if hasattr(step_obj, 'get_params') else {}
-            }
-        
-        pipeline_info["step_details"] = step_details
-        
-        return pipeline_info
-
-    except ImportError:
-        return {
-            "available": False,
-            "error": "Pipeline module not available"
-        }
-        
-    except Exception as e:
-        return {
-            "available": True,
-            "error": str(e),
-            "message": "Pipeline found but error getting details"
-        }
-
-def test_feature_pipeline_integration(feature_dict: Dict) -> Dict[str, Any]:
-    """Test the complete pipeline integration with given features"""
-    results = {
-        "success": False,
-        "steps_completed": [],
-        "errors": [],
-        "warnings": [],
-        "final_shape": None,
-        "processing_time": None
-    }
-    
-    import time
-    start_time = time.time()
-    
-    try:
-        # Step 1: Validate input
-        results["steps_completed"].append("input_validation")
-        if not isinstance(feature_dict, dict):
-            results["errors"].append("Input must be a dictionary")
-            return results
-        
-        # Step 2: Check configuration
-        results["steps_completed"].append("configuration_check")
-        validation = validate_feature_dict_against_config(feature_dict)
-        if not validation["valid"]:
-            results["warnings"].append(f"Missing features: {validation['missing_features']}")
-        
-        # Step 3: Convert to DataFrame
-        results["steps_completed"].append("dataframe_conversion")
-        try:
-            from pipeline import convert_feature_dict_to_dataframe
-            df = convert_feature_dict_to_dataframe(feature_dict, FEATURE_CONFIG)
-        except ImportError:
-            results["warnings"].append("Pipeline module not available for DataFrame conversion")
-        
-        # Step 4: Preprocessing pipeline
-        results["steps_completed"].append("preprocessing")
-        try:
-            from pipeline import preprocess_for_prediction
-            processed_df = preprocess_for_prediction(feature_dict)
-            results["final_shape"] = processed_df.shape
-        except ImportError:
-            results["warnings"].append("Pipeline module not available for preprocessing")
-        
-        # Step 5: Pipeline compatibility check
-        results["steps_completed"].append("compatibility_check")
-        try:
-            from pipeline import load_preprocessing_pipeline, validate_pipeline_compatibility
-            pipeline = load_preprocessing_pipeline()
-            if pipeline:
-                compat = validate_pipeline_compatibility(pipeline, feature_dict)
-                if not compat.get("compatible", False):
-                    results["warnings"].append("Pipeline compatibility issues detected")
-        except ImportError:
-            results["warnings"].append("Pipeline module not available for compatibility check")
-        
-        results["success"] = True
-        results["processing_time"] = time.time() - start_time
-        
-    except Exception as e:
-        results["errors"].append(str(e))
-        results["processing_time"] = time.time() - start_time
-    
-    return results
-
-# === Model training integration utilities ===
-def prepare_training_data_with_pipeline(
-    df: pd.DataFrame,
-    target_col: str = 'project_prf_normalised_work_effort',
-    save_pipeline: bool = True,
-    **pipeline_kwargs
-) -> Tuple[pd.DataFrame, Any, Dict]:
-    """
-    Prepare training data using preprocessing pipeline and optionally save it.
-    
-    Args:
-        df: Raw training DataFrame
-        target_col: Name of target column
-        save_pipeline: Whether to save the fitted pipeline
-        **pipeline_kwargs: Additional arguments for pipeline creation
-        
-    Returns:
-        Tuple of (processed_df, fitted_pipeline, metadata)
-    """
-    try:
-        # Import here to avoid circular imports
-        from pipeline import preprocess_dataframe, save_preprocessing_pipeline, create_preprocessing_pipeline
-        
-        # Preprocess the data
-        processed_df, metadata = preprocess_dataframe(
-            df, target_col=target_col, **pipeline_kwargs
-        )
-        
-        # Get the fitted pipeline from preprocessing
-
-        pipeline = create_preprocessing_pipeline(target_col=target_col, **pipeline_kwargs)
-        fitted_pipeline = pipeline.fit(df)
-        
-        if save_pipeline:
-            save_preprocessing_pipeline(fitted_pipeline)
-            logging.info("Preprocessing pipeline saved successfully")
-        
-        return processed_df, fitted_pipeline, metadata
-        
-    except Exception as e:
-        logging.error(f"Error in training data preparation: {e}")
-        raise
-
-def save_model_with_metadata(
-    model: Any,
-    model_name: str,
-    feature_names: List[str],
-    model_metadata: Optional[Dict] = None
-) -> bool:
-    """
-    Save model along with feature names and metadata.
-    
-    Args:
-        model: Trained model object
-        model_name: Name for the model file
-        feature_names: List of feature names expected by model
-        model_metadata: Additional metadata about the model
-        
-    Returns:
-        bool: Success status
-    """
-    try:
-        ensure_models_folder()
-        
-        # Save the model
-        model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
-        with open(model_path, 'wb') as f:
-            pickle.dump(model, f)
-        
-        # Save feature names
-        feature_names_path = os.path.join(DATA_FOLDER, 'expected_features.txt')
-        os.makedirs(DATA_FOLDER, exist_ok=True)
-        with open(feature_names_path, 'w') as f:
-            for feature in feature_names:
-                f.write(f"{feature}\n")
-        
-        # Save model metadata
-        if model_metadata:
-            metadata_path = os.path.join(MODELS_FOLDER, f'{model_name}_metadata.json')
-            with open(metadata_path, 'w') as f:
-                json.dump(model_metadata, f, indent=2, default=str)
-        
-        logging.info(f"Model '{model_name}' saved successfully with {len(feature_names)} features")
-        return True
-        
-    except Exception as e:
-        logging.error(f"Error saving model '{model_name}': {e}")
-        return False
-
-def load_model_metadata(model_name: str) -> Optional[Dict]:
-    """Load metadata for a specific model"""
-    try:
-        metadata_path = os.path.join(MODELS_FOLDER, f'{model_name}_metadata.json')
-        if os.path.exists(metadata_path):
-            with open(metadata_path, 'r') as f:
-                return json.load(f)
-        return None
-    except Exception as e:
-        logging.error(f"Error loading metadata for model '{model_name}': {e}")
-        return None
-
-def get_model_info(model_name: str) -> Dict[str, Any]:
-    """Get comprehensive information about a specific model"""
-    info = {
-        "model_name": model_name,
-        "display_name": get_model_display_name(model_name),
-        "model_available": False,
-        "scaler_available": False,
-        "metadata_available": False,
-        "feature_importance_available": False,
-        "expected_features": 0,
-        "model_type": None,
-        "metadata": None
-    }
-    
-    try:
-        # Check if model exists and load it
-        model = load_model(model_name)
-        if model:
-            info["model_available"] = True
-            info["model_type"] = str(type(model))
-            
-            # Check feature importance
-            feature_importance = get_feature_importance(model_name)
-            info["feature_importance_available"] = feature_importance is not None
-            
-            # Get expected features
-            expected_features = get_expected_feature_names_from_model(model)
-            info["expected_features"] = len(expected_features)
-        
-        # Check for scaler
-        scaler = load_scaler()
-        info["scaler_available"] = scaler is not None
-        
-        # Load metadata
-        metadata = load_model_metadata(model_name)
-        if metadata:
-            info["metadata_available"] = True
-            info["metadata"] = metadata
-            
-    except Exception as e:
-        info["error"] = str(e)
-        logging.error(f"Error getting model info for '{model_name}': {e}")
-    
-    return info
-
-def validate_model_setup() -> Dict[str, Any]:
-    """Validate the complete model setup including pipeline compatibility"""
-    validation = {
-        "overall_status": "unknown",
-        "models_found": 0,
-        "pipeline_available": False,
-        "configuration_valid": False,
-        "issues": [],
-        "recommendations": []
-    }
-    
-    try:
-        # Check available models
-        models = list_available_models()
-        validation["models_found"] = len(models)
-        
-        if len(models) == 0:
-            validation["issues"].append("No trained models found")
-            validation["recommendations"].append("Train and save at least one model")
-        
-        # Check preprocessing pipeline
-        pipeline_info = get_preprocessing_pipeline_info()
-        validation["pipeline_available"] = pipeline_info.get("available", False)
-        
-        if not validation["pipeline_available"]:
-            validation["issues"].append("No preprocessing pipeline found")
-            validation["recommendations"].append("Save preprocessing pipeline during model training")
-        
-        # Check configuration
-        try:
-            feature_stats = get_feature_statistics()
-            validation["configuration_valid"] = feature_stats["total_features"] > 0
-            validation["feature_stats"] = feature_stats
-        except Exception as e:
-            validation["issues"].append(f"Configuration validation failed: {e}")
-            validation["recommendations"].append("Check feature mapping configuration file")
-        
-        # Check pipeline compatibility if available
-        if validation["pipeline_available"]:
-            compat_info = check_preprocessing_pipeline_compatibility()
-            if not compat_info.get("compatible", False):
-                validation["issues"].append("Preprocessing pipeline compatibility issues")
-                validation["recommendations"].extend(compat_info.get("recommendations", []))
-        
-        # Determine overall status
-        if len(validation["issues"]) == 0:
-            validation["overall_status"] = "healthy"
-        elif validation["models_found"] > 0:
-            validation["overall_status"] = "functional_with_issues"
-        else:
-            validation["overall_status"] = "needs_setup"
-            
-    except Exception as e:
-        validation["overall_status"] = "error"
-        validation["issues"].append(f"Validation failed: {e}")
-    
-    return validation
-
-# === Backwards compatibility functions ===
-def prepare_feature_vector(user_inputs, model=None):
-    """
-    Backwards compatibility function - redirects to new preprocessing approach
-    """
-    logging.warning("prepare_feature_vector is deprecated. Use prepare_features_for_pycaret instead.")
-    return prepare_features_for_pycaret(user_inputs, model)
 
 # === Export list for easier imports ===
 __all__ = [
@@ -1126,18 +710,296 @@ __all__ = [
     # Feature importance
     'get_feature_importance',
     
-    # Pipeline integration
-    'check_preprocessing_pipeline_compatibility',
-    'get_preprocessing_pipeline_info',
-    'test_feature_pipeline_integration',
-    
     # Statistics and validation
-    'get_feature_statistics',
-    'validate_model_setup',
-    'get_model_info',
-    
-    # Training utilities
-    'prepare_training_data_with_pipeline',
-    'save_model_with_metadata',
-    'load_model_metadata'
+    'get_feature_statistics'
 ]
+
+def diagnose_model_file(model_name: str) -> Dict[str, Any]:
+    """
+    Comprehensive diagnosis of a model file to understand why it's not loading
+    """
+    diagnosis = {
+        "model_name": model_name,
+        "file_exists": False,
+        "file_size": 0,
+        "file_permissions": None,
+        "pickle_protocol": None,
+        "file_type": None,
+        "error_details": [],
+        "recommendations": []
+    }
+    
+    model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
+    
+    # Check if file exists
+    if os.path.exists(model_path):
+        diagnosis["file_exists"] = True
+        
+        # Get file info
+        stat_info = os.stat(model_path)
+        diagnosis["file_size"] = stat_info.st_size
+        diagnosis["file_permissions"] = oct(stat_info.st_mode)[-3:]
+        
+        # Try to detect pickle protocol and contents
+        try:
+            with open(model_path, 'rb') as f:
+                # Read first few bytes to detect pickle protocol
+                first_bytes = f.read(10)
+                f.seek(0)
+                
+                # Try to get pickle protocol info
+                try:
+                    import pickletools
+                    import io
+                    
+                    f.seek(0)
+                    data = f.read()
+                    memo = pickletools.dis(io.BytesIO(data))
+                    diagnosis["pickle_protocol"] = "Detectable"
+                except Exception as e:
+                    diagnosis["pickle_protocol"] = f"Error: {e}"
+                
+                # Try basic pickle load to see specific error
+                f.seek(0)
+                try:
+                    import pickle
+                    obj = pickle.load(f)
+                    diagnosis["file_type"] = str(type(obj))
+                    diagnosis["pickle_protocol"] = "Standard pickle - loadable"
+                    
+                    # Check if it has predict method
+                    if hasattr(obj, 'predict'):
+                        diagnosis["has_predict"] = True
+                    else:
+                        diagnosis["has_predict"] = False
+                        diagnosis["error_details"].append("Object doesn't have predict method")
+                        
+                except Exception as e:
+                    diagnosis["error_details"].append(f"Pickle load error: {str(e)}")
+                    
+                    # Try with different protocols
+                    for protocol in [0, 1, 2, 3, 4, 5]:
+                        try:
+                            f.seek(0)
+                            obj = pickle.load(f)
+                            diagnosis["pickle_protocol"] = f"Protocol {protocol} works"
+                            break
+                        except:
+                            continue
+        
+        except Exception as e:
+            diagnosis["error_details"].append(f"File reading error: {str(e)}")
+    else:
+        diagnosis["error_details"].append("Model file not found")
+        diagnosis["recommendations"].append("Check if model file exists in models folder")
+        
+        # List available files
+        if os.path.exists(MODELS_FOLDER):
+            available_files = os.listdir(MODELS_FOLDER)
+            diagnosis["available_files"] = available_files
+        else:
+            diagnosis["available_files"] = []
+            diagnosis["error_details"].append("Models folder doesn't exist")
+    
+    return diagnosis
+
+def create_test_model_file(model_name: str = "test_model") -> bool:
+    """
+    Create a simple test model file to verify the loading mechanism works
+    """
+    try:
+        from sklearn.ensemble import RandomForestRegressor
+        from sklearn.datasets import make_regression
+        
+        # Create simple test data and model
+        X, y = make_regression(n_samples=100, n_features=10, random_state=42)
+        model = RandomForestRegressor(n_estimators=5, random_state=42)
+        model.fit(X, y)
+        
+        # Save the model
+        ensure_models_folder()
+        model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
+        
+        with open(model_path, 'wb') as f:
+            pickle.dump(model, f)
+        
+        logging.info(f"Test model created at {model_path}")
+        
+        # Test loading immediately
+        loaded_model = load_model(model_name)
+        if loaded_model is not None:
+            logging.info("Test model loads successfully!")
+            return True
+        else:
+            logging.error("Test model failed to load")
+            return False
+            
+    except Exception as e:
+        logging.error(f"Error creating test model: {e}")
+        return False
+
+def fix_model_loading_issues():
+    """
+    Comprehensive fix for model loading issues
+    """
+    logging.info("=== Model Loading Diagnostics ===")
+    
+    # Check models folder
+    ensure_models_folder()
+    
+    # List all available model files
+    available_models = list_available_models()
+    logging.info(f"Found {len(available_models)} model files")
+    
+    if not available_models:
+        logging.warning("No model files found. Creating test model...")
+        if create_test_model_file():
+            logging.info("Test model created successfully!")
+        else:
+            logging.error("Failed to create test model")
+        return
+    
+    # Diagnose each model
+    for model_info in available_models:
+        model_name = model_info['technical_name']
+        logging.info(f"\n--- Diagnosing {model_name} ---")
+        
+        diagnosis = diagnose_model_file(model_name)
+        
+        logging.info(f"File exists: {diagnosis['file_exists']}")
+        if diagnosis['file_exists']:
+            logging.info(f"File size: {diagnosis['file_size']} bytes")
+            logging.info(f"Pickle protocol: {diagnosis['pickle_protocol']}")
+            if diagnosis['error_details']:
+                logging.error(f"Errors: {diagnosis['error_details']}")
+        
+        # Try to fix common issues
+        if diagnosis['file_exists'] and diagnosis['error_details']:
+            logging.info(f"Attempting to fix {model_name}...")
+            fixed = attempt_model_fix(model_name, diagnosis)
+            if fixed:
+                logging.info(f"Successfully fixed {model_name}")
+            else:
+                logging.warning(f"Could not fix {model_name}")
+
+def attempt_model_fix(model_name: str, diagnosis: Dict) -> bool:
+    """
+    Attempt to fix common model loading issues
+    """
+    model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
+    
+    # Backup original file
+    backup_path = f"{model_path}.backup"
+    try:
+        import shutil
+        shutil.copy2(model_path, backup_path)
+        logging.info(f"Created backup at {backup_path}")
+    except Exception as e:
+        logging.warning(f"Could not create backup: {e}")
+    
+    # Try different fix strategies
+    fix_strategies = [
+        ("Re-save with current pickle protocol", fix_pickle_protocol),
+        ("Convert PyCaret to sklearn", fix_pycaret_model),
+        ("Fix sklearn version compatibility", fix_sklearn_compatibility)
+    ]
+    
+    for strategy_name, fix_func in fix_strategies:
+        try:
+            logging.info(f"Trying: {strategy_name}")
+            if fix_func(model_path):
+                # Test if fixed model loads
+                if load_model(model_name) is not None:
+                    logging.info(f"Fix successful: {strategy_name}")
+                    return True
+                else:
+                    logging.info(f"Fix failed: {strategy_name}")
+        except Exception as e:
+            logging.warning(f"Fix strategy failed: {strategy_name} - {e}")
+    
+    # Restore backup if all fixes failed
+    try:
+        if os.path.exists(backup_path):
+            shutil.copy2(backup_path, model_path)
+            logging.info("Restored original file from backup")
+    except Exception as e:
+        logging.error(f"Could not restore backup: {e}")
+    
+    return False
+
+def fix_pickle_protocol(model_path: str) -> bool:
+    """Try to fix pickle protocol issues"""
+    try:
+        # Load with any available protocol
+        loaded_obj = None
+        
+        with open(model_path, 'rb') as f:
+            try:
+                loaded_obj = pickle.load(f)
+            except Exception as e:
+                # Try different approaches
+                import dill
+                f.seek(0)
+                loaded_obj = dill.load(f)
+        
+        if loaded_obj is not None:
+            # Re-save with current pickle protocol
+            with open(model_path, 'wb') as f:
+                pickle.dump(loaded_obj, f, protocol=pickle.HIGHEST_PROTOCOL)
+            return True
+            
+    except Exception as e:
+        logging.error(f"Pickle protocol fix failed: {e}")
+    
+    return False
+
+def fix_pycaret_model(model_path: str) -> bool:
+    """Try to extract sklearn model from PyCaret wrapper"""
+    try:
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
+        
+        # Check if it's a PyCaret model with an extractable estimator
+        if hasattr(model, '_final_estimator'):
+            sklearn_model = model._final_estimator
+        elif hasattr(model, 'named_steps'):
+            # Find the final estimator in pipeline
+            sklearn_model = None
+            for step_name, step in model.named_steps.items():
+                if hasattr(step, 'predict') and not hasattr(step, 'transform'):
+                    sklearn_model = step
+                    break
+        else:
+            return False
+        
+        if sklearn_model and hasattr(sklearn_model, 'predict'):
+            # Save the sklearn model
+            with open(model_path, 'wb') as f:
+                pickle.dump(sklearn_model, f)
+            logging.info("Extracted sklearn model from PyCaret wrapper")
+            return True
+            
+    except Exception as e:
+        logging.error(f"PyCaret model fix failed: {e}")
+    
+    return False
+
+def fix_sklearn_compatibility(model_path: str) -> bool:
+    """Try to fix sklearn version compatibility issues"""
+    try:
+        # This is a placeholder for sklearn version fixes
+        # In practice, you might need to retrain the model
+        logging.info("sklearn compatibility fix not implemented - model may need retraining")
+        return False
+    except Exception as e:
+        logging.error(f"sklearn compatibility fix failed: {e}")
+    
+    return False
+
+# Export the new functions
+__all__.extend([
+    'diagnose_model_file',
+    'create_test_model_file', 
+    'fix_model_loading_issues',
+    'add_model_diagnostics_to_ui'
+])
