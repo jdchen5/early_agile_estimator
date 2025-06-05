@@ -803,11 +803,15 @@ def diagnose_model_file(model_name: str) -> Dict[str, Any]:
     
     return diagnosis
 
+
+# Add these essential diagnostic functions to the END of your models.py file:
+
 def create_test_model_file(model_name: str = "test_model") -> bool:
     """
     Create a simple test model file to verify the loading mechanism works
     """
     try:
+        import numpy as np
         from sklearn.ensemble import RandomForestRegressor
         from sklearn.datasets import make_regression
         
@@ -837,6 +841,66 @@ def create_test_model_file(model_name: str = "test_model") -> bool:
     except Exception as e:
         logging.error(f"Error creating test model: {e}")
         return False
+
+def diagnose_model_file(model_name: str) -> Dict[str, Any]:
+    """
+    Comprehensive diagnosis of a model file to understand why it's not loading
+    """
+    diagnosis = {
+        "model_name": model_name,
+        "file_exists": False,
+        "file_size": 0,
+        "error_details": [],
+        "recommendations": []
+    }
+    
+    model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
+    
+    # Check if file exists
+    if os.path.exists(model_path):
+        diagnosis["file_exists"] = True
+        
+        # Get file info
+        stat_info = os.stat(model_path)
+        diagnosis["file_size"] = stat_info.st_size
+        
+        # Try to load with pickle
+        try:
+            with open(model_path, 'rb') as f:
+                obj = pickle.load(f)
+            diagnosis["file_type"] = str(type(obj))
+            
+            # Check if it has predict method
+            if hasattr(obj, 'predict'):
+                diagnosis["has_predict"] = True
+            else:
+                diagnosis["has_predict"] = False
+                diagnosis["error_details"].append("Object doesn't have predict method")
+                        
+        except Exception as e:
+            diagnosis["error_details"].append(f"Pickle load error: {str(e)}")
+            
+            # Check for common issues
+            error_str = str(e).lower()
+            if "cannot import name" in error_str:
+                diagnosis["recommendations"].append("sklearn version compatibility issue - model needs retraining")
+            elif "protocol" in error_str:
+                diagnosis["recommendations"].append("Pickle protocol issue - try different Python version")
+            else:
+                diagnosis["recommendations"].append("Model file may be corrupted")
+    else:
+        diagnosis["error_details"].append("Model file not found")
+        diagnosis["recommendations"].append("Check if model file exists in models folder")
+        
+        # List available files
+        if os.path.exists(MODELS_FOLDER):
+            available_files = os.listdir(MODELS_FOLDER)
+            diagnosis["available_files"] = available_files
+        else:
+            diagnosis["available_files"] = []
+            diagnosis["error_details"].append("Models folder doesn't exist")
+    
+    return diagnosis
 
 def fix_model_loading_issues():
     """
@@ -869,137 +933,35 @@ def fix_model_loading_issues():
         logging.info(f"File exists: {diagnosis['file_exists']}")
         if diagnosis['file_exists']:
             logging.info(f"File size: {diagnosis['file_size']} bytes")
-            logging.info(f"Pickle protocol: {diagnosis['pickle_protocol']}")
             if diagnosis['error_details']:
                 logging.error(f"Errors: {diagnosis['error_details']}")
-        
-        # Try to fix common issues
-        if diagnosis['file_exists'] and diagnosis['error_details']:
-            logging.info(f"Attempting to fix {model_name}...")
-            fixed = attempt_model_fix(model_name, diagnosis)
-            if fixed:
-                logging.info(f"Successfully fixed {model_name}")
-            else:
-                logging.warning(f"Could not fix {model_name}")
+            if diagnosis['recommendations']:
+                logging.info(f"Recommendations: {diagnosis['recommendations']}")
 
-def attempt_model_fix(model_name: str, diagnosis: Dict) -> bool:
-    """
-    Attempt to fix common model loading issues
-    """
-    model_path = os.path.join(MODELS_FOLDER, f'{model_name}.pkl')
-    
-    # Backup original file
-    backup_path = f"{model_path}.backup"
-    try:
-        import shutil
-        shutil.copy2(model_path, backup_path)
-        logging.info(f"Created backup at {backup_path}")
-    except Exception as e:
-        logging.warning(f"Could not create backup: {e}")
-    
-    # Try different fix strategies
-    fix_strategies = [
-        ("Re-save with current pickle protocol", fix_pickle_protocol),
-        ("Convert PyCaret to sklearn", fix_pycaret_model),
-        ("Fix sklearn version compatibility", fix_sklearn_compatibility)
+# Update the __all__ list to include the new functions
+try:
+    __all__.extend([
+        'diagnose_model_file',
+        'create_test_model_file',
+        'fix_model_loading_issues'
+    ])
+except NameError:
+    # If __all__ doesn't exist, create it
+    __all__ = [
+        'list_available_models',
+        'check_required_models', 
+        'load_model',
+        'get_model_display_name',
+        'predict_man_hours',
+        'analyze_what_if',
+        'get_expected_feature_names',
+        'get_expected_feature_names_from_model',
+        'prepare_features_for_pycaret',
+        'create_feature_vector_from_dict',
+        'validate_feature_dict_against_config',
+        'get_feature_importance',
+        'get_feature_statistics',
+        'diagnose_model_file',
+        'create_test_model_file',
+        'fix_model_loading_issues'
     ]
-    
-    for strategy_name, fix_func in fix_strategies:
-        try:
-            logging.info(f"Trying: {strategy_name}")
-            if fix_func(model_path):
-                # Test if fixed model loads
-                if load_model(model_name) is not None:
-                    logging.info(f"Fix successful: {strategy_name}")
-                    return True
-                else:
-                    logging.info(f"Fix failed: {strategy_name}")
-        except Exception as e:
-            logging.warning(f"Fix strategy failed: {strategy_name} - {e}")
-    
-    # Restore backup if all fixes failed
-    try:
-        if os.path.exists(backup_path):
-            shutil.copy2(backup_path, model_path)
-            logging.info("Restored original file from backup")
-    except Exception as e:
-        logging.error(f"Could not restore backup: {e}")
-    
-    return False
-
-def fix_pickle_protocol(model_path: str) -> bool:
-    """Try to fix pickle protocol issues"""
-    try:
-        # Load with any available protocol
-        loaded_obj = None
-        
-        with open(model_path, 'rb') as f:
-            try:
-                loaded_obj = pickle.load(f)
-            except Exception as e:
-                # Try different approaches
-                import dill
-                f.seek(0)
-                loaded_obj = dill.load(f)
-        
-        if loaded_obj is not None:
-            # Re-save with current pickle protocol
-            with open(model_path, 'wb') as f:
-                pickle.dump(loaded_obj, f, protocol=pickle.HIGHEST_PROTOCOL)
-            return True
-            
-    except Exception as e:
-        logging.error(f"Pickle protocol fix failed: {e}")
-    
-    return False
-
-def fix_pycaret_model(model_path: str) -> bool:
-    """Try to extract sklearn model from PyCaret wrapper"""
-    try:
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
-        
-        # Check if it's a PyCaret model with an extractable estimator
-        if hasattr(model, '_final_estimator'):
-            sklearn_model = model._final_estimator
-        elif hasattr(model, 'named_steps'):
-            # Find the final estimator in pipeline
-            sklearn_model = None
-            for step_name, step in model.named_steps.items():
-                if hasattr(step, 'predict') and not hasattr(step, 'transform'):
-                    sklearn_model = step
-                    break
-        else:
-            return False
-        
-        if sklearn_model and hasattr(sklearn_model, 'predict'):
-            # Save the sklearn model
-            with open(model_path, 'wb') as f:
-                pickle.dump(sklearn_model, f)
-            logging.info("Extracted sklearn model from PyCaret wrapper")
-            return True
-            
-    except Exception as e:
-        logging.error(f"PyCaret model fix failed: {e}")
-    
-    return False
-
-def fix_sklearn_compatibility(model_path: str) -> bool:
-    """Try to fix sklearn version compatibility issues"""
-    try:
-        # This is a placeholder for sklearn version fixes
-        # In practice, you might need to retrain the model
-        logging.info("sklearn compatibility fix not implemented - model may need retraining")
-        return False
-    except Exception as e:
-        logging.error(f"sklearn compatibility fix failed: {e}")
-    
-    return False
-
-# Export the new functions
-__all__.extend([
-    'diagnose_model_file',
-    'create_test_model_file', 
-    'fix_model_loading_issues',
-    'add_model_diagnostics_to_ui'
-])

@@ -16,25 +16,69 @@ import matplotlib.pyplot as plt
 import logging
 import os
 
-# Import core functions
+# Import core functions from models
 from models import (
     load_model, 
     predict_man_hours, 
     get_feature_importance, 
     get_model_display_name,
-    get_expected_feature_names_from_model
+    get_expected_feature_names_from_model,
+    check_required_models
 )
 
-from ui import (
-    sidebar_inputs, 
-    display_inputs, 
-    show_prediction, 
-    about_section, 
-    tips_section, 
-    show_feature_importance,
-    load_yaml_config,
-    get_field_label
-)
+# Import UI functions with fallbacks for enhanced functions
+try:
+    from ui import (
+        sidebar_inputs, 
+        display_inputs, 
+        show_prediction, 
+        about_section, 
+        tips_section, 
+        show_feature_importance,
+        load_yaml_config,
+        get_field_label,
+        enhanced_main,              # New enhanced function
+        enhanced_sidebar_inputs,    # New enhanced function
+        safe_display_inputs,        # New safe function
+        safe_show_prediction        # New safe function
+    )
+    ENHANCED_UI_AVAILABLE = True
+except ImportError as e:
+    # Fallback to basic UI functions if enhanced ones aren't available
+    from ui import (
+        sidebar_inputs, 
+        display_inputs, 
+        show_prediction, 
+        about_section, 
+        tips_section, 
+        show_feature_importance,
+        load_yaml_config,
+        get_field_label
+    )
+    ENHANCED_UI_AVAILABLE = False
+    print(f"Enhanced UI features not available: {e}")
+
+# Try to import diagnostic functions with fallbacks
+try:
+    from models import (
+        diagnose_model_file,
+        create_test_model_file,
+        fix_model_loading_issues
+    )
+    DIAGNOSTICS_AVAILABLE = True
+except ImportError as e:
+    DIAGNOSTICS_AVAILABLE = False
+    print(f"Diagnostic functions not available: {e}")
+    
+    # Create dummy functions to prevent errors
+    def diagnose_model_file(model_name):
+        return {"error": "Diagnostics not available"}
+    
+    def create_test_model_file():
+        return False
+    
+    def fix_model_loading_issues():
+        pass
 
 # Try to import pipeline-related functions with fallbacks
 try:
@@ -261,12 +305,15 @@ def check_dependencies():
         "models_module": True,  # We know this works from debug
         "pipeline_module": PIPELINE_AVAILABLE,
         "ui_module": True,  # We know this works from debug
-        "config_files": True  # We know this works from debug
+        "config_files": True,  # We know this works from debug
+        "enhanced_ui": ENHANCED_UI_AVAILABLE,
+        "diagnostics": DIAGNOSTICS_AVAILABLE
     }
     
     return status
 
 def main():
+    """Main function with enhanced UI support"""
     add_custom_css()
 
     st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
@@ -282,9 +329,32 @@ def main():
         st.error("Critical dependency missing: models module. Please check your installation.")
         return
     
+    # Use enhanced UI if available, otherwise fallback to original
+    if ENHANCED_UI_AVAILABLE:
+        try:
+            # Use the enhanced main function from ui.py
+            enhanced_main()
+            return
+        except Exception as e:
+            st.error(f"Enhanced UI failed: {e}. Falling back to basic UI.")
+            logger.error(f"Enhanced UI error: {e}")
+    
+    # Fallback to original main function
+    original_main()
+
+def original_main():
+    """Original main function as fallback"""
     # Get user inputs from sidebar
     try:
-        user_inputs = sidebar_inputs()
+        # Use enhanced sidebar if available, otherwise use original
+        if ENHANCED_UI_AVAILABLE:
+            try:
+                user_inputs = enhanced_sidebar_inputs()
+            except:
+                user_inputs = sidebar_inputs()
+        else:
+            user_inputs = sidebar_inputs()
+            
         selected_model = user_inputs.get('selected_model')
         submit = user_inputs.get('submit', False)
         team_size = user_inputs.get('project_prf_max_team_size', 5)
@@ -313,14 +383,29 @@ def main():
 
     with tab_results:
         try:
-            col2 = display_inputs(user_inputs, selected_model)
+            # Use safe display if available, otherwise use original
+            if ENHANCED_UI_AVAILABLE:
+                try:
+                    col2 = safe_display_inputs(user_inputs, selected_model)
+                except:
+                    col2 = display_inputs(user_inputs, selected_model)
+            else:
+                col2 = display_inputs(user_inputs, selected_model)
             
             if submit and selected_model:
                 with st.spinner("Calculating estimation..."):
                     try:
                         # Use the dict directly for prediction - models.py will handle preprocessing
                         prediction = predict_man_hours(user_inputs, selected_model)
-                        show_prediction(col2, prediction, team_size)
+                        
+                        # Use safe show prediction if available
+                        if ENHANCED_UI_AVAILABLE:
+                            try:
+                                safe_show_prediction(col2, prediction, team_size)
+                            except:
+                                show_prediction(col2, prediction, team_size)
+                        else:
+                            show_prediction(col2, prediction, team_size)
                         
                         # Log successful prediction
                         logger.info(f"Successful prediction: {prediction} man-hours using model {selected_model}")
@@ -410,6 +495,31 @@ def main():
                     tab_org = UI_CONFIG.get('tab_organization', {})
                     for tab_name, fields in tab_org.items():
                         st.write(f"**{tab_name} Tab:** {', '.join(fields)}")
+            
+            # Add dependency status
+            with st.expander("🔧 System Status"):
+                st.subheader("Module Status")
+                deps = check_dependencies()
+                
+                for module, status in deps.items():
+                    if status:
+                        st.success(f"✅ {module.replace('_', ' ').title()}")
+                    else:
+                        st.warning(f"⚠️ {module.replace('_', ' ').title()}")
+                
+                # Model status
+                st.subheader("Model Status")
+                try:
+                    model_status = check_required_models()
+                    if model_status["models_available"]:
+                        st.success(f"✅ Found {len(model_status['found_models'])} model(s)")
+                        for model in model_status['found_models']:
+                            st.write(f"- {model['display_name']}")
+                    else:
+                        st.warning("⚠️ No trained models found")
+                        st.info("Use the diagnostics tools in the sidebar to create a test model")
+                except Exception as e:
+                    st.error(f"Error checking models: {e}")
             
             # Add preprocessing pipeline info (only if available)
             if PIPELINE_AVAILABLE:

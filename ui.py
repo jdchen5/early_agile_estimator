@@ -797,4 +797,422 @@ def add_model_diagnostics_to_ui():
             else:
                 st.error("Failed to create test model. Check logs for details.")
 
-     
+def safe_display_inputs(user_inputs, selected_model):
+    """Safe display of inputs with enhanced error handling for Arrow conversion"""
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.subheader("Input Parameters Summary")
+        
+        try:
+            # Get key parameters from config
+            display_config = UI_CONFIG.get("display_config", {})
+            key_param_fields = display_config.get("key_parameters_for_summary", [])
+            
+            if not key_param_fields:
+                # Fallback to showing some basic fields
+                key_param_fields = ['project_prf_year_of_project', 'project_prf_functional_size', 'project_prf_max_team_size']
+            
+            key_params = {}
+            for field in key_param_fields:
+                if field in user_inputs:
+                    label = get_field_label(field)
+                    value = user_inputs.get(field, 'N/A')
+                    
+                    # Ensure value is safely convertible to string
+                    if value is None:
+                        value_str = 'N/A'
+                    elif isinstance(value, (list, tuple)):
+                        value_str = ', '.join(str(v) for v in value) if value else 'None'
+                    elif isinstance(value, (int, float)):
+                        value_str = str(value)
+                    else:
+                        value_str = str(value)
+                    
+                    key_params[label] = value_str
+            
+            # Create DataFrame with explicit string types to avoid Arrow issues
+            if key_params:
+                # Create list of dictionaries with explicit string conversion
+                input_data = []
+                for param, value in key_params.items():
+                    input_data.append({
+                        "Parameter": str(param), 
+                        "Value": str(value)
+                    })
+                
+                # Create DataFrame and explicitly convert to strings
+                input_df = pd.DataFrame(input_data)
+                input_df = input_df.astype({'Parameter': 'string', 'Value': 'string'})
+                
+                # Display with error handling
+                try:
+                    st.dataframe(input_df, use_container_width=True)
+                except Exception as e:
+                    st.warning(f"Display formatting issue: {e}")
+                    # Fallback: simple text display
+                    for param, value in key_params.items():
+                        st.write(f"**{param}:** {value}")
+            else:
+                st.write("No parameters to display")
+            
+            # Model display
+            if selected_model:
+                model_display_name = get_model_display_name(selected_model)
+                st.write(f"📊 Selected Model: **{model_display_name}**")
+            else:
+                st.write("📊 Selected Model: **None**")
+                
+        except Exception as e:
+            st.error(f"Error displaying inputs: {e}")
+            # Ultimate fallback: show raw input summary
+            st.write("**Input Summary (Raw):**")
+            for key, value in user_inputs.items():
+                if key not in ['selected_model', 'submit', 'save_config', 'config_name']:
+                    st.text(f"{key}: {value}")
+    
+    return col2
+
+def add_diagnostics_section():
+    """Add model diagnostics section to sidebar"""
+    with st.sidebar:
+        st.markdown("---")
+        st.subheader("🔧 Diagnostics")
+        
+        if st.button("Diagnose Models", use_container_width=True):
+            with st.spinner("Running diagnostics..."):
+                from models import fix_model_loading_issues
+                fix_model_loading_issues()
+                st.success("✅ Diagnostics completed!")
+                st.info("Check console logs for detailed results")
+        
+        if st.button("Create Test Model", use_container_width=True):
+            with st.spinner("Creating test model..."):
+                from models import create_test_model_file
+                if create_test_model_file():
+                    st.success("✅ Test model created!")
+                    st.info("Refresh page and select 'test_model'")
+                else:
+                    st.error("❌ Test model creation failed")
+
+
+# Add these functions to the END of your existing ui.py file:
+
+def enhanced_sidebar_inputs():
+    """Enhanced sidebar with diagnostics - wrapper around your existing sidebar_inputs"""
+    # Call your existing sidebar_inputs function
+    user_inputs = sidebar_inputs()
+    
+    # Add diagnostics section after the form
+    add_diagnostics_section()
+    
+    return user_inputs
+
+def add_diagnostics_section():
+    """Add model diagnostics section to sidebar"""
+    with st.sidebar:
+        st.markdown("---")
+        st.subheader("🔧 Diagnostics")
+        
+        if st.button("Diagnose Models", use_container_width=True):
+            with st.spinner("Running diagnostics..."):
+                try:
+                    from models import fix_model_loading_issues
+                    fix_model_loading_issues()
+                    st.success("✅ Diagnostics completed!")
+                    st.info("Check console logs for detailed results")
+                except Exception as e:
+                    st.error(f"Diagnostics failed: {e}")
+        
+        if st.button("Create Test Model", use_container_width=True):
+            with st.spinner("Creating test model..."):
+                try:
+                    from models import create_test_model_file
+                    if create_test_model_file():
+                        st.success("✅ Test model created!")
+                        st.info("Refresh page and select 'test_model'")
+                    else:
+                        st.error("❌ Test model creation failed")
+                except Exception as e:
+                    st.error(f"Test model creation failed: {e}")
+
+def safe_display_inputs(user_inputs, selected_model):
+    """Safe display of inputs with enhanced error handling for Arrow conversion"""
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.subheader("Input Parameters Summary")
+        
+        try:
+            # Get key parameters from config
+            display_config = UI_CONFIG.get("display_config", {})
+            key_param_fields = display_config.get("key_parameters_for_summary", [])
+            
+            if not key_param_fields:
+                # Fallback to showing some basic fields
+                key_param_fields = ['project_prf_year_of_project', 'project_prf_functional_size', 'project_prf_max_team_size']
+            
+            key_params = {}
+            for field in key_param_fields:
+                if field in user_inputs:
+                    label = get_field_label(field)
+                    value = user_inputs.get(field, 'N/A')
+                    
+                    # Ensure value is safely convertible to string
+                    if value is None:
+                        value_str = 'N/A'
+                    elif isinstance(value, (list, tuple)):
+                        value_str = ', '.join(str(v) for v in value) if value else 'None'
+                    elif isinstance(value, (int, float)):
+                        value_str = str(value)
+                    else:
+                        value_str = str(value)
+                    
+                    key_params[label] = value_str
+            
+            # Create DataFrame with explicit string types to avoid Arrow issues
+            if key_params:
+                # Create list of dictionaries with explicit string conversion
+                input_data = []
+                for param, value in key_params.items():
+                    input_data.append({
+                        "Parameter": str(param), 
+                        "Value": str(value)
+                    })
+                
+                # Create DataFrame and explicitly convert to strings
+                input_df = pd.DataFrame(input_data)
+                
+                # Try different approaches to avoid Arrow errors
+                try:
+                    # First, try with explicit string conversion
+                    input_df = input_df.astype(str)
+                    st.dataframe(input_df, use_container_width=True)
+                except Exception as e1:
+                    try:
+                        # Second, try with object dtype
+                        input_df = input_df.astype('object')
+                        st.dataframe(input_df, use_container_width=True)
+                    except Exception as e2:
+                        # Third, fallback to simple text display
+                        st.warning("Using simplified display due to formatting issues")
+                        for param, value in key_params.items():
+                            st.write(f"**{param}:** {value}")
+            else:
+                st.write("No parameters to display")
+            
+            # Model display
+            if selected_model:
+                model_display_name = get_model_display_name(selected_model)
+                st.write(f"📊 Selected Model: **{model_display_name}**")
+            else:
+                st.write("📊 Selected Model: **None**")
+                
+        except Exception as e:
+            st.error(f"Error displaying inputs: {e}")
+            # Ultimate fallback: show raw input summary
+            st.write("**Input Summary (Raw):**")
+            for key, value in user_inputs.items():
+                if key not in ['selected_model', 'submit', 'save_config', 'config_name']:
+                    st.text(f"{key}: {value}")
+    
+    return col2
+
+def safe_show_prediction(col2, prediction, team_size):
+    """Safe prediction display with enhanced error handling"""
+    thresholds = UI_CONFIG.get("prediction_thresholds", {"low_prediction_warning": 1, "high_prediction_warning": 10000})
+    
+    with col2:
+        st.subheader("Prediction Result")
+        
+        if prediction is None:
+            st.error("❌ Prediction Failed")
+            st.write("**Possible issues:**")
+            st.write("- Model compatibility problems")
+            st.write("- Missing preprocessing pipeline")
+            st.write("- Feature preparation errors")
+            st.write("- Check logs for detailed error information")
+            
+            # Offer troubleshooting
+            with st.expander("🔧 Troubleshooting"):
+                st.write("**Try these steps:**")
+                st.write("1. Check if models are properly saved")
+                st.write("2. Verify scikit-learn version compatibility")
+                st.write("3. Retrain models if necessary")
+                st.write("4. Check model files in the models folder")
+                st.write("5. Use the 'Create Test Model' button in sidebar")
+            return
+        
+        try:
+            # Display prediction
+            st.markdown(f"""
+            <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
+                <h3 style='text-align:center;'>Estimated Effort</h3>
+                <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Hours</h1>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Calculate timeline breakdown safely
+            try:
+                hours = int(prediction)
+                days = hours // 8
+                per_person = prediction / team_size if team_size and team_size > 0 else prediction
+                
+                st.markdown("### Timeline Breakdown")
+                metrics_col1, metrics_col2 = st.columns(2)
+                with metrics_col1:
+                    st.metric("Calendar Time", f"{days}d", help="Estimated calendar duration assuming full team availability")
+                with metrics_col2:
+                    st.metric("Per Person", f"{per_person:.2f}h", help="Average effort per team member in hours")
+                
+                # Use configurable thresholds
+                if prediction < thresholds["low_prediction_warning"]:
+                    st.warning("⚠️ This prediction seems unusually low. Consider reviewing your inputs.")
+                elif prediction > thresholds["high_prediction_warning"]:
+                    st.warning("⚠️ This prediction seems unusually high. Consider reviewing your inputs.")
+                    
+            except Exception as e:
+                st.warning(f"Error calculating timeline breakdown: {e}")
+                
+        except Exception as e:
+            st.error(f"Error displaying prediction: {e}")
+
+def create_dummy_model_for_testing():
+    """Create a simple working model for immediate testing"""
+    try:
+        import numpy as np
+        import pickle
+        import os
+        from models import ensure_models_folder
+        
+        # Simple model that just returns a prediction based on input sum
+        class SimpleTestModel:
+            def __init__(self):
+                self.name = "Simple Test Model"
+            
+            def predict(self, X):
+                """Simple prediction: sum of features * 10"""
+                if hasattr(X, 'values'):
+                    X_array = X.values
+                else:
+                    X_array = np.array(X)
+                
+                # Simple calculation: sum of all features * 10 + 100
+                if len(X_array.shape) == 1:
+                    X_array = X_array.reshape(1, -1)
+                
+                predictions = np.sum(X_array, axis=1) * 10 + 100
+                return predictions
+        
+        # Save the simple model
+        ensure_models_folder()
+        model_path = os.path.join('models', 'simple_test_model.pkl')
+        
+        simple_model = SimpleTestModel()
+        with open(model_path, 'wb') as f:
+            pickle.dump(simple_model, f)
+        
+        return True
+        
+    except Exception as e:
+        st.error(f"Error creating dummy model: {e}")
+        return False
+
+def enhanced_main():
+    """Enhanced main function with diagnostics and better error handling"""
+    st.title("🔮 Machine Learning for Early Estimation in Agile Projects")
+    st.write("This application helps project managers and team leads estimate the effort required for agile software projects using machine learning models trained on historical project data.")
+    
+    try:
+        # Enhanced sidebar with diagnostics
+        user_inputs = enhanced_sidebar_inputs()
+        
+        if user_inputs.get('submit', False):
+            selected_model = user_inputs.get('selected_model')
+            
+            # Safe display of inputs with Arrow error handling
+            col2 = safe_display_inputs(user_inputs, selected_model)
+            
+            if selected_model:
+                try:
+                    # Make prediction with enhanced error handling
+                    with st.spinner("Making prediction..."):
+                        prediction = predict_man_hours(user_inputs, selected_model, use_preprocessing_pipeline=True)
+                        team_size = user_inputs.get('project_prf_max_team_size', 5)
+                    
+                    # Safe display of prediction
+                    safe_show_prediction(col2, prediction, team_size)
+                    
+                    # Show feature importance if prediction was successful
+                    if prediction is not None:
+                        try:
+                            show_feature_importance(selected_model, user_inputs, st)
+                        except Exception as e:
+                            st.warning(f"Could not display feature importance: {e}")
+                    
+                except Exception as e:
+                    with col2:
+                        st.error("❌ Prediction Failed")
+                        st.write(f"**Error:** {str(e)}")
+                        
+                        with st.expander("🔧 Quick Fixes"):
+                            st.write("**Try these solutions:**")
+                            st.write("1. Check if your model file is corrupted")
+                            st.write("2. Use the 'Create Test Model' button in sidebar")
+                            st.write("3. Try a different model if available")
+                            st.write("4. Check the console logs for detailed errors")
+                            
+                            if st.button("🧪 Create Simple Test Model"):
+                                if create_dummy_model_for_testing():
+                                    st.success("✅ Test model created! Refresh the page.")
+                                else:
+                                    st.error("❌ Could not create test model")
+            else:
+                with col2:
+                    st.warning("⚠️ Please select a model to make predictions.")
+                    st.info("If no models are available, use the diagnostics tools in the sidebar.")
+        
+        # Show additional sections
+        tabs = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
+        
+        with tabs[0]:
+            if not user_inputs.get('submit', False):
+                st.info("👈 Configure your project parameters in the sidebar and click 'Predict' to get estimation results.")
+                
+                # Show model status
+                model_status = check_required_models()
+                if not model_status["models_available"]:
+                    st.warning("⚠️ No trained models found!")
+                    st.info("Use the diagnostics tools in the sidebar to create a test model or check existing models.")
+        
+        with tabs[1]:
+            st.info("Visualization features will be available after successful prediction.")
+        
+        with tabs[2]:
+            about_section()
+            tips_section()
+            
+            # Add troubleshooting section
+            with st.expander("🔧 Troubleshooting Guide"):
+                st.markdown("""
+                ### Common Issues and Solutions
+                
+                **Model Loading Failures:**
+                - Use 'Diagnose Models' button in sidebar
+                - Try creating a test model
+                - Check if model files are corrupted
+                
+                **Prediction Errors:**
+                - Verify all required fields are filled
+                - Check feature configuration files
+                - Use test model for validation
+                
+                **Display Issues:**
+                - Arrow conversion errors are automatically handled
+                - Refresh page if display seems broken
+                """)
+            
+    except Exception as e:
+        st.error(f"Application error: {e}")
+        st.write("**Troubleshooting:**")
+        st.write("1. Refresh the page")
+        st.write("2. Check console logs")
+        st.write("3. Use diagnostics tools in sidebar")
