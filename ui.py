@@ -1,9 +1,6 @@
-# ui.py
+# ui.py - Completely Fixed Ultra-Compact Version
 """
-- Launch the Streamlit App: Run streamlit run main.py and Use the 
-  "Check for required models" option to verify your models are detected properly. Should be only model allowed at one time.
-- Explore Additional Features: Save/load configurations for frequently used project settings, Use the what-if analysis to 
-  see how changing parameters affects estimates and Review feature importance to understand which factors have the biggest impact
+Fixed Streamlit UI with ultra-compact form design and proper field handling
 """
 
 import streamlit as st
@@ -15,1204 +12,784 @@ import os
 import yaml
 from datetime import datetime
 from models import *
-# --- Compact sidebar CSS ---
+
+# --- Ultra Compact CSS with Zero Gaps ---
 st.markdown("""
 <style>
-section[data-testid="stSidebar"] .stForm .stFormItem, 
-div[data-testid="stForm"] > div > div {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-section[data-testid="stSidebar"] .stForm label, 
-section[data-testid="stSidebar"] .stForm .stRadio, 
-section[data-testid="stSidebar"] .stForm .stSelectbox, 
-section[data-testid="stSidebar"] .stForm .stNumberInput {
-    margin-bottom: 0 !important;
-}
-.main .block-container { padding-top: 0 !important; }
-
-/* Ultra compact tabs styling with negative margins */
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-list"] {
-    gap: 0px !important;
-    margin-bottom: -5px !important;
-}
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab"] {
-    height: 30px !important;
-    padding: 2px 6px !important;
-    font-size: 0.8rem !important;
-    margin-bottom: -2px !important;
-}
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] {
-    padding-top: 02 !important;
-    margin-top: -3px !important;
+/* Global sidebar styling */
+section[data-testid="stSidebar"] {
+    background-color: #f8f9fa;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
 }
 
-/* NEGATIVE MARGINS FOR TAB CONTENT - Overlap fields inside tabs */
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .element-container {
-    margin-bottom: -2px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput {
-    margin-bottom: -3px !important;
-    margin-top: -2px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox > div,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect > div,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput > div,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider > div,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput > div {
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox label,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect label,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio label,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput label,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSlider label,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stTextInput label {
-    font-size: 0.75rem !important;
-    margin-bottom: -2px !important;
-    margin-top: -1px !important;
-    line-height: 1.0 !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-/* Negative spacing radio buttons inside tabs */
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio > div {
-    gap: -1px !important;
-    margin-top: -2px !important;
-    margin-bottom: -2px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio > div > label {
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    padding: 0 !important;
-    line-height: 1.0 !important;
-}
-
-/* Remove ALL spacing between consecutive form elements in tabs with negatives */
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stSelectbox,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stMultiSelect,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stRadio,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stSelectbox + .stNumberInput,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stMultiSelect + .stSelectbox,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stRadio + .stSelectbox,
-section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] .stNumberInput + .stSelectbox {
-    margin-top: -3px !important;
-    padding-top: 0 !important;
-}
-
-/* Ultra compact form elements with negative margins */
+/* Remove ALL spacing between elements */
 section[data-testid="stSidebar"] .element-container {
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stSelectbox,
-section[data-testid="stSidebar"] .stMultiSelect,
-section[data-testid="stSidebar"] .stRadio,
-section[data-testid="stSidebar"] .stNumberInput,
-section[data-testid="stSidebar"] .stSlider,
-section[data-testid="stSidebar"] .stTextInput {
-    margin-bottom: -2px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] .stMultiSelect label,
-section[data-testid="stSidebar"] .stRadio label,
-section[data-testid="stSidebar"] .stNumberInput label,
-section[data-testid="stSidebar"] .stSlider label,
-section[data-testid="stSidebar"] .stTextInput label {
-    font-size: 0.75rem !important;
-    margin-bottom: -1px !important;
-    margin-top: 0 !important;
-    line-height: 1.1 !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stSelectbox > div,
-section[data-testid="stSidebar"] .stMultiSelect > div,
-section[data-testid="stSidebar"] .stNumberInput > div,
-section[data-testid="stSidebar"] .stSlider > div,
-section[data-testid="stSidebar"] .stTextInput > div {
-    margin-bottom: 0 !important;
-    margin-top: 0 !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-/* Negative spacing radio buttons */
-section[data-testid="stSidebar"] .stRadio > div {
-    gap: -1px !important;
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stRadio > div > label {
-    margin-bottom: 0 !important;
-    margin-top: 0 !important;
+    margin: 0 !important;
     padding: 0 !important;
+    gap: 0 !important;
 }
 
-/* Negative spacing headers */
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-    margin-top: -2px !important;
-    margin-bottom: -1px !important;
-    font-size: 0.9rem !important;
-    line-height: 1.1 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Negative spacing buttons */
-section[data-testid="stSidebar"] .stButton > button {
-    height: 2rem !important;
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.75rem !important;
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-}
-
-/* Zero spacing text input */
-section[data-testid="stSidebar"] .stTextInput > div > div > input {
-    height: 2rem !important;
-    font-size: 0.75rem !important;
-    padding: 0.25rem !important;
-}
-
-/* Zero spacing selectbox */
-section[data-testid="stSidebar"] .stSelectbox > div > div > div {
-    height: 2rem !important;
-    font-size: 0.75rem !important;
-}
-
-/* Remove ALL extra spacing with negatives */
 section[data-testid="stSidebar"] .stMarkdown {
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stDivider {
-    margin: -2px 0 !important;
+    margin: 0 !important;
     padding: 0 !important;
 }
 
-section[data-testid="stSidebar"] .stCaption {
-    margin-bottom: -1px !important;
-    margin-top: -1px !important;
-    font-size: 0.7rem !important;
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
+/* Ultra compact form elements */
+section[data-testid="stSidebar"] .stSelectbox,
+section[data-testid="stSidebar"] .stNumberInput,
+section[data-testid="stSidebar"] .stRadio,
+section[data-testid="stSidebar"] .stTextInput {
+    margin: 0 !important;
+    padding: 0 !important;
+    margin-bottom: -8px !important;
+}
+
+/* Tiny labels */
+section[data-testid="stSidebar"] .stSelectbox label,
+section[data-testid="stSidebar"] .stNumberInput label,
+section[data-testid="stSidebar"] .stRadio label,
+section[data-testid="stSidebar"] .stTextInput label {
+    font-size: 0.65rem !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     line-height: 1.0 !important;
+    margin-bottom: 1px !important;
 }
 
-/* Negative gaps in columns */
-section[data-testid="stSidebar"] .stColumn {
-    padding: 0 !important;
-    margin: -1px 0 !important;
+/* Required field styling */
+.required-field label {
+    color: #d32f2f !important;
+    font-weight: 600 !important;
 }
 
-/* Negative spacing number input */
-section[data-testid="stSidebar"] .stNumberInput > div > div > div > div {
-    gap: -1px !important;
+.required-field label::before {
+    content: "* ";
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+/* Ultra small input controls */
+section[data-testid="stSidebar"] .stSelectbox > div > div {
+    height: 22px !important;
+    min-height: 22px !important;
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    margin: 0 !important;
 }
 
 section[data-testid="stSidebar"] .stNumberInput input {
-    height: 2rem !important;
-    font-size: 0.75rem !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    margin: 0 !important;
 }
 
+section[data-testid="stSidebar"] .stTextInput input {
+    height: 22px !important;
+    min-height: 22px !important;
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    margin: 0 !important;
+}
+
+/* Number input buttons */
 section[data-testid="stSidebar"] .stNumberInput button {
-    height: 2rem !important;
-    width: 2rem !important;
-    font-size: 0.7rem !important;
-    margin: -1px !important;
+    height: 22px !important;
+    width: 18px !important;
+    font-size: 0.5rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* WARNING: Monitor for overlapping issues */
-/* If elements overlap too much, reduce these negative values */
+/* Radio buttons - horizontal and compact */
+section[data-testid="stSidebar"] .stRadio > div {
+    flex-direction: row !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stRadio > div > label {
+    margin: 0 !important;
+    padding: 0 2px !important;
+    font-size: 0.6rem !important;
+    line-height: 1.0 !important;
+}
+
+/* Ultra compact tabs */
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-list"] {
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab"] {
+    height: 20px !important;
+    padding: 1px 4px !important;
+    font-size: 0.6rem !important;
+    margin: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stTabs [data-baseweb="tab-panel"] {
+    padding: 2px 0 !important;
+    margin: 0 !important;
+}
+
+/* Compact buttons */
+section[data-testid="stSidebar"] .stButton > button {
+    height: 24px !important;
+    padding: 1px 6px !important;
+    font-size: 0.65rem !important;
+    margin: 1px 0 !important;
+    font-weight: 500;
+}
+
+/* Form styling */
+section[data-testid="stSidebar"] .stForm {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+/* Compact info/warning messages */
+section[data-testid="stSidebar"] .stInfo,
+section[data-testid="stSidebar"] .stWarning,
+section[data-testid="stSidebar"] .stError,
+section[data-testid="stSidebar"] .stSuccess {
+    margin: 1px 0 !important;
+    padding: 2px 4px !important;
+    font-size: 0.6rem !important;
+    line-height: 1.1 !important;
+}
+
+/* Title styling */
+section[data-testid="stSidebar"] h1 {
+    font-size: 0.9rem !important;
+    margin: 2px 0 !important;
+    padding: 2px 0 !important;
+    line-height: 1.1 !important;
+    font-weight: 600;
+}
+
+/* Compact dividers */
+section[data-testid="stSidebar"] .stDivider {
+    margin: 2px 0 !important;
+    padding: 0 !important;
+}
+
+/* Help text styling */
+section[data-testid="stSidebar"] .stCaption {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0.55rem !important;
+    line-height: 1.0 !important;
+    color: #666 !important;
+}
+
+/* Column spacing */
+section[data-testid="stSidebar"] .stColumn {
+    padding: 0 1px !important;
+    margin: 0 !important;
+    gap: 0 !important;
+}
+
+/* Remove block spacing */
+section[data-testid="stSidebar"] .block-container {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Main content styling */
+.main .block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --- Config Loader ---
+# --- Configuration Loading ---
 def load_yaml_config(path):
     """Load YAML configuration file with error handling"""
     try:
         with open(path, "r") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        st.warning(f"Configuration file not found: {path}")
-        return {}
+        return create_default_config(path)
     except yaml.YAMLError as e:
         st.error(f"Error parsing YAML file {path}: {e}")
         return {}
 
+def create_default_config(path):
+    """Create default configuration if file doesn't exist"""
+    if "feature_mapping" in path:
+        default_config = {
+            "categorical_features": {
+                "external_eef_industry_sector": {"options": ["Banking", "Healthcare", "Technology", "Retail", "Manufacturing"]},
+                "external_eef_organisation_type": {"options": ["SME", "Large Enterprise", "Startup", "Government"]},
+                "project_prf_application_type": {"options": ["Web Application", "Mobile App", "Desktop Software", "API/Service"]},
+                "project_prf_development_type": {"options": ["New Development", "Enhancement", "Maintenance", "Migration"]},
+                "tech_tf_architecture": {"options": ["Monolithic", "Microservices", "SOA", "Serverless"]},
+                "tech_tf_development_platform": {"options": ["Cloud", "On-Premise", "Hybrid"]},
+                "tech_tf_language_type": {"options": ["Object-Oriented", "Functional", "Procedural", "Scripting"]},
+                "tech_tf_primary_programming_language": {"options": ["Java", "Python", "JavaScript", "C#", "PHP", "Ruby"]},
+                "project_prf_relative_size": {"options": ["XS (Extra Small)", "S (Small)", "M (Medium)", "L (Large)", "XL (Extra Large)"]}
+            },
+            "numeric_features": ["project_prf_year_of_project", "project_prf_max_team_size"],
+            "special_cases": {
+                "team_size_group": {
+                    "input_key": "project_prf_team_size_group",
+                    "options": ["1", "2-3", "4-5", "6-10", "11+"]
+                }
+            }
+        }
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            yaml.dump(default_config, f)
+        return default_config
+    return {}
+
 def load_configs():
     """Load all configuration files"""
-    # Try to load UI config first to get paths
-    ui_config = load_yaml_config("config/ui_config.yaml")
-    
-    # Get paths from UI config or use defaults
-    feature_config_path = ui_config.get("app_settings", {}).get("default_config_path", "config/feature_mapping.yaml")
+    ui_config_path = "config/ui_config.yaml"
+    feature_config_path = "config/feature_mapping.yaml"
+    help_config_path = "config/field_help.yaml"
     
     feature_config = load_yaml_config(feature_config_path)
+    ui_config = load_yaml_config(ui_config_path) or {}
+    help_config = load_yaml_config(help_config_path) or {}
     
-    return feature_config, ui_config
+    return feature_config, ui_config, help_config
 
-FEATURE_CONFIG, UI_CONFIG = load_configs()
+FEATURE_CONFIG, UI_CONFIG, HELP_CONFIG = load_configs()
 
-def get_team_size_group_from_config(max_team_size):
-    """Dynamically determine team size group based on YAML config options"""
-    team_size_config = FEATURE_CONFIG.get("special_cases", {}).get("team_size_group", {})
-    options = team_size_config.get("options", [])
-    
-    # Parse the options to create ranges
-    for option in options:
-        if option == "Missing":
-            continue
-        elif option.isdigit():
-            if max_team_size == int(option):
-                return option
-        elif "-" in option:
-            try:
-                start, end = map(int, option.split("-"))
-                if start <= max_team_size <= end:
-                    return option
-            except ValueError:
-                continue
-        elif option.endswith("+"):
-            try:
-                threshold = int(option[:-1])
-                if max_team_size >= threshold:
-                    return option
-            except ValueError:
-                continue
-    
-    return "Missing"
-
-def get_numeric_field_config(field_name):
-    """Get configuration for numeric fields from UI config"""
-    numeric_configs = UI_CONFIG.get("numeric_field_config", {})
-    
-    # Return specific config if exists, otherwise default
-    if field_name in numeric_configs:
-        return numeric_configs[field_name]
-    
-    # Fallback defaults
-    return {"min": 1, "max": 10, "default": 1, "input_type": "number_input"}
-
-def get_field_label(field_name):
-    """Get human-readable labels from UI config"""
-    field_labels = UI_CONFIG.get("field_labels", {})
-    
-    # Return configured label or generate from field name
-    return field_labels.get(field_name, field_name.replace('_', ' ').title())
-
-def get_tab_organization():
-    """Get tab organization from UI config"""
-    return UI_CONFIG.get("tab_organization", {
-        "Basic": [],
-        "Technical": [],
-        "Advanced": []
-    })
-
-def get_ui_behavior():
-    """Get UI behavior settings from config"""
-    return UI_CONFIG.get("ui_behavior", {
-        "multiselect_threshold": 10,
-        "radio_threshold": 4,
-        "selectbox_threshold": 8
-    })
-
-def render_field(field_name, config_section, config_data):
-    """Dynamically render form fields based on YAML config with compact styling"""
-    label = get_field_label(field_name)
-    ui_behavior = get_ui_behavior()
-    
-    if config_section == "numeric_features":
-        field_config = get_numeric_field_config(field_name)
-        input_type = field_config.get("input_type", "number_input")
-        
-        if input_type == "slider":
-            return st.slider(label, field_config["min"], field_config["max"], field_config["default"], help=None)
-        else:
-            return st.number_input(label, field_config["min"], field_config["max"], field_config["default"], help=None)
-    
-    elif config_section == "categorical_features":
-        options = config_data.get("options", [])
-        if len(options) > ui_behavior["multiselect_threshold"]:
-            return st.multiselect(label, options, help=None)
-        else:
-            return st.selectbox(label, options, help=None)
-    
-    elif config_section == "one_hot_features":
-        mapping = config_data.get("mapping", {})
-        options = list(mapping.keys())
-        
-        if len(options) <= ui_behavior["radio_threshold"]:
-            return st.radio(label, options, help=None)
-        elif len(options) <= ui_behavior["selectbox_threshold"]:
-            return st.selectbox(label, options, help=None)
-        else:
-            return st.multiselect(label, options, help=None)
-    
-    elif config_section == "special_cases":
-        if field_name == "project_prf_team_size_group":
-            # This will be auto-calculated, just display it
-            return None
-        else:
-            options = config_data.get("options", [])
-            return st.selectbox(label, options, help=None)
-    
-    elif config_section == "binary_features":
-        mapping = config_data.get("mapping", {})
-        options = list(mapping.keys())
-        return st.radio(label, options, help=None)
-    
+# --- Helper Functions ---
+def get_field_help(field_name):
+    """Get help text for a field"""
+    field_help = HELP_CONFIG.get("field_help", {})
+    if field_name in field_help:
+        return field_help[field_name].get("help", "")
     return None
 
-def sidebar_inputs():
-    model_status = check_required_models()
-    tab_organization = get_tab_organization()
-    user_inputs = {}
+def get_field_title(field_name):
+    """Get display title for a field"""
+    field_help = HELP_CONFIG.get("field_help", {})
+    if field_name in field_help:
+        return field_help[field_name].get("title", get_field_label(field_name))
+    return get_field_label(field_name)
+
+def get_field_label(field_name):
+    """Convert field name to readable label"""
+    field_labels = UI_CONFIG.get("field_labels", {})
+    if field_name in field_labels:
+        return field_labels[field_name]
     
+    # Default conversion
+    return field_name.replace('_', ' ').replace('prf', '').replace('eef', '').replace('tf', '').title().strip()
+
+def is_mandatory_field(field_name):
+    """Check if field is mandatory"""
+    mandatory_fields = [
+        "project_prf_year_of_project",
+        "external_eef_industry_sector", 
+        "external_eef_organisation_type",
+        "project_prf_team_size_group",
+        "project_prf_max_team_size",
+        "project_prf_relative_size",
+        "project_prf_application_type",
+        "project_prf_development_type",
+        "tech_tf_architecture",
+        "tech_tf_development_platform",
+        "tech_tf_language_type",
+        "tech_tf_primary_programming_language"
+    ]
+    return field_name in mandatory_fields
+
+def get_team_size_group_from_max(max_team_size):
+    """Calculate team size group from max team size"""
+    if max_team_size <= 1:
+        return "1"
+    elif max_team_size <= 3:
+        return "2-3"
+    elif max_team_size <= 5:
+        return "4-5"
+    elif max_team_size <= 10:
+        return "6-10"
+    else:
+        return "11+"
+
+def get_numeric_field_config(field_name):
+    """Get configuration for numeric fields"""
+    if "year" in field_name.lower():
+        return {"min": 2010, "max": 2030, "default": 2024}
+    elif "team" in field_name.lower() and "size" in field_name.lower():
+        return {"min": 1, "max": 50, "default": 5}
+    return {"min": 1, "max": 1000, "default": 10}
+
+# --- Field Rendering Functions ---
+def render_field(field_name, field_config=None, is_required=False):
+    """Render a single form field with ultra-compact styling"""
+    label = get_field_title(field_name)
+    help_text = get_field_help(field_name)
+    
+    # Apply required field styling
+    if is_required:
+        with st.container():
+            st.markdown(f'<div class="required-field">', unsafe_allow_html=True)
+    
+    field_value = None
+    
+    # Handle different field types
+    if field_name in FEATURE_CONFIG.get("numeric_features", []):
+        config = get_numeric_field_config(field_name)
+        field_value = st.number_input(
+            label,
+            min_value=config["min"],
+            max_value=config["max"],
+            value=config["default"],
+            help=help_text,
+            key=f"num_{field_name}"
+        )
+    
+    elif field_name in FEATURE_CONFIG.get("categorical_features", {}):
+        options = FEATURE_CONFIG["categorical_features"][field_name].get("options", [])
+        if options:
+            field_value = st.selectbox(
+                label,
+                options,
+                help=help_text,
+                key=f"cat_{field_name}"
+            )
+        else:
+            field_value = st.text_input(label, help=help_text, key=f"txt_{field_name}")
+    
+    elif field_name == "project_prf_team_size_group":
+        # Auto-calculated field - display only
+        max_team_size = st.session_state.get("num_project_prf_max_team_size", 5)
+        team_size_group = get_team_size_group_from_max(max_team_size)
+        st.text_input(
+            label,
+            value=team_size_group,
+            disabled=True,
+            help="Automatically calculated based on max team size",
+            key=f"calc_{field_name}"
+        )
+        field_value = team_size_group
+    
+    else:
+        # Default field handling
+        field_value = st.text_input(label, help=help_text, key=f"def_{field_name}")
+    
+    if is_required:
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    return field_value
+
+def get_tab_organization():
+    """Organize fields into tabs"""
+    mandatory_fields = [
+        "project_prf_year_of_project",
+        "external_eef_industry_sector", 
+        "external_eef_organisation_type",
+        "project_prf_max_team_size",
+        "project_prf_team_size_group",
+        "project_prf_relative_size",
+        "project_prf_application_type",
+        "project_prf_development_type",
+        "tech_tf_architecture",
+        "tech_tf_development_platform",
+        "tech_tf_language_type",
+        "tech_tf_primary_programming_language"
+    ]
+    
+    # Get all available fields
+    all_fields = set()
+    all_fields.update(FEATURE_CONFIG.get("numeric_features", []))
+    all_fields.update(FEATURE_CONFIG.get("categorical_features", {}).keys())
+    
+    # Add special case fields
+    for group_config in FEATURE_CONFIG.get("special_cases", {}).values():
+        if "input_key" in group_config:
+            all_fields.add(group_config["input_key"])
+    
+    optional_fields = [f for f in all_fields if f not in mandatory_fields]
+    
+    return {
+        "Required": {
+            "fields": mandatory_fields,
+            "description": "Essential parameters for accurate estimation"
+        },
+        "Optional": {
+            "fields": optional_fields,
+            "description": "Additional parameters for improved accuracy"
+        }
+    }
+
+# --- About Section Function ---
+def about_section():
+    """Display about section with tool information"""
+    st.markdown("""
+    ### About This Tool
+    
+    The **ML Project Effort Estimator** is a machine learning-powered tool designed to help project managers, 
+    developers, and teams estimate the effort required for software development projects.
+    
+    #### Key Features:
+    - **Machine Learning Models**: Uses trained ML models to predict effort based on project characteristics
+    - **Comprehensive Parameters**: Considers project size, team composition, technology stack, and organizational factors
+    - **Interactive Interface**: User-friendly form with real-time validation and feedback
+    - **Feature Importance**: Shows which factors most influence the effort estimation
+    - **Configuration Management**: Save and load project configurations for reuse
+    
+    #### How It Works:
+    1. **Data Input**: Enter project parameters including team size, technology stack, and project characteristics
+    2. **ML Prediction**: The tool applies trained machine learning models to generate effort estimates
+    3. **Results Analysis**: View the predicted effort in hours, days, and per-person breakdowns
+    4. **Insights**: Understand which factors most influence your project's effort estimate
+    
+    #### Best Practices:
+    - Provide accurate team size and project complexity information
+    - Select the most appropriate technology stack options
+    - Use historical project data to validate estimates
+    - Consider the tool's predictions as guidance alongside expert judgment
+    
+    #### Model Information:
+    The underlying models are trained on historical project data and consider factors such as:
+    - Project size and complexity
+    - Team size and composition
+    - Technology stack and architecture
+    - Industry sector and organization type
+    - Development approach and methodology
+    
+    For technical support or questions, please refer to the documentation or contact the development team.
+    """)
+
+# --- Main Sidebar Function ---
+def sidebar_inputs():
+    """Create ultra-compact sidebar with form inputs"""
     with st.sidebar:
+        st.title("Project Parameters")
+        
         with st.form("estimation_form"):
-            # Create tabs dynamically
-            tabs = st.tabs(list(tab_organization.keys()))
+            user_inputs = {}
+            tab_organization = get_tab_organization()
             
-            # Variables to track across tabs
-            selected_model = None
-            submit = False
-            save_config = False
-            config_name = ""
+            # Create tabs
+            tab_names = list(tab_organization.keys())
+            tabs = st.tabs(tab_names)
             
-            for tab_idx, (tab_name, field_list) in enumerate(tab_organization.items()):
+            for tab_idx, (tab_name, tab_config) in enumerate(tab_organization.items()):
                 with tabs[tab_idx]:
-                    # Process fields for this tab
-                    for field_name in field_list:
-                        # Find field in config
-                        field_found = False
-                        
-                        # Check numeric features
-                        if field_name in FEATURE_CONFIG.get("numeric_features", []):
-                            user_inputs[field_name] = render_field(field_name, "numeric_features", {})
-                            field_found = True
-                        
-                        # Check categorical features
-                        elif field_name in FEATURE_CONFIG.get("categorical_features", {}):
-                            config_data = FEATURE_CONFIG["categorical_features"][field_name]
-                            user_inputs[field_name] = render_field(field_name, "categorical_features", config_data)
-                            field_found = True
-                        
-                        # Check one-hot features
+                    # Tab description
+                    description = tab_config.get("description", "")
+                    if description:
+                        st.info(description)
+                    
+                    # Render fields
+                    fields = tab_config.get("fields", [])
+                    for field_name in fields:
+                        if field_name in FEATURE_CONFIG.get("categorical_features", {}) or \
+                           field_name in FEATURE_CONFIG.get("numeric_features", []) or \
+                           field_name in [sc.get("input_key") for sc in FEATURE_CONFIG.get("special_cases", {}).values()]:
+                            
+                            is_required = is_mandatory_field(field_name)
+                            field_value = render_field(field_name, is_required=is_required)
+                            user_inputs[field_name] = field_value
                         else:
-                            for group_name, group_config in FEATURE_CONFIG.get("one_hot_features", {}).items():
-                                if group_config.get("input_key") == field_name:
-                                    user_inputs[field_name] = render_field(field_name, "one_hot_features", group_config)
-                                    field_found = True
-                                    break
-                        
-                        # Check special cases
-                        if not field_found:
-                            for group_name, group_config in FEATURE_CONFIG.get("special_cases", {}).items():
-                                if group_config.get("input_key") == field_name:
-                                    if field_name == "project_prf_team_size_group":
-                                        # Auto-calculate based on max team size
-                                        max_team_size = user_inputs.get("project_prf_max_team_size", 5)
-                                        team_size_group = get_team_size_group_from_config(max_team_size)
-                                        user_inputs[field_name] = team_size_group
-                                        st.caption(f"**{get_field_label(field_name)}:** {team_size_group}")
-                                    else:
-                                        user_inputs[field_name] = render_field(field_name, "special_cases", group_config)
-                                    field_found = True
-                                    break
-                        
-                        # Check binary features
-                        if not field_found:
-                            for group_name, group_config in FEATURE_CONFIG.get("binary_features", {}).items():
-                                if group_config.get("input_key") == field_name:
-                                    user_inputs[field_name] = render_field(field_name, "binary_features", group_config)
-                                    field_found = True
-                                    break
+                            # Handle missing field configurations
+                            st.warning(f"⚠️ Field '{field_name}' not configured")
             
-            # MOVE ALL FORM CONTROLS OUTSIDE THE TABS - This is the key fix!
-            st.divider()  # More compact than markdown ---
+            # Model selection and controls
+            st.markdown("---")
             
-            # Model selection in a more compact format
-            if model_status["models_available"]:
-                available_models = list_available_models()
-                if available_models:
-                    model_options = {model['display_name']: model['technical_name'] for model in available_models}
-                    selected_display_name = st.selectbox(
-                        "🤖 Model", 
-                        list(model_options.keys()),
-                        help=None
-                    )
-                    selected_model = model_options[selected_display_name]
+            # Model selection
+            selected_model = None
+            try:
+                model_status = check_required_models()
+                if model_status.get("models_available", False):
+                    available_models = list_available_models()
+                    if available_models:
+                        model_options = {m['display_name']: m['technical_name'] for m in available_models}
+                        selected_display_name = st.selectbox(
+                            "🤖 Model",
+                            list(model_options.keys()),
+                            help="Select ML model for prediction"
+                        )
+                        selected_model = model_options[selected_display_name]
+                    else:
+                        st.warning("⚠️ No trained models found")
                 else:
-                    st.caption("⚠️ No trained models found")
-            else:
-                st.caption("⚠️ No trained models found")
+                    st.warning("⚠️ Models not available")
+            except Exception as e:
+                st.error(f"Model loading error: {e}")
+                selected_model = "default_model"  # Fallback
             
-            # More compact action section
+            # Validation
+            mandatory_fields = [f for f in user_inputs.keys() if is_mandatory_field(f)]
+            missing_fields = []
+            for field in mandatory_fields:
+                value = user_inputs.get(field)
+                if value is None or value == "" or value == []:
+                    missing_fields.append(get_field_title(field))
+            
+            if missing_fields:
+                st.error(f"⚠️ Missing: {', '.join(missing_fields[:3])}{'...' if len(missing_fields) > 3 else ''}")
+            
+            # Action buttons
             col1, col2 = st.columns(2)
             with col1:
-                submit = st.form_submit_button("🔮 Predict", use_container_width=True)
+                submit = st.form_submit_button(
+                    "🔮 Predict",
+                    use_container_width=True,
+                    disabled=len(missing_fields) > 0 or not selected_model
+                )
             with col2:
-                save_config = st.form_submit_button("💾 Save", use_container_width=True)
+                save_config = st.form_submit_button(
+                    "💾 Save",
+                    use_container_width=True
+                )
             
-            # Compact configuration name input
-            config_name = st.text_input(
-                "Config name", 
-                placeholder="Save as...",
-                help=None,
-                label_visibility="collapsed"
-            )
-
-            # Store final values
-            user_inputs["selected_model"] = selected_model
-            user_inputs["submit"] = submit
-            user_inputs["save_config"] = save_config
-            user_inputs["config_name"] = config_name
-
-            # Save config logic
-            if save_config and selected_model and config_name and config_name.strip():
-                save_current_configuration(user_inputs, config_name.strip())
-            elif save_config and (not config_name or not config_name.strip()):
-                st.warning("Please enter a configuration name to save.")
-            elif save_config and not selected_model:
-                st.warning("Please select a model before saving configuration.")
-
-            if submit or save_config:
-                return create_feature_dict_from_config(user_inputs, FEATURE_CONFIG)
-            return {'selected_model': selected_model, 'submit': False}
+            # Configuration name for saving
+            if save_config:
+                config_name = st.text_input("Config Name", placeholder="Enter name")
+                if config_name.strip():
+                    save_current_configuration(user_inputs, config_name.strip())
         
-# -- Feature dict creation (supports multi-hot) --
-def create_feature_dict_from_config(user_inputs, config):
-    features = {}
-    
-    # Process numeric features
-    for key in config.get("numeric_features", []):
-        features[key] = user_inputs.get(key, 0)
-    
-    # Process categorical features
-    for key, meta in config.get("categorical_features", {}).items():
-        val = user_inputs.get(key, None)
-        if isinstance(val, list):
-            features[key] = ";".join(val) if val else ""
-        else:
-            features[key] = val if val else ""
-    
-    # Process one-hot features
-    for group, mapping in config.get("one_hot_features", {}).items():
-        input_key = mapping["input_key"]
-        input_value = user_inputs.get(input_key, [])
+        # Diagnostics section
+        st.markdown("---")
+        st.subheader("🔧 Diagnostics")
         
-        if isinstance(input_value, list):
-            selected_values = set(input_value)
-        else:
-            selected_values = {input_value} if input_value else set()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Check Models", use_container_width=True):
+                try:
+                    fix_model_loading_issues()
+                    st.success("✅ Models checked")
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
         
-        for label, feat_key in mapping["mapping"].items():
-            features[feat_key] = int(label in selected_values)
-    
-    # Process special cases
-    for group, spec in config.get("special_cases", {}).items():
-        input_key = spec["input_key"]
-        input_value = user_inputs.get(input_key, "")
+        with col2:
+            if st.button("Test Model", use_container_width=True):
+                try:
+                    if create_test_model_file():
+                        st.success("✅ Test model created")
+                    else:
+                        st.error("❌ Creation failed")
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
         
-        if "output_keys" in spec:
-            for label, feat_key in spec["output_keys"].items():
-                features[feat_key] = int(input_value == label)
-    
-    # Process binary features
-    for group, mapping in config.get("binary_features", {}).items():
-        input_key = mapping["input_key"]
-        input_value = user_inputs.get(input_key, "")
-        for label, feat_key in mapping["mapping"].items():
-            features[feat_key] = int(input_value == label)
-    
-    features["selected_model"] = user_inputs.get("selected_model")
-    features["submit"] = user_inputs.get("submit", False)
-    return features
+        # Prepare return data
+        user_inputs["selected_model"] = selected_model
+        user_inputs["submit"] = submit
+        
+        return user_inputs
 
-def ensure_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
+# --- Configuration Management ---
 def save_current_configuration(user_inputs, config_name):
+    """Save current configuration to file"""
     config = user_inputs.copy()
     config.pop('submit', None)
-    config['date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
     
-    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
-    ensure_dir(configs_dir)
+    configs_dir = "saved_configs"
+    os.makedirs(configs_dir, exist_ok=True)
     
-    with open(f'{configs_dir}/{config_name}.json', 'w') as f:
-        json.dump(config, f, default=str)
-    st.success(f"Configuration '{config_name}' saved successfully!")
+    config_file = f'{configs_dir}/{config_name}.json'
+    with open(config_file, 'w') as f:
+        json.dump(config, f, indent=2, default=str)
+    
+    st.success(f"✅ Configuration '{config_name}' saved!")
 
-def load_saved_configurations():
-    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
-    configs = {}
-    if not os.path.exists(configs_dir):
-        return configs
-    for filename in os.listdir(configs_dir):
-        if filename.endswith('.json'):
-            config_name = os.path.splitext(filename)[0]
-            try:
-                with open(f'{configs_dir}/{filename}', 'r') as f:
-                    configs[config_name] = json.load(f)
-            except Exception:
-                pass
-    return configs
-
-def load_configuration(config_name):
-    configs_dir = UI_CONFIG.get("app_settings", {}).get("configs_directory", "configs")
-    try:
-        with open(f'{configs_dir}/{config_name}.json', 'r') as f:
-            return json.load(f)
-    except Exception:
-        st.error(f"Failed to load configuration '{config_name}'")
-        return None
-
+# --- Display Functions ---
 def display_inputs(user_inputs, selected_model):
+    """Display input parameters summary"""
     col1, col2 = st.columns([2, 1])
+    
     with col1:
         st.subheader("Input Parameters Summary")
         
-        # Get key parameters from config
-        display_config = UI_CONFIG.get("display_config", {})
-        key_param_fields = display_config.get("key_parameters_for_summary", [])
+        # Filter and display parameters
+        display_params = {}
+        exclude_keys = {'selected_model', 'submit', 'save_config', 'config_name'}
         
-        key_params = {}
-        for field in key_param_fields:
-            label = get_field_label(field)
-            key_params[label] = user_inputs.get(field, 'N/A')
+        for key, value in user_inputs.items():
+            if key not in exclude_keys and value is not None and value != "":
+                label = get_field_title(key)
+                display_params[label] = str(value)
         
-        input_df = pd.DataFrame([{"Parameter": k, "Value": v} for k, v in key_params.items()])
-        st.dataframe(input_df, use_container_width=True)
+        if display_params:
+            for param, value in list(display_params.items())[:10]:  # Limit display
+                st.write(f"**{param}:** {value}")
+            
+            if len(display_params) > 10:
+                st.write(f"... and {len(display_params) - 10} more parameters")
+        else:
+            st.info("No parameters to display")
         
+        # Display selected model
         if selected_model:
-            model_display_name = get_model_display_name(selected_model)
-            st.write(f"📊 Selected Model: **{model_display_name}**")
-        else:
-            st.write("📊 Selected Model: **None**")
+            try:
+                model_display_name = get_model_display_name(selected_model)
+                st.write(f"📊 **Model:** {model_display_name}")
+            except:
+                st.write(f"📊 **Model:** {selected_model}")
+    
     return col2
-
-def create_feature_name_mapping():
-    """Dynamically create feature name mapping from config"""
-    mapping = {}
-    
-    # Add numeric features
-    for feature in FEATURE_CONFIG.get("numeric_features", []):
-        mapping[feature] = get_field_label(feature)
-    
-    # Add one-hot features
-    for group, config in FEATURE_CONFIG.get("one_hot_features", {}).items():
-        for label, feat_key in config.get("mapping", {}).items():
-            # Create more descriptive names
-            base_name = group.replace('_', ' ').title()
-            mapping[feat_key] = f"{base_name}: {label}"
-    
-    # Add special case features
-    for group, config in FEATURE_CONFIG.get("special_cases", {}).items():
-        if "output_keys" in config:
-            base_name = group.replace('_', ' ').title()
-            for label, feat_key in config["output_keys"].items():
-                mapping[feat_key] = f"{base_name}: {label}"
-    
-    return mapping
-
-def show_feature_importance(selected_model, features_dict, st):
-    if not selected_model:
-        st.info("No model selected for feature importance analysis.")
-        return
-    
-    feature_importance = get_feature_importance(selected_model)
-    if feature_importance is not None:
-        st.subheader("Feature Importance")
-        exclude_keys = {'selected_model', 'submit'}
-        feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
-        
-        # Use dynamic feature name mapping
-        feature_name_mapping = create_feature_name_mapping()
-        
-        # Get display config
-        importance_config = UI_CONFIG.get("feature_importance_display", {})
-        max_features = importance_config.get("max_features_shown", 15)
-        chart_size = importance_config.get("chart_size", {"width": 10, "height": 8})
-        precision = importance_config.get("precision_decimals", 3)
-        
-        importance_data = []
-        for i, name in enumerate(feature_names[:min(len(feature_importance), max_features)]):
-            if i < len(feature_importance):
-                friendly_name = feature_name_mapping.get(name, name.replace('_', ' ').title())
-                importance_data.append({
-                    'Feature': friendly_name,
-                    'Importance': abs(feature_importance[i])
-                })
-        
-        if importance_data:
-            importance_df = pd.DataFrame(importance_data)
-            importance_df = importance_df.sort_values('Importance', ascending=False)
-            
-            fig, ax = plt.subplots(figsize=(chart_size["width"], chart_size["height"]))
-            bars = ax.barh(importance_df['Feature'], importance_df['Importance'])
-            
-            for bar in bars:
-                width = bar.get_width()
-                if width > 0:
-                    label_x_pos = width * 1.01
-                    format_str = f'{{:.{precision}f}}'
-                    ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, format_str.format(width), va='center')
-            
-            ax.set_xlabel('Relative Importance')
-            ax.set_title(f'Top Feature Importance - {get_model_display_name(selected_model)}')
-            ax.grid(True, linestyle='--', alpha=0.3)
-            plt.tight_layout()
-            st.pyplot(fig)
-            st.dataframe(importance_df.round(precision), use_container_width=True)
-        else:
-            st.info("No feature importance data available.")
-    else:
-        model_display_name = get_model_display_name(selected_model)
-        st.info(f"Feature importance is not available for {model_display_name}. This might be because the model doesn't support feature importance or there was an error retrieving it.")
 
 def show_prediction(col2, prediction, team_size):
-    # Get prediction thresholds from config
-    thresholds = UI_CONFIG.get("prediction_thresholds", {"low_prediction_warning": 1, "high_prediction_warning": 10000})
-    
-    with col2:
-        st.subheader("Prediction Result")
-        if prediction is None:
-            st.error("Failed to make prediction. Please check logs for details.")
-            return
-        st.markdown(f"""
-        <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
-            <h3 style='text-align:center;'>Estimated Effort</h3>
-            <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Hours</h1>
-        </div>
-        """, unsafe_allow_html=True)
-        hours = int(prediction)
-        days = hours // 8
-        per_person = prediction / team_size if team_size > 0 else prediction
-        st.markdown("### Timeline Breakdown")
-        metrics_col1, metrics_col2 = st.columns(2)
-        with metrics_col1:
-            st.metric("Calendar Time", f"{days}d", help="Estimated calendar duration assuming full team availability")
-        with metrics_col2:
-            st.metric("Per Person", f"{per_person:.2f}h", help="Average effort per team member in hours")
-        
-        # Use configurable thresholds
-        if prediction < thresholds["low_prediction_warning"]:
-            st.warning("This prediction seems unusually low. Consider reviewing your inputs.")
-        elif prediction > thresholds["high_prediction_warning"]:
-            st.warning("This prediction seems unusually high. Consider reviewing your inputs.")
-
-def about_section():
-    st.markdown("---")
-    with st.expander("About this Estimator", expanded=False):
-        st.subheader("Machine Learning for Project Estimation")
-        st.write("""
-        This application uses machine learning models to predict the effort required for projects.
-        The models have been trained on historical project data to provide early estimations based on
-        key project parameters. These estimations can help in project planning and resource allocation.
-        
-        ### How it Works
-        The estimator dynamically processes input parameters based on the configured feature mapping
-        and uses the selected machine learning model to predict the required effort in man-hours.
-        
-        ### Input Categories
-        The system organizes inputs into configurable categories based on the UI configuration file.
-        All field labels, organization, and behavior can be customized through YAML configuration files.
-        """)
-
-def tips_section():
-    with st.expander("Tips for Accurate Estimation", expanded=False):
-        st.markdown("""
-        ### Tips for Getting Accurate Estimations
-        
-        1. **Provide Complete Information**
-           - Fill out all relevant fields for the most accurate predictions
-           - Use realistic values based on your project's actual requirements
-        
-        2. **Consider Project Context**
-           - Factor in your team's specific experience and capabilities
-           - Account for any unique constraints or requirements
-        
-        3. **Review and Validate**
-           - Compare estimates with historical data from similar projects
-           - Use estimates as starting points, not absolute values
-        
-        4. **Iterative Refinement**
-           - Update estimates as project requirements become clearer
-           - Consider re-estimating at key project milestones
-        """)
-        st.info("Remember that these estimations are meant to be starting points. Always review and adjust based on your team's specific context and historical performance.")
-
-def add_model_diagnostics_to_ui():
-    """Add model diagnostics section to Streamlit UI"""
-    if st.button("🔧 Diagnose Model Loading Issues"):
-        with st.spinner("Running model diagnostics..."):
-            fix_model_loading_issues()
-            st.success("Diagnostics completed! Check the logs for details.")
-    
-    if st.button("🧪 Create Test Model"):
-        with st.spinner("Creating test model..."):
-            if create_test_model_file():
-                st.success("Test model created successfully!")
-                st.info("Try selecting 'test_model' from the dropdown and making a prediction.")
-            else:
-                st.error("Failed to create test model. Check logs for details.")
-
-def safe_display_inputs(user_inputs, selected_model):
-    """Safe display of inputs with enhanced error handling for Arrow conversion"""
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.subheader("Input Parameters Summary")
-        
-        try:
-            # Get key parameters from config
-            display_config = UI_CONFIG.get("display_config", {})
-            key_param_fields = display_config.get("key_parameters_for_summary", [])
-            
-            if not key_param_fields:
-                # Fallback to showing some basic fields
-                key_param_fields = ['project_prf_year_of_project', 'project_prf_functional_size', 'project_prf_max_team_size']
-            
-            key_params = {}
-            for field in key_param_fields:
-                if field in user_inputs:
-                    label = get_field_label(field)
-                    value = user_inputs.get(field, 'N/A')
-                    
-                    # Ensure value is safely convertible to string
-                    if value is None:
-                        value_str = 'N/A'
-                    elif isinstance(value, (list, tuple)):
-                        value_str = ', '.join(str(v) for v in value) if value else 'None'
-                    elif isinstance(value, (int, float)):
-                        value_str = str(value)
-                    else:
-                        value_str = str(value)
-                    
-                    key_params[label] = value_str
-            
-            # Create DataFrame with explicit string types to avoid Arrow issues
-            if key_params:
-                # Create list of dictionaries with explicit string conversion
-                input_data = []
-                for param, value in key_params.items():
-                    input_data.append({
-                        "Parameter": str(param), 
-                        "Value": str(value)
-                    })
-                
-                # Create DataFrame and explicitly convert to strings
-                input_df = pd.DataFrame(input_data)
-                input_df = input_df.astype({'Parameter': 'string', 'Value': 'string'})
-                
-                # Display with error handling
-                try:
-                    st.dataframe(input_df, use_container_width=True)
-                except Exception as e:
-                    st.warning(f"Display formatting issue: {e}")
-                    # Fallback: simple text display
-                    for param, value in key_params.items():
-                        st.write(f"**{param}:** {value}")
-            else:
-                st.write("No parameters to display")
-            
-            # Model display
-            if selected_model:
-                model_display_name = get_model_display_name(selected_model)
-                st.write(f"📊 Selected Model: **{model_display_name}**")
-            else:
-                st.write("📊 Selected Model: **None**")
-                
-        except Exception as e:
-            st.error(f"Error displaying inputs: {e}")
-            # Ultimate fallback: show raw input summary
-            st.write("**Input Summary (Raw):**")
-            for key, value in user_inputs.items():
-                if key not in ['selected_model', 'submit', 'save_config', 'config_name']:
-                    st.text(f"{key}: {value}")
-    
-    return col2
-
-def add_diagnostics_section():
-    """Add model diagnostics section to sidebar"""
-    with st.sidebar:
-        st.markdown("---")
-        st.subheader("🔧 Diagnostics")
-        
-        if st.button("Diagnose Models", use_container_width=True):
-            with st.spinner("Running diagnostics..."):
-                from models import fix_model_loading_issues
-                fix_model_loading_issues()
-                st.success("✅ Diagnostics completed!")
-                st.info("Check console logs for detailed results")
-        
-        if st.button("Create Test Model", use_container_width=True):
-            with st.spinner("Creating test model..."):
-                from models import create_test_model_file
-                if create_test_model_file():
-                    st.success("✅ Test model created!")
-                    st.info("Refresh page and select 'test_model'")
-                else:
-                    st.error("❌ Test model creation failed")
-
-
-# Add these functions to the END of your existing ui.py file:
-
-def enhanced_sidebar_inputs():
-    """Enhanced sidebar with diagnostics - wrapper around your existing sidebar_inputs"""
-    # Call your existing sidebar_inputs function
-    user_inputs = sidebar_inputs()
-    
-    # Add diagnostics section after the form
-    add_diagnostics_section()
-    
-    return user_inputs
-
-def add_diagnostics_section():
-    """Add model diagnostics section to sidebar"""
-    with st.sidebar:
-        st.markdown("---")
-        st.subheader("🔧 Diagnostics")
-        
-        if st.button("Diagnose Models", use_container_width=True):
-            with st.spinner("Running diagnostics..."):
-                try:
-                    from models import fix_model_loading_issues
-                    fix_model_loading_issues()
-                    st.success("✅ Diagnostics completed!")
-                    st.info("Check console logs for detailed results")
-                except Exception as e:
-                    st.error(f"Diagnostics failed: {e}")
-        
-        if st.button("Create Test Model", use_container_width=True):
-            with st.spinner("Creating test model..."):
-                try:
-                    from models import create_test_model_file
-                    if create_test_model_file():
-                        st.success("✅ Test model created!")
-                        st.info("Refresh page and select 'test_model'")
-                    else:
-                        st.error("❌ Test model creation failed")
-                except Exception as e:
-                    st.error(f"Test model creation failed: {e}")
-
-def safe_display_inputs(user_inputs, selected_model):
-    """Safe display of inputs with enhanced error handling for Arrow conversion"""
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.subheader("Input Parameters Summary")
-        
-        try:
-            # Get key parameters from config
-            display_config = UI_CONFIG.get("display_config", {})
-            key_param_fields = display_config.get("key_parameters_for_summary", [])
-            
-            if not key_param_fields:
-                # Fallback to showing some basic fields
-                key_param_fields = ['project_prf_year_of_project', 'project_prf_functional_size', 'project_prf_max_team_size']
-            
-            key_params = {}
-            for field in key_param_fields:
-                if field in user_inputs:
-                    label = get_field_label(field)
-                    value = user_inputs.get(field, 'N/A')
-                    
-                    # Ensure value is safely convertible to string
-                    if value is None:
-                        value_str = 'N/A'
-                    elif isinstance(value, (list, tuple)):
-                        value_str = ', '.join(str(v) for v in value) if value else 'None'
-                    elif isinstance(value, (int, float)):
-                        value_str = str(value)
-                    else:
-                        value_str = str(value)
-                    
-                    key_params[label] = value_str
-            
-            # Create DataFrame with explicit string types to avoid Arrow issues
-            if key_params:
-                # Create list of dictionaries with explicit string conversion
-                input_data = []
-                for param, value in key_params.items():
-                    input_data.append({
-                        "Parameter": str(param), 
-                        "Value": str(value)
-                    })
-                
-                # Create DataFrame and explicitly convert to strings
-                input_df = pd.DataFrame(input_data)
-                
-                # Try different approaches to avoid Arrow errors
-                try:
-                    # First, try with explicit string conversion
-                    input_df = input_df.astype(str)
-                    st.dataframe(input_df, use_container_width=True)
-                except Exception as e1:
-                    try:
-                        # Second, try with object dtype
-                        input_df = input_df.astype('object')
-                        st.dataframe(input_df, use_container_width=True)
-                    except Exception as e2:
-                        # Third, fallback to simple text display
-                        st.warning("Using simplified display due to formatting issues")
-                        for param, value in key_params.items():
-                            st.write(f"**{param}:** {value}")
-            else:
-                st.write("No parameters to display")
-            
-            # Model display
-            if selected_model:
-                model_display_name = get_model_display_name(selected_model)
-                st.write(f"📊 Selected Model: **{model_display_name}**")
-            else:
-                st.write("📊 Selected Model: **None**")
-                
-        except Exception as e:
-            st.error(f"Error displaying inputs: {e}")
-            # Ultimate fallback: show raw input summary
-            st.write("**Input Summary (Raw):**")
-            for key, value in user_inputs.items():
-                if key not in ['selected_model', 'submit', 'save_config', 'config_name']:
-                    st.text(f"{key}: {value}")
-    
-    return col2
-
-def safe_show_prediction(col2, prediction, team_size):
-    """Safe prediction display with enhanced error handling"""
-    thresholds = UI_CONFIG.get("prediction_thresholds", {"low_prediction_warning": 1, "high_prediction_warning": 10000})
-    
+    """Display prediction results"""
     with col2:
         st.subheader("Prediction Result")
         
         if prediction is None:
             st.error("❌ Prediction Failed")
-            st.write("**Possible issues:**")
-            st.write("- Model compatibility problems")
-            st.write("- Missing preprocessing pipeline")
-            st.write("- Feature preparation errors")
-            st.write("- Check logs for detailed error information")
-            
-            # Offer troubleshooting
-            with st.expander("🔧 Troubleshooting"):
-                st.write("**Try these steps:**")
-                st.write("1. Check if models are properly saved")
-                st.write("2. Verify scikit-learn version compatibility")
-                st.write("3. Retrain models if necessary")
-                st.write("4. Check model files in the models folder")
-                st.write("5. Use the 'Create Test Model' button in sidebar")
+            st.info("Check diagnostics section for troubleshooting")
             return
         
         try:
-            # Display prediction
+            # Main prediction display
             st.markdown(f"""
-            <div style='background-color:#f0f2f6; padding:20px; border-radius:10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
-                <h3 style='text-align:center;'>Estimated Effort</h3>
-                <h1 style='text-align:center; color:#1f77b4; font-size:2.5rem;'>{prediction:.2f} Man-Hours</h1>
+            <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        padding: 15px; border-radius: 10px; text-align: center; 
+                        color: white; margin: 10px 0;'>
+                <h3 style='margin: 0; font-size: 1.1rem;'>Estimated Effort</h3>
+                <h1 style='margin: 5px 0; font-size: 2.2rem; font-weight: bold;'>{prediction:.1f}</h1>
+                <p style='margin: 0; font-size: 0.9rem;'>Hours</p>
             </div>
             """, unsafe_allow_html=True)
             
-            # Calculate timeline breakdown safely
-            try:
-                hours = int(prediction)
-                days = hours // 8
-                per_person = prediction / team_size if team_size and team_size > 0 else prediction
+            # Quick metrics
+            if team_size and team_size > 0:
+                per_person = prediction / team_size
+                days = prediction / 8
                 
-                st.markdown("### Timeline Breakdown")
-                metrics_col1, metrics_col2 = st.columns(2)
-                with metrics_col1:
-                    st.metric("Calendar Time", f"{days}d", help="Estimated calendar duration assuming full team availability")
-                with metrics_col2:
-                    st.metric("Per Person", f"{per_person:.2f}h", help="Average effort per team member in hours")
-                
-                # Use configurable thresholds
-                if prediction < thresholds["low_prediction_warning"]:
-                    st.warning("⚠️ This prediction seems unusually low. Consider reviewing your inputs.")
-                elif prediction > thresholds["high_prediction_warning"]:
-                    st.warning("⚠️ This prediction seems unusually high. Consider reviewing your inputs.")
-                    
-            except Exception as e:
-                st.warning(f"Error calculating timeline breakdown: {e}")
-                
-        except Exception as e:
-            st.error(f"Error displaying prediction: {e}")
-
-def create_dummy_model_for_testing():
-    """Create a simple working model for immediate testing"""
-    try:
-        import numpy as np
-        import pickle
-        import os
-        from models import ensure_models_folder
-        
-        # Simple model that just returns a prediction based on input sum
-        class SimpleTestModel:
-            def __init__(self):
-                self.name = "Simple Test Model"
+                st.markdown("### Breakdown")
+                st.metric("Per Person", f"{per_person:.1f}h")
+                st.metric("Work Days", f"{days:.1f}d")
             
-            def predict(self, X):
-                """Simple prediction: sum of features * 10"""
-                if hasattr(X, 'values'):
-                    X_array = X.values
-                else:
-                    X_array = np.array(X)
-                
-                # Simple calculation: sum of all features * 10 + 100
-                if len(X_array.shape) == 1:
-                    X_array = X_array.reshape(1, -1)
-                
-                predictions = np.sum(X_array, axis=1) * 10 + 100
-                return predictions
+            # Validation warnings
+            if prediction < 1:
+                st.warning("⚠️ Very low estimate")
+            elif prediction > 10000:
+                st.warning("⚠️ Very high estimate")
         
-        # Save the simple model
-        ensure_models_folder()
-        model_path = os.path.join('models', 'simple_test_model.pkl')
-        
-        simple_model = SimpleTestModel()
-        with open(model_path, 'wb') as f:
-            pickle.dump(simple_model, f)
-        
-        return True
-        
-    except Exception as e:
-        st.error(f"Error creating dummy model: {e}")
-        return False
+        except Exception as e:
+            st.error(f"Display error: {e}")
 
-def enhanced_main():
-    """Enhanced main function with diagnostics and better error handling"""
-    st.title("🔮 Machine Learning for Early Estimation in Agile Projects")
-    st.write("This application helps project managers and team leads estimate the effort required for agile software projects using machine learning models trained on historical project data.")
+# --- Feature Analysis ---
+def show_feature_importance(selected_model, features_dict):
+    """Display feature importance analysis"""
+    if not selected_model:
+        return
     
     try:
-        # Enhanced sidebar with diagnostics
-        user_inputs = enhanced_sidebar_inputs()
+        feature_importance = get_feature_importance(selected_model)
+        if feature_importance is not None:
+            st.subheader("📊 Feature Importance")
+            
+            # Prepare data
+            exclude_keys = {'selected_model', 'submit'}
+            feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
+            
+            importance_data = []
+            for i, name in enumerate(feature_names[:10]):  # Top 10
+                if i < len(feature_importance):
+                    friendly_name = get_field_title(name)
+                    importance_data.append({
+                        'Feature': friendly_name,
+                        'Importance': abs(feature_importance[i])
+                    })
+            
+            if importance_data:
+                importance_df = pd.DataFrame(importance_data)
+                importance_df = importance_df.sort_values('Importance', ascending=True)
+                
+                # Create horizontal bar chart
+                fig, ax = plt.subplots(figsize=(10, 6))
+                bars = ax.barh(importance_df['Feature'], importance_df['Importance'], 
+                              color='skyblue', edgecolor='navy', alpha=0.7)
+                ax.set_xlabel('Importance Score')
+                ax.set_title('Top Feature Importance')
+                ax.grid(True, alpha=0.3)
+                plt.tight_layout()
+                st.pyplot(fig)
+                
+                # Data table
+                with st.expander("View Importance Data"):
+                    st.dataframe(importance_df.round(3), use_container_width=True)
+    
+    except Exception as e:
+        st.info(f"Feature importance not available: {e}")
+
+# --- Main Application ---
+def main():
+    """Main application function"""
+    st.title("🔮 ML Project Effort Estimator")
+    st.markdown("Get accurate effort estimates using machine learning models trained on historical project data.")
+    
+    try:
+        # Get user inputs from sidebar
+        user_inputs = sidebar_inputs()
         
+        # Main content area
         if user_inputs.get('submit', False):
             selected_model = user_inputs.get('selected_model')
             
-            # Safe display of inputs with Arrow error handling
-            col2 = safe_display_inputs(user_inputs, selected_model)
-            
             if selected_model:
-                try:
-                    # Make prediction with enhanced error handling
-                    with st.spinner("Making prediction..."):
+                # Display input summary
+                col2 = display_inputs(user_inputs, selected_model)
+                
+                # Make prediction
+                with st.spinner("Generating prediction..."):
+                    try:
                         prediction = predict_man_hours(user_inputs, selected_model, use_preprocessing_pipeline=True)
                         team_size = user_inputs.get('project_prf_max_team_size', 5)
-                    
-                    # Safe display of prediction
-                    safe_show_prediction(col2, prediction, team_size)
-                    
-                    # Show feature importance if prediction was successful
-                    if prediction is not None:
-                        try:
-                            show_feature_importance(selected_model, user_inputs, st)
-                        except Exception as e:
-                            st.warning(f"Could not display feature importance: {e}")
-                    
-                except Exception as e:
-                    with col2:
-                        st.error("❌ Prediction Failed")
-                        st.write(f"**Error:** {str(e)}")
-                        
-                        with st.expander("🔧 Quick Fixes"):
-                            st.write("**Try these solutions:**")
-                            st.write("1. Check if your model file is corrupted")
-                            st.write("2. Use the 'Create Test Model' button in sidebar")
-                            st.write("3. Try a different model if available")
-                            st.write("4. Check the console logs for detailed errors")
-                            
-                            if st.button("🧪 Create Simple Test Model"):
-                                if create_dummy_model_for_testing():
-                                    st.success("✅ Test model created! Refresh the page.")
-                                else:
-                                    st.error("❌ Could not create test model")
+                    except Exception as e:
+                        prediction = None
+                        st.error(f"Prediction error: {e}")
+                
+                # Show prediction results
+                show_prediction(col2, prediction, team_size)
+                
+                # Show feature analysis if prediction successful
+                if prediction is not None:
+                    show_feature_importance(selected_model, user_inputs)
+            
             else:
-                with col2:
-                    st.warning("⚠️ Please select a model to make predictions.")
-                    st.info("If no models are available, use the diagnostics tools in the sidebar.")
+                st.warning("⚠️ Please select a model to make predictions")
         
-        # Show additional sections
-        tabs = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
-        
-        with tabs[0]:
-            if not user_inputs.get('submit', False):
-                st.info("👈 Configure your project parameters in the sidebar and click 'Predict' to get estimation results.")
-                
-                # Show model status
-                model_status = check_required_models()
-                if not model_status["models_available"]:
-                    st.warning("⚠️ No trained models found!")
-                    st.info("Use the diagnostics tools in the sidebar to create a test model or check existing models.")
-        
-        with tabs[1]:
-            st.info("Visualization features will be available after successful prediction.")
-        
-        with tabs[2]:
-            about_section()
-            tips_section()
+        else:
+            # Welcome screen
+            st.info("👈 **Get Started:** Fill in the project parameters in the sidebar and click 'Predict' to get your effort estimate.")
             
-            # Add troubleshooting section
-            with st.expander("🔧 Troubleshooting Guide"):
+            # Help section
+            with st.expander("ℹ️ How to Use This Tool"):
                 st.markdown("""
-                ### Common Issues and Solutions
+                ### Quick Start Guide
                 
-                **Model Loading Failures:**
-                - Use 'Diagnose Models' button in sidebar
-                - Try creating a test model
-                - Check if model files are corrupted
+                1. **Fill Required Fields** - Complete all fields marked with * in the "Required" tab
+                2. **Optional Parameters** - Add more details in the "Optional" tab for better accuracy  
+                3. **Select Model** - Choose from available ML models
+                4. **Get Prediction** - Click 'Predict' to see your effort estimate
                 
-                **Prediction Errors:**
-                - Verify all required fields are filled
-                - Check feature configuration files
-                - Use test model for validation
+                ### Tips for Better Estimates
+                - Provide accurate team size information
+                - Select the most appropriate technology stack
+                - Choose realistic project complexity levels
+                - Review historical similar projects if available
                 
-                **Display Issues:**
-                - Arrow conversion errors are automatically handled
-                - Refresh page if display seems broken
+                ### Troubleshooting
+                - Use "Check Models" if no models appear in the dropdown
+                - Use "Test Model" to create a sample model for testing
+                - Ensure all required fields are completed before predicting
                 """)
-            
+    
     except Exception as e:
         st.error(f"Application error: {e}")
-        st.write("**Troubleshooting:**")
-        st.write("1. Refresh the page")
-        st.write("2. Check console logs")
-        st.write("3. Use diagnostics tools in sidebar")
+        st.info("Please check your configuration files and model setup.")
+
+if __name__ == "__main__":
+    main()

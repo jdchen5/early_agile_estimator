@@ -1,0 +1,115 @@
+# Field Help Configuration
+# This file contains help text for all form fields in the UI
+
+field_help:
+  # Mandatory Fields Help
+  project_prf_year_of_project:
+    title: "Project Year"
+    help: "The year when the project was initiated or planned to start. This helps account for technological and methodological changes over time."
+  
+  project_prf_functional_size:
+    title: "Functional Size"
+    help: "The estimated functional size of the project measured in function points, use cases, or similar metrics. This represents the scope of functionality to be delivered."
+  
+  project_prf_max_team_size:
+    title: "Maximum Team Size"
+    help: "The maximum number of team members that will work on this project simultaneously. Include developers, testers, analysts, and other active contributors."
+  
+  project_prf_team_size_group:
+    title: "Team Size Group"
+    help: "Automatically calculated based on maximum team size. This categorizes teams into size groups for better estimation accuracy."
+  
+  project_prf_duration_months:
+    title: "Duration (Months)"
+    help: "Expected project duration in months from start to completion. Consider all phases including development, testing, and deployment."
+  
+  project_prf_effort_person_months:
+    title: "Effort (Person-Months)"
+    help: "Total estimated effort in person-months. This represents the cumulative work effort across all team members."
+
+  # Optional Fields Help
+  project_prf_programming_language:
+    title: "Programming Language"
+    help: "Primary programming language(s) used in the project. Select the main language or framework that will be used for development."
+  
+  project_prf_development_platform:
+    title: "Development Platform"
+    help: "Target platform for the application (Web, Mobile, Desktop, etc.). This affects complexity and development approach."
+  
+  project_prf_database_type:
+    title: "Database Type"
+    help: "Type of database system to be used (SQL, NoSQL, etc.). Different database types have varying complexity and integration requirements."
+  
+  project_prf_architecture_type:
+    title: "Architecture Type"
+    help: "Software architecture pattern (Microservices, Monolithic, etc.). This impacts development complexity and deployment strategies."
+  
+  project_prf_integration_complexity:
+    title: "Integration Complexity"
+    help: "Level of complexity for integrating with external systems, APIs, or third-party services. Higher complexity requires more development effort."
+  
+  project_prf_security_requirements:
+    title: "Security Requirements"
+    help: "Level of security requirements for the project (Basic, Standard, High, Critical). Higher security levels require additional development and testing effort."
+  
+  project_prf_performance_requirements:
+    title: "Performance Requirements"
+    help: "Performance expectations for the system (response times, throughput, scalability). Higher performance requirements increase development complexity."
+  
+  project_prf_ui_complexity:
+    title: "UI Complexity"
+    help: "Complexity level of the user interface (Simple, Moderate, Complex). More complex UIs require additional design and development time."
+  
+  project_prf_testing_strategy:
+    title: "Testing Strategy"
+    help: "Planned testing approach (Manual, Automated, Mixed). Different strategies have varying time and resource requirements."
+  
+  project_prf_deployment_strategy:
+    title: "Deployment Strategy"
+    help: "How the application will be deployed (Cloud, On-premise, Hybrid). Different deployment strategies affect development and configuration effort."
+
+# Mandatory field configuration
+mandatory_fields:
+  - project_prf_year_of_project
+  - project_prf_functional_size
+  - project_prf_max_team_size
+  - project_prf_duration_months
+  - project_prf_effort_person_months
+
+# Optional field configuration
+optional_fields:
+  - project_prf_programming_language
+  - project_prf_development_platform
+  - project_prf_database_type
+  - project_prf_architecture_type
+  - project_prf_integration_complexity
+  - project_prf_security_requirements
+  - project_prf_performance_requirements
+  - project_prf_ui_complexity
+  - project_prf_testing_strategy
+  - project_prf_deployment_strategy
+
+# Tab configuration
+tab_configuration:
+  "Required Fields":
+    description: "Essential project parameters needed for accurate estimation"
+    fields: 
+      - project_prf_year_of_project
+      - project_prf_functional_size
+      - project_prf_max_team_size
+      - project_prf_duration_months
+      - project_prf_effort_person_months
+    
+  "Optional Fields":
+    description: "Additional parameters that can improve estimation accuracy"
+    fields:
+      - project_prf_programming_language
+      - project_prf_development_platform
+      - project_prf_database_type
+      - project_prf_architecture_type
+      - project_prf_integration_complexity
+      - project_prf_security_requirements
+      - project_prf_performance_requirements
+      - project_prf_ui_complexity
+      - project_prf_testing_strategy
+      - project_prf_deployment_strategy

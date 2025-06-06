@@ -1,122 +1,108 @@
-# ui_config.yaml
-# Configuration for UI labels, organization, and field settings
+# UI Configuration File
+# Updated to support the mandatory/optional field structure
 
+app_settings:
+  default_config_path: "config/feature_mapping.yaml"
+  help_config_path: "config/field_help.yaml"  # New: Path to help configuration
+  configs_directory: "configs"
+
+# Field labels for display
 field_labels:
   project_prf_year_of_project: "Project Year"
-  external_eef_industry_sector: "Industry Sector"
-  external_eef_organisation_type: "Organisation Type"
-  project_prf_application_type: "Application Type"
-  project_prf_functional_size: "Functional Size (Function Points)"
-  project_prf_max_team_size: "Maximum Team Size"
-  process_pmf_docs: "Documentation Level (1-5)"
-  tech_tf_tools_used: "Development Tools Sophistication (1-5)"
-  people_prf_personnel_changes: "Personnel Changes (1-5)"
-  project_prf_application_group: "Primary Application Category"
-  project_prf_development_type: "Development Type"
-  project_prf_relative_size: "Relative Project Size"
-  tech_tf_development_platform: "Development Platform"
-  tech_tf_language_type: "Programming Language Type"
-  tech_tf_primary_language: "Primary Programming Language"
-  tech_tf_architecture: "System Architecture"
-  tech_tf_client_server: "Client-Server Architecture"
-  tech_tf_web_development: "Web Development"
-  tech_tf_dbms_used: "Database Management System Used"
-  tech_tf_client_roles: "Client Roles"
-  tech_tf_server_roles: "Server Roles"
-  process_pmf_development_methodologies: "Development Methodologies"
+  project_prf_functional_size: "Functional Size"
+  project_prf_max_team_size: "Max Team Size"
   project_prf_team_size_group: "Team Size Group"
-  project_prfcost_currency: "Cost Currency"
+  project_prf_duration_months: "Duration (Months)"
+  project_prf_effort_person_months: "Effort (Person-Months)"
+  project_prf_programming_language: "Programming Language"
+  project_prf_development_platform: "Development Platform"
+  project_prf_database_type: "Database Type"
+  project_prf_architecture_type: "Architecture Type"
+  project_prf_integration_complexity: "Integration Complexity"
+  project_prf_security_requirements: "Security Requirements"
+  project_prf_performance_requirements: "Performance Requirements"
+  project_prf_ui_complexity: "UI Complexity"
+  project_prf_testing_strategy: "Testing Strategy"
+  project_prf_deployment_strategy: "Deployment Strategy"
 
-tab_organization:
-  Basic:
-    - project_prf_year_of_project
-    - external_eef_industry_sector
-    - external_eef_organisation_type
-    - project_prf_application_type
-    - project_prf_application_group
-    - project_prf_development_type
-    - project_prf_functional_size
-    - project_prf_relative_size
-    - project_prf_max_team_size
-  Technical:
-    - tech_tf_development_platform
-    - tech_tf_language_type
-    - tech_tf_primary_language
-    - tech_tf_architecture
-    - tech_tf_client_server
-    - tech_tf_client_roles
-    - tech_tf_server_roles
-    - tech_tf_web_development
-    - tech_tf_dbms_used
-    - tech_tf_tools_used
-  Advanced:
-    - process_pmf_docs
-    - people_prf_personnel_changes
-    - process_pmf_development_methodologies
-    - project_prf_team_size_group
-    - project_prfcost_currency
-
+# Numeric field configurations
 numeric_field_config:
   project_prf_year_of_project:
     min: 2015
     max: 2030
     default: 2024
     input_type: "number_input"
+  
   project_prf_functional_size:
     min: 1
     max: 10000
     default: 100
     input_type: "number_input"
+  
   project_prf_max_team_size:
     min: 1
     max: 100
     default: 5
     input_type: "number_input"
-  process_pmf_docs:
+  
+  project_prf_duration_months:
     min: 1
-    max: 100
-    default: 3
-    input_type: "slider"
-  tech_tf_tools_used:
+    max: 60
+    default: 6
+    input_type: "number_input"
+  
+  project_prf_effort_person_months:
     min: 1
-    max: 100
-    default: 3
-    input_type: "slider"
-  people_prf_personnel_changes:
-    min: 1
-    max: 100
-    default: 2
-    input_type: "slider"
+    max: 500
+    default: 30
+    input_type: "number_input"
 
+# UI behavior settings
 ui_behavior:
-  multiselect_threshold: 10  # Use multiselect if more than this many options
-  radio_threshold: 4         # Use radio if less than or equal to this many options
-  selectbox_threshold: 8     # Use selectbox if between radio and multiselect thresholds
+  multiselect_threshold: 10
+  radio_threshold: 4
+  selectbox_threshold: 8
 
+# Display configuration for summary
 display_config:
   key_parameters_for_summary:
     - project_prf_year_of_project
     - project_prf_functional_size
     - project_prf_max_team_size
-    - external_eef_industry_sector
-    - project_prf_application_type
-    - process_pmf_docs
-    - tech_tf_tools_used
-    - people_prf_personnel_changes
+    - project_prf_duration_months
+    - project_prf_effort_person_months
 
-prediction_thresholds:
-  low_prediction_warning: 1
-  high_prediction_warning: 10000
-
-app_settings:
-  default_config_path: "config/feature_mapping.yaml"
-  ui_config_path: "config/ui_config.yaml"
-  configs_directory: "configs"
-  models_directory: "models"
-
+# Feature importance display settings
 feature_importance_display:
   max_features_shown: 15
+  precision_decimals: 3
   chart_size:
     width: 10
     height: 8
-  precision_decimals: 3
+
+# Prediction thresholds for warnings
+prediction_thresholds:
+  low_prediction_warning: 10
+  high_prediction_warning: 5000
+
+# Legacy tab organization (now overridden by field_help.yaml)
+# This is kept for backward compatibility
+tab_organization:
+  "Required Fields":
+    - project_prf_year_of_project
+    - project_prf_functional_size
+    - project_prf_max_team_size
+    - project_prf_duration_months
+    - project_prf_effort_person_months
+  
+  "Optional Fields":
+    - project_prf_programming_language
+    - project_prf_development_platform
+    - project_prf_database_type
+    - project_prf_architecture_type
+    - project_prf_integration_complexity
+    - project_prf_security_requirements
+    - project_prf_performance_requirements
+    - project_prf_ui_complexity
+    - project_prf_testing_strategy
+    - project_prf_deployment_strategy
