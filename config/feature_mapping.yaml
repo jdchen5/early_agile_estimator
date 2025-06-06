@@ -124,7 +124,7 @@ categorical_features:
     options: ["Mainframe (MF)", "Midrang (MR)", "Multi-platform", "PC", "Proprietary"]
   tech_tf_language_type:
     options: ["2GL (Second Generation)", "3GL (Third Generation)", "4GL (Fourth Generation)", "5GL (Fifth Generation)", "Application Generator", "Other"]
-  tech_tf_primary_language:
+  tech_tf_primary_programming_language:
     options:
       - ABAP
       - Agile platform
@@ -156,6 +156,10 @@ categorical_features:
   tech_tf_web_development:
     options: ["No", "Yes"]
   tech_tf_dbms_used:
+    options: ["No", "Yes"]
+  process_pmf_prototyping_used:
+    options: ["No", "Yes"]
+  project_prf_case_tool_used:
     options: ["No", "Yes"]
   project_prfcost_currency:
     options: ["Canadian Dollar", "European Euro"]

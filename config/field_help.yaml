@@ -71,23 +71,33 @@ field_help:
 # Mandatory field configuration
 mandatory_fields:
   - project_prf_year_of_project
-  - project_prf_functional_size
-  - project_prf_max_team_size
-  - project_prf_duration_months
-  - project_prf_effort_person_months
+      - external_eef_industry_sector
+      - external_eef_organisation_type
+      - project_prf_team_size_group
+      - project_prf_max_team_size
+      - project_prf_relative_size
+      - project_prf_application_type
+      - project_prf_development_type
+      - tech_tf_architecture
+      - tech_tf_development_platform
+      - tech_tf_language_type
+      - tech_tf_primary_programming_language
 
 # Optional field configuration
 optional_fields:
-  - project_prf_programming_language
-  - project_prf_development_platform
-  - project_prf_database_type
-  - project_prf_architecture_type
-  - project_prf_integration_complexity
-  - project_prf_security_requirements
-  - project_prf_performance_requirements
-  - project_prf_ui_complexity
-  - project_prf_testing_strategy
-  - project_prf_deployment_strategy
+    - project_prf_functional_size
+      - people_prf_personnel_changes
+      - process_pmf_development_methodologies
+      - tech_tf_server_roles
+      - tech_tf_client_roles
+      - tech_tf_client_server
+      - tech_tf_web_development
+      - tech_tf_dbms_used
+      - process_pmf_prototyping_used
+      - project_prf_case_tool_used
+      - tech_tf_tools_used
+      - process_pmf_docs
+      - people_prf_project_user_involvement
 
 # Tab configuration
 tab_configuration:
@@ -95,21 +105,31 @@ tab_configuration:
     description: "Essential project parameters needed for accurate estimation"
     fields: 
       - project_prf_year_of_project
-      - project_prf_functional_size
+      - external_eef_industry_sector
+      - external_eef_organisation_type
+      - project_prf_team_size_group
       - project_prf_max_team_size
-      - project_prf_duration_months
-      - project_prf_effort_person_months
+      - project_prf_relative_size
+      - project_prf_application_type
+      - project_prf_development_type
+      - tech_tf_architecture
+      - tech_tf_development_platform
+      - tech_tf_language_type
+      - tech_tf_primary_programming_language
     
   "Optional Fields":
     description: "Additional parameters that can improve estimation accuracy"
     fields:
-      - project_prf_programming_language
-      - project_prf_development_platform
-      - project_prf_database_type
-      - project_prf_architecture_type
-      - project_prf_integration_complexity
-      - project_prf_security_requirements
-      - project_prf_performance_requirements
-      - project_prf_ui_complexity
-      - project_prf_testing_strategy
-      - project_prf_deployment_strategy
+      - project_prf_functional_size
+      - people_prf_personnel_changes
+      - process_pmf_development_methodologies
+      - tech_tf_server_roles
+      - tech_tf_client_roles
+      - tech_tf_client_server
+      - tech_tf_web_development
+      - tech_tf_dbms_used
+      - process_pmf_prototyping_used
+      - project_prf_case_tool_used
+      - tech_tf_tools_used
+      - process_pmf_docs
+      - people_prf_project_user_involvement
