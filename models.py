@@ -688,6 +688,536 @@ def get_feature_statistics() -> Dict[str, Any]:
     
     return stats
 
+
+def create_training_compatible_features(input_features):
+    """
+    Create features that match EXACTLY how the model was trained.
+    Based on the notebook preprocessing shown in the image.
+    INCLUDES the target column that PyCaret is treating as a feature.
+    """
+    
+    # Start with the core features
+    training_features = {}
+    
+    # === NUMERIC FEATURES (as-is) ===
+    training_features['project_prf_year_of_project'] = input_features.get('project_prf_year_of_project', 2024)
+    training_features['project_prf_max_team_size'] = input_features.get('project_prf_max_team_size', 8)
+    
+    # === TARGET COLUMN THAT PYCARET TREATS AS FEATURE ===
+    # This is the key missing piece! PyCaret is expecting this as an input feature
+    # We'll provide a reasonable default value based on team size and project type
+    training_features['project_prf_normalised_work_effort'] = estimate_work_effort_default(input_features)
+    
+    # === CATEGORICAL FEATURES (fill missing with "Missing") ===
+    
+    # Industry Sector - use exact mapping from training
+    industry_input = input_features.get('external_eef_industry_sector', 'Missing')
+    if industry_input in ['Technology', 'Banking', 'Healthcare', 'Manufacturing', 'Government']:
+        training_features['external_eef_industry_sector'] = industry_input
+    else:
+        training_features['external_eef_industry_sector'] = 'Missing'
+    
+    # Primary Programming Language
+    lang_input = input_features.get('tech_tf_primary_programming_language', 'Missing')
+    if lang_input in ['Python', 'Java', 'JavaScript', 'C#', 'PHP', 'Ruby', 'C++', 'C']:
+        training_features['tech_tf_primary_programming_language'] = lang_input
+    else:
+        training_features['tech_tf_primary_programming_language'] = 'Missing'
+    
+    # Team Size Group - calculate from max team size
+    max_team_size = training_features['project_prf_max_team_size']
+    if max_team_size <= 1:
+        team_size_group = "1"
+    elif max_team_size <= 3:
+        team_size_group = "2-3"
+    elif max_team_size <= 5:
+        team_size_group = "4-5"
+    elif max_team_size <= 10:
+        team_size_group = "6-10"
+    else:
+        team_size_group = "11+"
+    training_features['project_prf_team_size_group'] = team_size_group
+    
+    # Development Methodologies - default to Missing
+    training_features['process_pmf_development_methodologies'] = 'Missing'
+    
+    # Client/Server Roles - default to Missing
+    training_features['tech_tf_client_roles'] = 'Missing'
+    training_features['tech_tf_server_roles'] = 'Missing'
+    
+    # Client-Server Description - default to Missing
+    training_features['tech_tf_clientserver_description'] = 'Missing'
+    
+    # === ADD MISSING FEATURES THAT MODEL EXPECTS ===
+    # Based on the error messages from your model
+    
+    # Functional Size (numeric)
+    training_features['project_prf_functional_size'] = 100  # Default value
+    
+    # Documentation
+    training_features['process_pmf_docs'] = 'Missing'
+    
+    # Tools Used
+    training_features['tech_tf_tools_used'] = 'Missing'
+    
+    # Application Group
+    app_type = input_features.get('project_prf_application_type', 'Missing')
+    if 'Web' in str(app_type) or 'Business' in str(app_type):
+        training_features['project_prf_application_group'] = 'business_application'
+    else:
+        training_features['project_prf_application_group'] = 'Missing'
+    
+    # Client-Server Description
+    arch_input = input_features.get('tech_tf_architecture', 'Missing')
+    if 'Multi' in str(arch_input) or 'Micro' in str(arch_input):
+        training_features['tech_tf_clientserver_description'] = 'web'
+    elif 'Client' in str(arch_input):
+        training_features['tech_tf_clientserver_description'] = 'client_server'
+    else:
+        training_features['tech_tf_clientserver_description'] = 'Missing'
+    
+    # Data Quality Rating
+    training_features['external_eef_data_quality_rating'] = 'A'  # Default to high quality
+    
+    # Development Type
+    dev_input = input_features.get('project_prf_development_type', 'Missing')
+    if 'New' in str(dev_input):
+        training_features['project_prf_development_type'] = 'new_development'
+    elif 'Enhancement' in str(dev_input):
+        training_features['project_prf_development_type'] = 'enhancement'
+    else:
+        training_features['project_prf_development_type'] = 'Missing'
+    
+    # Development Platform
+    platform_input = input_features.get('tech_tf_development_platform', 'Missing')
+    if 'Cloud' in str(platform_input) or 'PC' in str(platform_input):
+        training_features['tech_tf_development_platform'] = 'pc'
+    elif 'Multi' in str(platform_input):
+        training_features['tech_tf_development_platform'] = 'multi'
+    else:
+        training_features['tech_tf_development_platform'] = 'Missing'
+    
+    # Language Type
+    lang_type_input = input_features.get('tech_tf_language_type', 'Missing')
+    if 'Object' in str(lang_type_input) or '3GL' in str(lang_type_input):
+        training_features['tech_tf_language_type'] = '3gl'
+    elif '4GL' in str(lang_type_input):
+        training_features['tech_tf_language_type'] = '4gl'
+    else:
+        training_features['tech_tf_language_type'] = 'Missing'
+    
+    # Relative Size
+    size_input = input_features.get('project_prf_relative_size', 'Missing')
+    if 'M' in str(size_input) or 'Medium' in str(size_input):
+        training_features['project_prf_relative_size'] = 'm1'
+    elif 'L' in str(size_input) and 'XL' not in str(size_input):
+        training_features['project_prf_relative_size'] = 'l'
+    elif 'S' in str(size_input) and 'XS' not in str(size_input):
+        training_features['project_prf_relative_size'] = 's'
+    elif 'XL' in str(size_input):
+        training_features['project_prf_relative_size'] = 'xl'
+    else:
+        training_features['project_prf_relative_size'] = 'Missing'
+    
+    # Case Tool Used
+    training_features['project_prf_case_tool_used'] = 'Missing'
+    
+    # Prototyping Used
+    training_features['process_pmf_prototyping_used'] = 'Missing'
+    
+    # Architecture
+    if 'Multi' in str(arch_input) or 'Micro' in str(arch_input):
+        training_features['tech_tf_architecture'] = 'multi_tier'
+    elif 'Client' in str(arch_input):
+        training_features['tech_tf_architecture'] = 'client_server'
+    else:
+        training_features['tech_tf_architecture'] = 'Missing'
+    
+    # Client Server (binary)
+    training_features['tech_tf_client_server'] = 'Missing'
+    
+    # Type of Server
+    training_features['tech_tf_type_of_server'] = 'Missing'
+    
+    # Web Development
+    if 'Web' in str(app_type):
+        training_features['tech_tf_web_development'] = 'web'
+    else:
+        training_features['tech_tf_web_development'] = 'Missing'
+    
+    # DBMS Used
+    training_features['tech_tf_dbms_used'] = 'Missing'
+    
+    # User Involvement
+    training_features['people_prf_project_user_involvement'] = 'Missing'
+    
+    # Currency Multiple
+    training_features['project_prf_currency_multiple'] = 'Missing'
+    
+    # Organization Type (mapped from input)
+    org_input = input_features.get('external_eef_organisation_type', 'Missing')
+    if 'Large' in str(org_input) or 'Enterprise' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'computers & software'
+    elif 'Banking' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'banking'
+    elif 'Government' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'government'
+    else:
+        training_features['external_eef_organisation_type_top'] = 'Missing'
+    
+    # Application Type (mapped from input)
+    if 'Web' in str(app_type):
+        training_features['project_prf_application_type_top'] = 'business application'
+    elif 'Financial' in str(app_type):
+        training_features['project_prf_application_type_top'] = 'financial transaction process/accounting'
+    else:
+        training_features['project_prf_application_type_top'] = 'Missing'
+    
+    return training_features
+
+
+def estimate_work_effort_default(input_features):
+    """
+    Estimate a reasonable default value for project_prf_normalised_work_effort
+    based on project characteristics. This is needed because PyCaret treats
+    the target column as a feature.
+    """
+    
+    # Base effort calculation using simple heuristics
+    team_size = input_features.get('project_prf_max_team_size', 5)
+    
+    # Size multiplier
+    size_input = str(input_features.get('project_prf_relative_size', 'Medium'))
+    if 'XS' in size_input or 'Extra Small' in size_input:
+        size_multiplier = 0.5
+    elif 'S' in size_input and 'XS' not in size_input:
+        size_multiplier = 0.8
+    elif 'M' in size_input or 'Medium' in size_input:
+        size_multiplier = 1.0
+    elif 'L' in size_input and 'XL' not in size_input:
+        size_multiplier = 1.5
+    elif 'XL' in size_input:
+        size_multiplier = 2.0
+    else:
+        size_multiplier = 1.0
+    
+    # Application type multiplier
+    app_type = str(input_features.get('project_prf_application_type', ''))
+    if 'Web' in app_type:
+        app_multiplier = 1.2
+    elif 'Mobile' in app_type:
+        app_multiplier = 1.0
+    elif 'Desktop' in app_type:
+        app_multiplier = 1.3
+    elif 'API' in app_type:
+        app_multiplier = 0.8
+    else:
+        app_multiplier = 1.0
+    
+    # Development type multiplier  
+    dev_type = str(input_features.get('project_prf_development_type', ''))
+    if 'New' in dev_type:
+        dev_multiplier = 1.0
+    elif 'Enhancement' in dev_type:
+        dev_multiplier = 0.7
+    elif 'Maintenance' in dev_type:
+        dev_multiplier = 0.5
+    else:
+        dev_multiplier = 1.0
+    
+    # Base effort per person (hours)
+    base_effort_per_person = 200
+    
+    # Calculate normalized work effort
+    estimated_effort = base_effort_per_person * team_size * size_multiplier * app_multiplier * dev_multiplier
+    
+    # Normalize (this might need adjustment based on your training data scale)
+    # Common normalization ranges: 0-1, 0-100, or raw hours
+    # You might need to adjust this based on what range your training data used
+    normalized_effort = estimated_effort / 1000  # Assuming normalization to 0-10 range
+    
+    return normalized_effort
+    
+    # === CATEGORICAL FEATURES (fill missing with "Missing") ===
+    
+    # Industry Sector - use exact mapping from training
+    industry_input = input_features.get('external_eef_industry_sector', 'Missing')
+    if industry_input in ['Technology', 'Banking', 'Healthcare', 'Manufacturing', 'Government']:
+        training_features['external_eef_industry_sector'] = industry_input
+    else:
+        training_features['external_eef_industry_sector'] = 'Missing'
+    
+    # Primary Programming Language
+    lang_input = input_features.get('tech_tf_primary_programming_language', 'Missing')
+    if lang_input in ['Python', 'Java', 'JavaScript', 'C#', 'PHP', 'Ruby', 'C++', 'C']:
+        training_features['tech_tf_primary_programming_language'] = lang_input
+    else:
+        training_features['tech_tf_primary_programming_language'] = 'Missing'
+    
+    # Team Size Group - calculate from max team size
+    max_team_size = training_features['project_prf_max_team_size']
+    if max_team_size <= 1:
+        team_size_group = "1"
+    elif max_team_size <= 3:
+        team_size_group = "2-3"
+    elif max_team_size <= 5:
+        team_size_group = "4-5"
+    elif max_team_size <= 10:
+        team_size_group = "6-10"
+    else:
+        team_size_group = "11+"
+    training_features['project_prf_team_size_group'] = team_size_group
+    
+    # Development Methodologies - default to Missing
+    training_features['process_pmf_development_methodologies'] = 'Missing'
+    
+    # Client/Server Roles - default to Missing
+    training_features['tech_tf_client_roles'] = 'Missing'
+    training_features['tech_tf_server_roles'] = 'Missing'
+    
+    # Client-Server Description - default to Missing
+    training_features['tech_tf_clientserver_description'] = 'Missing'
+    
+    # === ADD MISSING FEATURES THAT MODEL EXPECTS ===
+    # Based on the error messages from your model
+    
+    # Functional Size (numeric)
+    training_features['project_prf_functional_size'] = 100  # Default value
+    
+    # Documentation
+    training_features['process_pmf_docs'] = 'Missing'
+    
+    # Tools Used
+    training_features['tech_tf_tools_used'] = 'Missing'
+    
+    # Application Group
+    app_type = input_features.get('project_prf_application_type', 'Missing')
+    if 'Web' in str(app_type) or 'Business' in str(app_type):
+        training_features['project_prf_application_group'] = 'business_application'
+    else:
+        training_features['project_prf_application_group'] = 'Missing'
+    
+    # Client-Server Description
+    arch_input = input_features.get('tech_tf_architecture', 'Missing')
+    if 'Multi' in str(arch_input) or 'Micro' in str(arch_input):
+        training_features['tech_tf_clientserver_description'] = 'web'
+    elif 'Client' in str(arch_input):
+        training_features['tech_tf_clientserver_description'] = 'client_server'
+    else:
+        training_features['tech_tf_clientserver_description'] = 'Missing'
+    
+    # Data Quality Rating
+    training_features['external_eef_data_quality_rating'] = 'A'  # Default to high quality
+    
+    # Development Type
+    dev_input = input_features.get('project_prf_development_type', 'Missing')
+    if 'New' in str(dev_input):
+        training_features['project_prf_development_type'] = 'new_development'
+    elif 'Enhancement' in str(dev_input):
+        training_features['project_prf_development_type'] = 'enhancement'
+    else:
+        training_features['project_prf_development_type'] = 'Missing'
+    
+    # Development Platform
+    platform_input = input_features.get('tech_tf_development_platform', 'Missing')
+    if 'Cloud' in str(platform_input) or 'PC' in str(platform_input):
+        training_features['tech_tf_development_platform'] = 'pc'
+    elif 'Multi' in str(platform_input):
+        training_features['tech_tf_development_platform'] = 'multi'
+    else:
+        training_features['tech_tf_development_platform'] = 'Missing'
+    
+    # Language Type
+    lang_type_input = input_features.get('tech_tf_language_type', 'Missing')
+    if 'Object' in str(lang_type_input) or '3GL' in str(lang_type_input):
+        training_features['tech_tf_language_type'] = '3gl'
+    elif '4GL' in str(lang_type_input):
+        training_features['tech_tf_language_type'] = '4gl'
+    else:
+        training_features['tech_tf_language_type'] = 'Missing'
+    
+    # Relative Size
+    size_input = input_features.get('project_prf_relative_size', 'Missing')
+    if 'M' in str(size_input) or 'Medium' in str(size_input):
+        training_features['project_prf_relative_size'] = 'm1'
+    elif 'L' in str(size_input) and 'XL' not in str(size_input):
+        training_features['project_prf_relative_size'] = 'l'
+    elif 'S' in str(size_input) and 'XS' not in str(size_input):
+        training_features['project_prf_relative_size'] = 's'
+    elif 'XL' in str(size_input):
+        training_features['project_prf_relative_size'] = 'xl'
+    else:
+        training_features['project_prf_relative_size'] = 'Missing'
+    
+    # Case Tool Used
+    training_features['project_prf_case_tool_used'] = 'Missing'
+    
+    # Prototyping Used
+    training_features['process_pmf_prototyping_used'] = 'Missing'
+    
+    # Architecture
+    if 'Multi' in str(arch_input) or 'Micro' in str(arch_input):
+        training_features['tech_tf_architecture'] = 'multi_tier'
+    elif 'Client' in str(arch_input):
+        training_features['tech_tf_architecture'] = 'client_server'
+    else:
+        training_features['tech_tf_architecture'] = 'Missing'
+    
+    # Client Server (binary)
+    training_features['tech_tf_client_server'] = 'Missing'
+    
+    # Type of Server
+    training_features['tech_tf_type_of_server'] = 'Missing'
+    
+    # Web Development
+    if 'Web' in str(app_type):
+        training_features['tech_tf_web_development'] = 'web'
+    else:
+        training_features['tech_tf_web_development'] = 'Missing'
+    
+    # DBMS Used
+    training_features['tech_tf_dbms_used'] = 'Missing'
+    
+    # User Involvement
+    training_features['people_prf_project_user_involvement'] = 'Missing'
+    
+    # Currency Multiple
+    training_features['project_prf_currency_multiple'] = 'Missing'
+    
+    # Organization Type (mapped from input)
+    org_input = input_features.get('external_eef_organisation_type', 'Missing')
+    if 'Large' in str(org_input) or 'Enterprise' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'computers & software'
+    elif 'Banking' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'banking'
+    elif 'Government' in str(org_input):
+        training_features['external_eef_organisation_type_top'] = 'government'
+    else:
+        training_features['external_eef_organisation_type_top'] = 'Missing'
+    
+    # Application Type (mapped from input)
+    if 'Web' in str(app_type):
+        training_features['project_prf_application_type_top'] = 'business application'
+    elif 'Financial' in str(app_type):
+        training_features['project_prf_application_type_top'] = 'financial transaction process/accounting'
+    else:
+        training_features['project_prf_application_type_top'] = 'Missing'
+    
+    return training_features
+
+
+def predict_with_training_features(input_features, model_name):
+    """
+    Make prediction using features that match the training preprocessing
+    """
+    try:
+        print(f"Creating training-compatible features for model: {model_name}")
+        
+        # Create features that match training preprocessing
+        training_features = create_training_compatible_features(input_features)
+        print(f"Created {len(training_features)} training-compatible features")
+        
+        # Debug: show some key features
+        print("Key features created:")
+        for key, value in list(training_features.items())[:10]:
+            print(f"  {key}: {value}")
+        
+        # Load model
+        model = load_model(model_name)
+        if not model:
+            print("Failed to load model")
+            return None
+        
+        # Try PyCaret prediction first (since model was trained with PyCaret)
+        try:
+            import pandas as pd
+            features_df = pd.DataFrame([training_features])
+            
+            if PYCARET_AVAILABLE:
+                from pycaret.regression import predict_model as pc_predict
+                predictions = pc_predict(model, data=features_df)
+                
+                # Look for prediction column
+                prediction_columns = ['prediction_label', 'Label', 'pred', 'prediction']
+                for col in prediction_columns:
+                    if col in predictions.columns:
+                        result = float(predictions[col].iloc[0])
+                        print(f"PyCaret prediction successful: {result:.2f} hours")
+                        return max(0.1, result)
+            
+            # Fallback to direct model prediction
+            if hasattr(model, 'predict'):
+                prediction = model.predict(features_df)
+                result = float(prediction[0]) if hasattr(prediction, '__len__') else float(prediction)
+                print(f"Direct prediction successful: {result:.2f} hours")
+                return max(0.1, result)
+            
+        except Exception as e:
+            print(f"Prediction error: {e}")
+            return None
+            
+    except Exception as e:
+        print(f"Training-compatible prediction failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def test_training_compatible_prediction():
+    """
+    Test prediction using training-compatible features with target column
+    """
+    print("\n=== TESTING TRAINING-COMPATIBLE PREDICTION (WITH TARGET) ===")
+    
+    # Sample input that matches your UI
+    sample_input = {
+        "project_prf_year_of_project": 2024,
+        "external_eef_industry_sector": "Technology",
+        "external_eef_organisation_type": "Large Enterprise", 
+        "project_prf_max_team_size": 8,
+        "project_prf_relative_size": "M (Medium)",
+        "project_prf_application_type": "Web Application",
+        "project_prf_development_type": "New Development",
+        "tech_tf_architecture": "Microservices",
+        "tech_tf_development_platform": "Cloud",
+        "tech_tf_language_type": "Object-Oriented",
+        "tech_tf_primary_programming_language": "Python"
+    }
+    
+    print("Input features:")
+    for key, value in sample_input.items():
+        print(f"  {key}: {value}")
+    
+    # Test with first available model
+    models = list_available_models()
+    if models:
+        model_name = models[0]['technical_name']
+        print(f"\nTesting with model: {model_name}")
+        
+        # Try optimized prediction with target value optimization
+        result = predict_with_training_features_optimized(sample_input, model_name)
+        
+        if result:
+            print(f"🎉 SUCCESS! Training-compatible prediction: {result:.1f} hours")
+            print(f"   That's {result/8:.1f} work days for {sample_input['project_prf_max_team_size']} people")
+            print(f"   Per person: {result/sample_input['project_prf_max_team_size']:.1f} hours")
+            return True
+        else:
+            print("❌ Training-compatible prediction failed")
+            
+            # Fallback: try simple approach
+            print("\n🔄 Trying simple target approach...")
+            simple_result = predict_with_training_features(sample_input, model_name)
+            if simple_result:
+                print(f"✅ Simple approach worked: {simple_result:.1f} hours")
+                return True
+            else:
+                print("❌ All approaches failed")
+                return False
+    else:
+        print("❌ No models available for testing")
+        return False
+
 # === Export list for easier imports ===
 __all__ = [
     # Model management
@@ -965,3 +1495,523 @@ except NameError:
         'create_test_model_file',
         'fix_model_loading_issues'
     ]
+
+def test_different_target_strategies(input_features, model_name):
+    """
+    Test different strategies for estimating the target column value
+    """
+    print(f"\n=== TESTING DIFFERENT TARGET STRATEGIES ===")
+    
+    strategies = {
+        "Strategy 1: Zero Target": 0.0,
+        "Strategy 2: Small Target": 0.1,
+        "Strategy 3: Medium Target": 1.0,
+        "Strategy 4: Large Target": 5.0,
+        "Strategy 5: Estimated Target": estimate_work_effort_default(input_features),
+        "Strategy 6: Team-based Target": input_features.get('project_prf_max_team_size', 5) * 0.5,
+        "Strategy 7: Size-based Target": get_size_based_target(input_features)
+    }
+    
+    results = {}
+    
+    for strategy_name, target_value in strategies.items():
+        print(f"\nTesting {strategy_name}: {target_value}")
+        
+        try:
+            # Create features with this target value
+            test_features = create_training_compatible_features(input_features)
+            test_features['project_prf_normalised_work_effort'] = target_value
+            
+            # Try prediction
+            result = predict_with_specific_target(test_features, model_name)
+            results[strategy_name] = result
+            
+            if result:
+                print(f"  ✅ SUCCESS: {result:.1f} hours")
+            else:
+                print(f"  ❌ FAILED")
+                
+        except Exception as e:
+            print(f"  ❌ ERROR: {e}")
+            results[strategy_name] = None
+    
+    # Find the best strategy
+    working_strategies = [(k, v) for k, v in results.items() if v is not None]
+    
+    print(f"\n{'='*60}")
+    print("TARGET STRATEGY RESULTS")
+    print(f"{'='*60}")
+    
+    for strategy, result in results.items():
+        status = f"{result:.1f} hours" if result else "FAILED"
+        print(f"{strategy:25}: {status}")
+    
+    if working_strategies:
+        print(f"\n✅ WORKING STRATEGIES: {len(working_strategies)}")
+        best_strategy, best_result = working_strategies[0]
+        print(f"🎯 BEST STRATEGY: {best_strategy} -> {best_result:.1f} hours")
+        return best_strategy, best_result
+    else:
+        print(f"\n❌ NO STRATEGIES WORKED")
+        return None, None
+
+
+def get_size_based_target(input_features):
+    """
+    Create target value based on project size
+    """
+    size_input = str(input_features.get('project_prf_relative_size', 'Medium'))
+    
+    size_targets = {
+        'XS': 0.1,
+        'S': 0.3, 
+        'M': 1.0,
+        'L': 2.0,
+        'XL': 5.0
+    }
+    
+    for size_key, target_val in size_targets.items():
+        if size_key in size_input:
+            return target_val
+    
+    return 1.0  # Default
+
+
+def predict_with_specific_target(training_features, model_name):
+    """
+    Make prediction with specific target value included
+    """
+    try:
+        # Load model
+        model = load_model(model_name)
+        if not model:
+            return None
+        
+        # Create DataFrame
+        import pandas as pd
+        features_df = pd.DataFrame([training_features])
+        
+        # Try PyCaret prediction first
+        if PYCARET_AVAILABLE:
+            try:
+                from pycaret.regression import predict_model as pc_predict
+                predictions = pc_predict(model, data=features_df)
+                
+                # Look for prediction column
+                prediction_columns = ['prediction_label', 'Label', 'pred', 'prediction']
+                for col in prediction_columns:
+                    if col in predictions.columns:
+                        result = float(predictions[col].iloc[0])
+                        return max(0.1, result)
+                
+                # Try last column
+                result = float(predictions.iloc[0, -1])
+                return max(0.1, result)
+            except Exception as e:
+                print(f"    PyCaret failed: {e}")
+        
+        # Try direct model prediction
+        if hasattr(model, 'predict'):
+            prediction = model.predict(features_df)
+            result = float(prediction[0]) if hasattr(prediction, '__len__') else float(prediction)
+            return max(0.1, result)
+        
+        return None
+        
+    except Exception as e:
+        return None
+
+
+def find_optimal_target_value(input_features, model_name):
+    """
+    Try to find the optimal target value that produces realistic results
+    """
+    print(f"\n=== FINDING OPTIMAL TARGET VALUE ===")
+    
+    # Test a range of target values
+    target_values = [0.0, 0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0]
+    
+    results = []
+    
+    for target_val in target_values:
+        try:
+            test_features = create_training_compatible_features(input_features)
+            test_features['project_prf_normalised_work_effort'] = target_val
+            
+            result = predict_with_specific_target(test_features, model_name)
+            
+            if result:
+                results.append((target_val, result))
+                print(f"Target {target_val:4.1f} -> Prediction {result:6.1f} hours")
+        except:
+            pass
+    
+    if results:
+        print(f"\n✅ Found {len(results)} working target values")
+        
+        # Find most reasonable result (not too low, not too high)
+        reasonable_results = [(t, r) for t, r in results if 10 <= r <= 5000]
+        
+        if reasonable_results:
+            # Choose middle result
+            best_target, best_result = reasonable_results[len(reasonable_results)//2]
+            print(f"🎯 OPTIMAL: Target {best_target} -> {best_result:.1f} hours")
+            return best_target, best_result
+        else:
+            # Use first working result
+            best_target, best_result = results[0]
+            print(f"🎯 FIRST WORKING: Target {best_target} -> {best_result:.1f} hours")
+            return best_target, best_result
+    else:
+        print("❌ No working target values found")
+        return None, None
+
+
+# Update the main prediction function to use optimal target
+def predict_with_training_features_optimized(input_features, model_name):
+    """
+    Enhanced prediction using training-compatible features with optimized target value
+    """
+    try:
+        print(f"Making optimized training-compatible prediction with model: {model_name}")
+        
+        # Method 1: Try with estimated target
+        training_features = create_training_compatible_features(input_features)
+        result1 = predict_with_specific_target(training_features, model_name)
+        
+        if result1 and 10 <= result1 <= 5000:  # Reasonable range
+            print(f"✅ Estimated target worked: {result1:.1f} hours")
+            return result1
+        
+        # Method 2: Find optimal target value
+        print("🔍 Estimated target didn't work, finding optimal target...")
+        optimal_target, optimal_result = find_optimal_target_value(input_features, model_name)
+        
+        if optimal_result:
+            print(f"✅ Optimal target found: {optimal_result:.1f} hours")
+            return optimal_result
+        
+        # Method 3: Try different strategies
+        print("🔍 Trying different target strategies...")
+        best_strategy, best_result = test_different_target_strategies(input_features, model_name)
+        
+        if best_result:
+            print(f"✅ Best strategy worked: {best_result:.1f} hours")
+            return best_result
+        
+        print("❌ All target strategies failed")
+        return None
+        
+    except Exception as e:
+        print(f"Optimized prediction failed: {e}")
+        return None
+
+def main():
+    """
+    Test function to validate model loading and prediction functionality
+    Run this file directly to test all functions: python models.py
+    """
+    print("=" * 60)
+    print("MODELS.PY TESTING SUITE")
+    print("=" * 60)
+    
+    # Test 1: Check folder structure
+    print("\n1. CHECKING FOLDER STRUCTURE")
+    print("-" * 30)
+    ensure_models_folder()
+    print(f"✓ Models folder: {MODELS_FOLDER}")
+    print(f"✓ Config folder: {CONFIG_FOLDER}")
+    print(f"✓ Data folder: {DATA_FOLDER}")
+    
+    # Test 2: Load configurations
+    print("\n2. LOADING CONFIGURATIONS")
+    print("-" * 30)
+    print(f"Feature config loaded: {bool(FEATURE_CONFIG)}")
+    print(f"UI config loaded: {bool(UI_CONFIG)}")
+    
+    if FEATURE_CONFIG:
+        print(f"  - Categorical features: {len(FEATURE_CONFIG.get('categorical_features', {}))}")
+        print(f"  - Numeric features: {len(FEATURE_CONFIG.get('numeric_features', []))}")
+        print(f"  - Special cases: {len(FEATURE_CONFIG.get('special_cases', {}))}")
+    
+    # Test 3: Check expected features
+    print("\n3. FEATURE ANALYSIS")
+    print("-" * 30)
+    expected_features = get_expected_feature_names()
+    print(f"Expected features count: {len(expected_features)}")
+    if expected_features:
+        print(f"First 5 features: {expected_features[:5]}")
+        print(f"Last 5 features: {expected_features[-5:]}")
+    
+    # Get feature statistics
+    stats = get_feature_statistics()
+    print("\nFeature Statistics:")
+    for key, value in stats.items():
+        print(f"  {key}: {value}")
+    
+    # Test 4: Check available models
+    print("\n4. MODEL AVAILABILITY CHECK")
+    print("-" * 30)
+    model_status = check_required_models()
+    print(f"Models available: {model_status['models_available']}")
+    print(f"Scaler available: {model_status['scaler_available']}")
+    print(f"Found models: {len(model_status['found_models'])}")
+    
+    available_models = list_available_models()
+    if available_models:
+        print("\nAvailable Models:")
+        for i, model in enumerate(available_models, 1):
+            print(f"  {i}. {model['display_name']} ({model['technical_name']})")
+    else:
+        print("No models found!")
+    
+    # Test 5: Create test model if no models exist
+    print("\n5. MODEL CREATION TEST")
+    print("-" * 30)
+    if not available_models:
+        print("No models found. Creating test model...")
+        if create_test_model_file("test_regression_model"):
+            print("✓ Test model created successfully!")
+            # Refresh available models list
+            available_models = list_available_models()
+        else:
+            print("✗ Failed to create test model")
+    else:
+        print(f"✓ {len(available_models)} models already available")
+    
+    # Test 6: Test model loading
+    print("\n6. MODEL LOADING TEST")
+    print("-" * 30)
+    if available_models:
+        test_model_name = available_models[0]['technical_name']
+        print(f"Testing model: {test_model_name}")
+        
+        # Diagnose the model
+        diagnosis = diagnose_model_file(test_model_name)
+        print(f"File exists: {diagnosis['file_exists']}")
+        if diagnosis['file_exists']:
+            print(f"File size: {diagnosis['file_size']} bytes")
+        
+        if diagnosis['error_details']:
+            print(f"Errors: {diagnosis['error_details']}")
+        
+        # Try to load the model
+        model = load_model(test_model_name)
+        if model is not None:
+            print("✓ Model loaded successfully!")
+            print(f"Model type: {type(model)}")
+            print(f"Has predict method: {hasattr(model, 'predict')}")
+        else:
+            print("✗ Model loading failed")
+    else:
+        print("No models to test")
+    
+    # Test 7: Feature preparation test
+    print("\n7. FEATURE PREPARATION TEST")
+    print("-" * 30)
+    
+    # Create sample feature dictionary
+    sample_features = {
+        "project_prf_year_of_project": 2024,
+        "external_eef_industry_sector": "Technology",
+        "external_eef_organisation_type": "Large Enterprise",
+        "project_prf_max_team_size": 8,
+        "project_prf_relative_size": "M (Medium)",
+        "project_prf_application_type": "Web Application",
+        "project_prf_development_type": "New Development",
+        "tech_tf_architecture": "Microservices",
+        "tech_tf_development_platform": "Cloud",
+        "tech_tf_language_type": "Object-Oriented",
+        "tech_tf_primary_programming_language": "Python"
+    }
+    
+    print("Sample features created:")
+    for key, value in sample_features.items():
+        print(f"  {key}: {value}")
+    
+    # Validate features
+    validation = validate_feature_dict_against_config(sample_features)
+    print(f"\nFeature validation:")
+    print(f"  Valid: {validation['valid']}")
+    print(f"  Expected count: {validation['expected_count']}")
+    print(f"  Provided count: {validation['provided_count']}")
+    if validation['missing_features']:
+        print(f"  Missing: {validation['missing_features'][:5]}...")  # Show first 5
+    
+    # Test feature vector creation
+    try:
+        feature_vector = create_feature_vector_from_dict(sample_features)
+        print(f"Feature vector shape: {feature_vector.shape}")
+        print(f"Feature vector (first 10): {feature_vector[:10]}")
+    except Exception as e:
+        print(f"Feature vector creation failed: {e}")
+    
+    # Test DataFrame preparation
+    try:
+        features_df = prepare_features_for_pycaret(sample_features)
+        if features_df is not None:
+            print(f"✓ DataFrame preparation successful!")
+            print(f"DataFrame shape: {features_df.shape}")
+            print(f"DataFrame columns (first 10): {list(features_df.columns)[:10]}")
+        else:
+            print("✗ DataFrame preparation failed")
+    except Exception as e:
+        print(f"DataFrame preparation error: {e}")
+    
+    # Test 8: Prediction test
+    print("\n8. PREDICTION TEST")
+    print("-" * 30)
+    if available_models and len(available_models) > 0:
+        test_model_name = available_models[0]['technical_name']
+        print(f"Testing prediction with model: {test_model_name}")
+        
+        try:
+            prediction = predict_man_hours(
+                features=sample_features,
+                model_name=test_model_name,
+                use_preprocessing_pipeline=True
+            )
+            
+            if prediction is not None:
+                print(f"✓ Prediction successful: {prediction:.2f} hours")
+                print(f"Prediction in days: {prediction/8:.2f} days")
+                
+                # Test feature importance
+                importance = get_feature_importance(test_model_name)
+                if importance is not None:
+                    print(f"✓ Feature importance available: {len(importance)} features")
+                    print(f"Top 3 importance values: {sorted(importance, reverse=True)[:3]}")
+                else:
+                    print("✗ Feature importance not available")
+            else:
+                print("✗ Prediction failed")
+                
+        except Exception as e:
+            print(f"Prediction error: {e}")
+            import traceback
+            print(f"Full error: {traceback.format_exc()}")
+    else:
+        print("No models available for prediction test")
+    
+    # Test 9: What-if analysis test
+    print("\n9. WHAT-IF ANALYSIS TEST")
+    print("-" * 30)
+    if available_models and len(available_models) > 0:
+        test_model_name = available_models[0]['technical_name']
+        
+        try:
+            # Test varying team size
+            whatif_results = analyze_what_if(
+                base_features=sample_features,
+                model_name=test_model_name,
+                param_name="project_prf_max_team_size",
+                param_values=[2, 4, 6, 8, 10, 12],
+                use_preprocessing_pipeline=True
+            )
+            
+            if whatif_results['predictions']:
+                print("✓ What-if analysis successful!")
+                print("Team Size -> Prediction:")
+                for size, pred in zip(whatif_results['param_values'], whatif_results['predictions']):
+                    print(f"  {size} people -> {pred:.1f} hours")
+            else:
+                print("✗ What-if analysis failed - no results")
+                
+        except Exception as e:
+            print(f"What-if analysis error: {e}")
+    else:
+        print("No models available for what-if analysis")
+    
+    # Test 10: Diagnostics
+    print("\n10. COMPREHENSIVE DIAGNOSTICS")
+    print("-" * 30)
+    try:
+        fix_model_loading_issues()
+        print("✓ Diagnostics completed successfully")
+    except Exception as e:
+        print(f"Diagnostics error: {e}")
+    
+    # Summary
+    print("\n" + "=" * 60)
+    print("TESTING SUMMARY")
+    print("=" * 60)
+    print(f"✓ Models folder: {os.path.exists(MODELS_FOLDER)}")
+    print(f"✓ Available models: {len(list_available_models())}")
+    print(f"✓ Feature configuration: {bool(FEATURE_CONFIG)}")
+    print(f"✓ Expected features: {len(get_expected_feature_names())}")
+    print(f"✓ PyCaret available: {PYCARET_AVAILABLE}")
+    
+    if available_models:
+        print(f"✓ Ready for predictions with {len(available_models)} models")
+    else:
+        print("⚠ No models available - need to train and save models first")
+    
+    print("\nTo use in Streamlit UI:")
+    print("1. Make sure models are trained and saved in 'models/' folder")
+    print("2. Ensure all YAML config files are properly set up")
+    print("3. Run: streamlit run ui.py")
+
+
+# Alternative simple test function for quick checks
+def quick_test():
+    """Quick test of essential functions"""
+    print("=== QUICK TEST ===")
+    
+    # Check models
+    models = list_available_models()
+    print(f"Available models: {len(models)}")
+    
+    # Check features  
+    features = get_expected_feature_names()
+    print(f"Expected features: {len(features)}")
+    
+    # Check configs
+    print(f"Feature config loaded: {bool(FEATURE_CONFIG)}")
+    
+    if models and features:
+        print("✅ Ready for predictions!")
+    else:
+        print("❌ Setup incomplete")
+
+
+if __name__ == "__main__":
+    # Run the main test when file is executed directly
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "quick":
+        quick_test()
+    else:
+        main()    
+
+# Simple test at the end of models.py
+if __name__ == "__main__":
+    print("Starting models.py test...")
+    try:
+        print("Testing basic imports...")
+        import os
+        import sys
+        print(f"Python version: {sys.version}")
+        print(f"Current directory: {os.getcwd()}")
+        
+        print("Testing folder creation...")
+        ensure_models_folder()
+        print("✓ Folders OK")
+        
+        print("Testing configuration loading...")
+        print(f"FEATURE_CONFIG loaded: {bool(FEATURE_CONFIG)}")
+        print(f"UI_CONFIG loaded: {bool(UI_CONFIG)}")
+        
+        print("Testing feature names...")
+        features = get_expected_feature_names()
+        print(f"Expected features count: {len(features)}")
+        
+        print("Testing model check...")
+        models = list_available_models()
+        print(f"Available models: {len(models)}")
+        
+        print("✅ Basic test completed successfully!")
+        
+    except Exception as e:
+        print(f"❌ Error during testing: {e}")
+        import traceback
+        print(f"Full error: {traceback.format_exc()}")

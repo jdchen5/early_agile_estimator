@@ -11,8 +11,40 @@ import json
 import os
 import yaml
 from datetime import datetime
-from models import *
+from models import (
+    # Core prediction functions
+    predict_with_training_features_optimized,
+    predict_man_hours_direct,
+    
+    # Feature creation
+    create_training_compatible_features,
+    
+    # Model management
+    list_available_models,
+    check_required_models,
+    
+    # Diagnostics (optional)
+    diagnose_model_file,
+    fix_model_loading_issues
+)
 
+st.set_page_config(
+    page_title="ML Project Effort Estimator",
+    page_icon="🔮",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Minimal CSS for sidebar width only
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] {
+    width: 350px !important;  /* Change this value */
+    min-width: 350px !important;
+    max-width: 350px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # --- Configuration Loading ---
 def load_yaml_config(path):
@@ -95,22 +127,32 @@ def get_field_label(field_name):
     return field_name.replace('_', ' ').replace('prf', '').replace('eef', '').replace('tf', '').title().strip()
 
 def is_mandatory_field(field_name):
-    """Check if field is mandatory"""
-    mandatory_fields = [
-        "project_prf_year_of_project",
-        "external_eef_industry_sector", 
-        "external_eef_organisation_type",
-        "project_prf_team_size_group",
-        "project_prf_max_team_size",
-        "project_prf_relative_size",
-        "project_prf_application_type",
-        "project_prf_development_type",
-        "tech_tf_architecture",
-        "tech_tf_development_platform",
-        "tech_tf_language_type",
-        "tech_tf_primary_programming_language"
-    ]
-    return field_name in mandatory_fields
+    """Check if field is mandatory based on tab configuration"""
+    # Try to get from tab configuration first
+    tab_config = UI_CONFIG.get("tab_configuration") or HELP_CONFIG.get("tab_configuration")
+    
+    if tab_config:
+        # Check if field is in "Required Fields" tab
+        required_tab = tab_config.get("Required Fields", {})
+        required_fields = required_tab.get("fields", [])
+        return field_name in required_fields
+    else:
+        # Fallback to hardcoded list
+        mandatory_fields = [
+            "project_prf_year_of_project",
+            "external_eef_industry_sector", 
+            "external_eef_organisation_type",
+            "project_prf_team_size_group",
+            "project_prf_max_team_size",
+            "project_prf_relative_size",
+            "project_prf_application_type",
+            "project_prf_development_type",
+            "tech_tf_architecture",
+            "tech_tf_development_platform",
+            "tech_tf_language_type",
+            "tech_tf_primary_programming_language"
+        ]
+        return field_name in mandatory_fields
 
 def get_team_size_group_from_max(max_team_size):
     """Calculate team size group from max team size"""
@@ -196,45 +238,57 @@ def render_field(field_name, is_required=False):
     return field_value
 
 def get_tab_organization():
-    """Organize fields into tabs"""
-    mandatory_fields = [
-        "project_prf_year_of_project",
-        "external_eef_industry_sector", 
-        "external_eef_organisation_type",
-        "project_prf_max_team_size",
-        "project_prf_team_size_group",
-        "project_prf_relative_size",
-        "project_prf_application_type",
-        "project_prf_development_type",
-        "tech_tf_architecture",
-        "tech_tf_development_platform",
-        "tech_tf_language_type",
-        "tech_tf_primary_programming_language"
-    ]
+    """Organize fields into tabs using tab_configuration from YAML files"""
     
-    # Get all available fields
-    all_fields = set()
-    all_fields.update(FEATURE_CONFIG.get("numeric_features", []))
-    all_fields.update(FEATURE_CONFIG.get("categorical_features", {}).keys())
+    # Try to get tab configuration from UI_CONFIG first, then HELP_CONFIG
+    tab_config = UI_CONFIG.get("tab_configuration") or HELP_CONFIG.get("tab_configuration")
     
-    # Add special case fields
-    for group_config in FEATURE_CONFIG.get("special_cases", {}).values():
-        if "input_key" in group_config:
-            all_fields.add(group_config["input_key"])
-    
-    optional_fields = [f for f in all_fields if f not in mandatory_fields]
-    
-    return {
-        "Required": {
-            "fields": mandatory_fields,
-            "description": "Essential parameters for accurate estimation"
-        },
-        "Optional": {
-            "fields": optional_fields,
-            "description": "Additional parameters for improved accuracy"
+    if tab_config:
+        # Use the tab configuration from YAML file
+        return tab_config
+    else:
+        # Fallback to default configuration if not found in YAML
+        st.warning("⚠️ Tab configuration not found in YAML files, using default")
+        
+        # Get all available fields from configuration
+        all_available_fields = set()
+        all_available_fields.update(FEATURE_CONFIG.get("numeric_features", []))
+        all_available_fields.update(FEATURE_CONFIG.get("categorical_features", {}).keys())
+        
+        # Add special case fields
+        for group_config in FEATURE_CONFIG.get("special_cases", {}).values():
+            if "input_key" in group_config:
+                all_available_fields.add(group_config["input_key"])
+        
+        # Default mandatory fields
+        mandatory_field_names = [
+            "project_prf_year_of_project",
+            "external_eef_industry_sector", 
+            "external_eef_organisation_type",
+            "project_prf_team_size_group",
+            "project_prf_max_team_size",
+            "project_prf_relative_size",
+            "project_prf_application_type",
+            "project_prf_development_type",
+            "tech_tf_architecture",
+            "tech_tf_development_platform",
+            "tech_tf_language_type",
+            "tech_tf_primary_programming_language"
+        ]
+        
+        required_fields = [f for f in mandatory_field_names if f in all_available_fields]
+        optional_fields = [f for f in all_available_fields if f not in mandatory_field_names]
+        
+        return {
+            "Required Fields": {
+                "fields": required_fields,
+                "description": "Essential parameters for accurate estimation"
+            },
+            "Optional Fields": {
+                "fields": optional_fields,
+                "description": "Additional parameters for improved accuracy"
+            }
         }
-    }
-
 # --- About Section Function ---
 def about_section():
     """Display about section with tool information"""
@@ -281,7 +335,7 @@ def sidebar_inputs():
         st.title("🔮 Project Parameters")
         
         # Instructions
-        st.info("Fill in the required fields (marked with ⭐) to get started")
+        st.info("Required fields (marked with ⭐)")
         
         user_inputs = {}
         tab_organization = get_tab_organization()
@@ -557,13 +611,6 @@ def show_feature_importance(selected_model, features_dict):
 # --- Main Application ---
 def main():
     """Main application function"""
-    # Page config
-    st.set_page_config(
-        page_title="ML Project Effort Estimator",
-        page_icon="🔮",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
     
     # Main header
     st.title("🔮 ML Project Effort Estimator")

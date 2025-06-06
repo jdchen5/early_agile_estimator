@@ -27,6 +27,10 @@ field_help:
     title: "Relative Size"
     help: "Categories the Functional Size (or Adjusted Function Points) by relative sizes: XXS, XS, S, M1, M2, L, XL, XXL, XXXL. See ISBSG for numeric boundaries."
 
+  project_prf_application_group:
+    title: "Application Group"
+    help: "Application Type of the project: Business Application, Real-Time Application, Mathematically-Intensive Application, or Infrastructure Software."
+
   project_prf_application_type:
     title: "Application Type"
     help: "Identifies the type of application being addressed by the project (e.g., information system, transaction/production system, process control)."
@@ -103,6 +107,7 @@ mandatory_fields:
     - project_prf_team_size_group
     - project_prf_max_team_size
     - project_prf_relative_size
+    - project_prf_application_group
     - project_prf_application_type
     - project_prf_development_type
     - tech_tf_architecture
@@ -160,3 +165,4 @@ tab_configuration:
       - tech_tf_tools_used
       - process_pmf_docs
       - people_prf_project_user_involvement
+      

@@ -5,6 +5,7 @@ numeric_features:
   - process_pmf_docs
   - tech_tf_tools_used
   - people_prf_personnel_changes
+  - people_prf_project_user_involvement
 
 categorical_features:
   external_eef_industry_sector:
