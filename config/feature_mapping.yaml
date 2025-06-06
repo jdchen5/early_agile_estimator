@@ -8,7 +8,25 @@ numeric_features:
 
 categorical_features:
   external_eef_industry_sector:
-    options: ["Banking", "Construction", "Defence", "Education", "Electronics Computers", "Financial", "Government", "Insurance","Insurance", "Logistics", "Manufacturing",  "Mining", "Medical Healthcare",  "Professional Services", "Service Industry", "Telecommunications", "Utilities", "Wholesale Retail", "Other"]
+    options: 
+      - Banking
+      - Construction
+      - Defence
+      - Education
+      - Electronics Computers
+      - Financial
+      - Government
+      - Insurance
+      - Logistics
+      - Manufacturing
+      - Mining
+      - Medical Healthcare
+      - Professional Services
+      - Service Industry
+      - Telecommunications
+      - Utilities
+      - Wholesale Retail
+      - Other
   external_eef_organisation_type:
     options:
       - All industry organization types
@@ -85,8 +103,7 @@ categorical_features:
       - security
       - web/html browser
       - web public interface
- 
-  tech_tf_server_roles:
+   tech_tf_server_roles:
     options:
       - business logic + integration to 30 other systems
       - data acquisation
@@ -99,6 +116,51 @@ categorical_features:
       - mail server
       - messaging server
       - object/component server
+  project_prf_application_group:
+    options: ["Business Application", "Infrastructure Software", "Mathematically Intensive Application", "Real-time Application"]
+  development_type: 
+    options: ["Enhancement", "New Development", "Re-development" ]
+  tech_tf_development_platform:
+    options:["Mainframe (MF)", "Midrang (MR)", "Multi-platform", "PC", "Proprietary" ]
+  tech_tf_language_type:
+    options: ["2GL (Second Generation)", "3GL (Third Generation)", "4GL (Fourth Generation)", "5GL (Fifth Generation)", "Application Generator", "Other"]
+  tech_tf_primary_language:
+    options:
+      - ABAP
+      - Agile platform
+      - JAVA
+      - Javascript
+      - C
+      - C++
+      - PL/i
+      - Natural
+      - Cobol
+      - Oracle
+      - Proprietary Agile Platform
+      - Other
+  project_prf_relative_size:
+    options: ["XXS (Extra Extra Small), "XS (Extra Small)", "S (Small)", "M1 (Medium 1)", "M2 (Medium 2)", "L (Large)", "XL (Extra Large)", "XXL (Extra Extra Large)", "XXXL (Extra Extra Extra Large)"]
+  architecture:
+    options: ["Client-Server", "Multi-tier with Web Interface", "Stand-alone"]
+  tech_tf_client_server:
+    options: ["No", "Yes"]
+  tech_tf_web_development:
+     options: ["No", "Yes"]
+  tech_tf_dbms_used:
+    options: ["No", "Yes"]
+  project_prfcost_currency:
+    options: ["Canadian Dollar", "European Euro"]
+  process_pmf_development_methodologies:
+    options:
+      - Agile Development
+      - Iterative
+      - Joint Application Development (jad)"
+      - Multifunctional Teams
+      - Personal Software Process (psp)
+      - Scrum
+      - Unified Process
+  project_prf_team_size_group:
+    options: ["1", "2", "3-4", "5-8", "9-14", "15-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100", "101+"]
 
 one_hot_features:
   project_prf_application_group:
@@ -108,14 +170,12 @@ one_hot_features:
       "Infrastructure Software": project_prf_application_group_infrastructure_software
       "Mathematically Intensive": project_prf_application_group_mathematically_intensive_application
       "Real-time Application": project_prf_application_group_real_time_application
-
   development_type:
     input_key: project_prf_development_type
     mapping:
       "Enhancement": project_prf_development_type_enhancement
       "New Development": project_prf_development_type_new_development
       "Re-development": project_prf_development_type_re_development
-
   development_platform:
     input_key: tech_tf_development_platform
     mapping:
@@ -123,7 +183,6 @@ one_hot_features:
       "Multi-platform": tech_tf_development_platform_multi
       "PC": tech_tf_development_platform_pc
       "Proprietary": tech_tf_development_platform_proprietary
-
   language_type:
     input_key: tech_tf_language_type
     mapping:
@@ -133,7 +192,6 @@ one_hot_features:
       "5GL (Fifth Generation)": tech_tf_language_type_5GL
       "Application Generator": tech_tf_language_type_application_generator
       "Other": tech_tf_language_type_other
-
   primary_language:
     input_key: tech_tf_primary_language
     mapping:
@@ -149,7 +207,6 @@ one_hot_features:
       "Oracle": tech_tf_primary_language_oracle
       "Other": tech_tf_primary_language_other
       "Proprietary Agile Platform": tech_tf_primary_programming_language_proprietary_agile_platform
-
   project_prf_relative_size:
     input_key: project_prf_relative_size
     mapping:
@@ -162,38 +219,32 @@ one_hot_features:
       "XL (Extra Large)": project_prfrelative_size_xl
       "XXL (Extra Extra Large)": project_prfrelative_size_xxl
       "XXXL (Extra Extra Extra Large)": project_prfrelative_size_xxxl
-
   architecture:
     input_key: tech_tf_architecture
     mapping:
       "Client-Server": tech_tf_architecture_client_server
       "Multi-tier with Web Interface": tech_tf_architecture_multi_tier_with_web_public_interface
       "Stand-alone": tech_tf_architecture_stand_alone
-
   client_server:
     input_key: tech_tf_client_server
     mapping:
       "No": tech_tf_client_server_no
       "Yes": tech_tf_client_server_yes
-
   web_development:
     input_key: tech_tf_web_development
     mapping:
       "Yes": tech_tf_web_development_tech_tf_web_development
       "No": tech_tf_web_development_web
-
   dbms_used:
     input_key: tech_tf_dbms_used
     mapping:
       "Yes": tech_tf_dbms_used_tech_tf_dbms_used
       "No": tech_tf_dbms_used_no
-
   cost_currency:
     input_key: project_prfcost_currency
     mapping:
       "Canadian Dollar": project_prf_cost_currency_canadadollar
       "European Euro": project_prf_cost_currency_europeaneuro
-
   process_pmf_development_methodologies:
     input_key: process_pmf_development_methodologies
     mapping:
@@ -231,18 +282,16 @@ special_cases:
 
 
 binary_features:
-  client_server:
-    input_key: client_server
+  tech_tf_client_server:
     mapping:
-      "No": client_server_no
-      "Yes": client_server_yes
-  web_development:
+      "No": tech_tf_client_server_no
+      "Yes": tech_tf_client_server_yes
+  tech_tf_web_development:
     input_key: web_development
     mapping:
-      "Yes": web_development_yes
-      "No": web_development_no
-  dbms_used:
-    input_key: dbms_used
+      "Yes": tech_tf_web_development_yes
+      "No": tech_tf_web_development_no
+  tech_tf_dbms_used:
     mapping:
-      "Yes": dbms_used_yes
-      "No": dbms_used_no
+      "Yes": tech_tf_dbms_used_yes
+      "No": tech_tf_dbms_used_no
