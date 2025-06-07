@@ -11,22 +11,29 @@ import json
 import os
 import yaml
 from datetime import datetime
-from models import (
-    # Core prediction functions
-    predict_with_training_features_optimized,
-    predict_man_hours_direct,
+try:
+    from models import (
+        predict_with_training_features_optimized,
+        predict_man_hours,
+        list_available_models,
+        check_required_models,
+        get_feature_importance,
+        get_model_display_name
+    )
+    MODELS_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Could not import from models.py: {e}")
+    MODELS_AVAILABLE = False
     
-    # Feature creation
-    create_training_compatible_features,
-    
-    # Model management
-    list_available_models,
-    check_required_models,
-    
-    # Diagnostics (optional)
-    diagnose_model_file,
-    fix_model_loading_issues
-)
+    # Define stub functions so UI doesn't crash
+    def predict_with_training_features_optimized(inputs, model):
+        return None
+    def predict_man_hours_direct(inputs, model):
+        return None
+    def list_available_models():
+        return []
+    def check_required_models():
+        return {"models_available": False}
 
 st.set_page_config(
     page_title="ML Project Effort Estimator",
@@ -328,7 +335,7 @@ def about_section():
     For technical support or questions, please refer to the documentation or contact the development team.
     """)
 
-# --- Main Sidebar Function ---
+# Main sidebar function to create inputs and model selection
 def sidebar_inputs():
     """Create ultra-compact sidebar with form inputs"""
     with st.sidebar:
@@ -401,57 +408,29 @@ def sidebar_inputs():
         if missing_fields:
             st.error(f"⚠️ Missing required fields: {', '.join(missing_fields)}")
         
-        # Action buttons
+        # Action buttons - SIMPLIFIED
         st.divider()
-        col1, col2 = st.columns(2)
         
-        with col1:
-            predict_button = st.button(
-                "🔮 Predict Effort",
-                type="primary",
-                use_container_width=True,
-                disabled=len(missing_fields) > 0 or not selected_model
-            )
+        # Just one button - the main predict button
+        predict_button = st.button(
+            "🔮 Predict Effort",
+            type="primary",
+            use_container_width=True,
+            disabled=len(missing_fields) > 0 or not selected_model
+        )
         
-        with col2:
-            save_button = st.button(
-                "💾 Save Config",
-                use_container_width=True
-            )
-        
-        # Configuration saving
-        if save_button:
-            config_name = st.text_input(
-                "Configuration Name", 
-                placeholder="Enter a name for this configuration"
-            )
-            if config_name.strip():
-                save_current_configuration(user_inputs, config_name.strip())
-        
-        # Diagnostics section
-        st.divider()
-        st.subheader("🔧 Diagnostics")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Check Models", use_container_width=True):
-                try:
-                    fix_model_loading_issues()
-                    st.success("✅ Models checked")
-                except Exception as e:
-                    st.error(f"❌ Error: {e}")
-        
-        with col2:
-            if st.button("Test Model", use_container_width=True):
-                try:
-                    if create_test_model_file():
-                        st.success("✅ Test model created")
-                    else:
-                        st.error("❌ Creation failed")
-                except Exception as e:
-                    st.error(f"❌ Error: {e}")
+        # Optional: Simple model check (remove if you don't need it)
+        if st.button("Check Models", use_container_width=True):
+            try:
+                model_status = check_required_models()
+                if model_status.get("models_available", False):
+                    st.success("✅ Models available")
+                else:
+                    st.error("❌ Models not available")
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
 
-        # Debug information
+        # Debug information (optional - remove if you don't need it)
         with st.expander("🐛 Debug Info"):
             st.json({
                 "Total Fields": len(user_inputs),
@@ -465,6 +444,7 @@ def sidebar_inputs():
         user_inputs["submit"] = predict_button
         
         return user_inputs
+
 
 # --- Configuration Management: save the current form input state to a JSON files of user configs for future reuse ---
 def save_current_configuration(user_inputs, config_name):

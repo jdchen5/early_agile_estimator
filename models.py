@@ -1228,6 +1228,7 @@ __all__ = [
     
     # Prediction functions
     'predict_man_hours',
+    'predict_with_training_features_optimized'
     'analyze_what_if',
     
     # Feature handling
@@ -1236,6 +1237,7 @@ __all__ = [
     'prepare_features_for_pycaret',
     'create_feature_vector_from_dict',
     'validate_feature_dict_against_config',
+    'create_training_compatible_features',
     
     # Feature importance
     'get_feature_importance',
