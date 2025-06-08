@@ -34,12 +34,6 @@ except ImportError as e:
     def check_required_models():
         return {"models_available": False}
 
-st.set_page_config(
-    page_title="ML Project Effort Estimator",
-    page_icon="🔮",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Minimal CSS for sidebar width only
 st.markdown("""
@@ -586,6 +580,25 @@ def show_feature_importance(selected_model, features_dict):
     
     except Exception as e:
         st.info(f"Feature importance analysis not available: {e}")
+
+def tips_section():
+    """Display tips section"""
+    st.markdown("""
+    ### 💡 Tips for Better Estimates
+    
+    - **Provide accurate team size information** - This significantly impacts the estimation
+    - **Select the most appropriate technology stack** - Different technologies have different complexity levels
+    - **Choose realistic project complexity levels** - Be honest about the project scope
+    - **Review historical similar projects** - Use past experience to validate estimates
+    - **Consider the tool's predictions as guidance** - Always combine with expert judgment
+    
+    ### 🎯 Best Practices
+    
+    - Fill in all required fields marked with ⭐
+    - Use the optional fields for more accurate predictions
+    - Run what-if analysis to understand parameter sensitivity
+    - Save configurations for similar future projects
+    """)
 
 # --- Main Application ---
 def main():

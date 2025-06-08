@@ -4,7 +4,7 @@ import streamlit as st
 
 # THIS MUST BE FIRST, before any other Streamlit call!
 st.set_page_config(
-    page_title="Agile Project Estimator", 
+    page_title="ML Agile Project Effort Estimator", 
     page_icon="⏱️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -26,59 +26,18 @@ from models import (
     check_required_models
 )
 
-# Import UI functions with fallbacks for enhanced functions
-try:
-    from ui import (
-        sidebar_inputs, 
-        display_inputs, 
-        show_prediction, 
-        about_section, 
-        tips_section, 
-        show_feature_importance,
-        load_yaml_config,
-        get_field_label,
-        enhanced_main,              # New enhanced function
-        enhanced_sidebar_inputs,    # New enhanced function
-        safe_display_inputs,        # New safe function
-        safe_show_prediction        # New safe function
-    )
-    ENHANCED_UI_AVAILABLE = True
-except ImportError as e:
-    # Fallback to basic UI functions if enhanced ones aren't available
-    from ui import (
-        sidebar_inputs, 
-        display_inputs, 
-        show_prediction, 
-        about_section, 
-        tips_section, 
-        show_feature_importance,
-        load_yaml_config,
-        get_field_label
-    )
-    ENHANCED_UI_AVAILABLE = False
-    print(f"Enhanced UI features not available: {e}")
 
-# Try to import diagnostic functions with fallbacks
-try:
-    from models import (
-        diagnose_model_file,
-        create_test_model_file,
-        fix_model_loading_issues
-    )
-    DIAGNOSTICS_AVAILABLE = True
-except ImportError as e:
-    DIAGNOSTICS_AVAILABLE = False
-    print(f"Diagnostic functions not available: {e}")
-    
-    # Create dummy functions to prevent errors
-    def diagnose_model_file(model_name):
-        return {"error": "Diagnostics not available"}
-    
-    def create_test_model_file():
-        return False
-    
-    def fix_model_loading_issues():
-        pass
+
+# Import UI functions
+from ui import (
+    sidebar_inputs, 
+    display_inputs, 
+    show_prediction, 
+    about_section, 
+    show_feature_importance,
+    load_yaml_config,
+    get_field_label
+)
 
 # Try to import pipeline-related functions with fallbacks
 try:
@@ -104,7 +63,6 @@ except ImportError:
     def get_feature_statistics():
         return {"error": "Pipeline module not available"}
 
-MODEL_SCALER = 'standard_scaler'
 
 # Logging setup
 logging.basicConfig(
@@ -146,6 +104,18 @@ def show_disclaimer():
         These estimations should be used as a starting point and always be reviewed by experienced project managers.
         Actual project timelines may vary based on factors not captured in this model.
         """)
+
+def check_dependencies():
+    """Check if all required dependencies are available"""
+    status = {
+        "models_module": True,  # We know this works
+        "pipeline_module": PIPELINE_AVAILABLE,
+        "ui_module": True,  # We know this works
+        "config_files": True,  # We know this works
+    }
+    
+    return status
+
 
 def get_what_if_range_from_config(param_key, current_value):
     """Get what-if analysis ranges from configuration or use smart defaults"""
@@ -221,7 +191,8 @@ def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label
         chart_config = UI_CONFIG.get("feature_importance_display", {}).get("chart_size", {"width": 10, "height": 8})
         
         # Plot
-        fig, ax = plt.subplots(figsize=(chart_config["width"], 6))
+        fig, ax = plt.subplots(figsize=(chart_config["width"], chart_config["height"]))
+
         ax.plot(what_if_df[param_label], what_if_df["Estimated Man-Hours"], 
                 marker='o', linewidth=2, markersize=6)
         ax.set_xlabel(param_label)
@@ -260,60 +231,26 @@ def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label
         st.error(f"Error in what-if analysis: {str(e)}")
         logger.error(f"What-if analysis error: {str(e)}")
 
-def validate_user_inputs(user_inputs):
-    """Validate user inputs against configuration constraints"""
-    errors = []
-    warnings = []
+def save_current_configuration(user_inputs, config_name):
+    """Save current configuration to file"""
+    from datetime import datetime
+    import json
     
-    # Check numeric fields against their constraints
-    numeric_config = UI_CONFIG.get("numeric_field_config", {})
-    for field_name, config in numeric_config.items():
-        if field_name in user_inputs:
-            value = user_inputs[field_name]
-            min_val = config.get("min", 0)
-            max_val = config.get("max", float('inf'))
-            
-            if value < min_val:
-                errors.append(f"{get_field_label(field_name)} must be at least {min_val}")
-            elif value > max_val:
-                warnings.append(f"{get_field_label(field_name)} is above recommended maximum of {max_val}")
+    config = user_inputs.copy()
+    config.pop('submit', None)
+    config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
     
-    # Check for required fields
-    required_fields = ["project_prf_functional_size", "project_prf_max_team_size"]
-    for field in required_fields:
-        if field not in user_inputs or user_inputs[field] <= 0:
-            errors.append(f"{get_field_label(field)} is required and must be greater than 0")
+    configs_dir = "saved_configs"
+    os.makedirs(configs_dir, exist_ok=True)
     
-    # Basic pipeline test (only if submission attempted and function is available)
-    if user_inputs.get('submit', False) and PIPELINE_AVAILABLE:
-        try:
-            pipeline_test = test_feature_pipeline_integration(user_inputs)
-            if not pipeline_test.get("success", False):
-                for error in pipeline_test.get("errors", []):
-                    warnings.append(f"Pipeline issue: {error}")
-            for warning in pipeline_test.get("warnings", []):
-                warnings.append(warning)
-        except Exception as e:
-            # Don't fail validation if pipeline test fails
-            logger.warning(f"Could not validate preprocessing pipeline: {str(e)}")
+    config_file = f'{configs_dir}/{config_name}.json'
+    with open(config_file, 'w') as f:
+        json.dump(config, f, indent=2, default=str)
     
-    return errors, warnings
-
-def check_dependencies():
-    """Check if all required dependencies are available"""
-    status = {
-        "models_module": True,  # We know this works from debug
-        "pipeline_module": PIPELINE_AVAILABLE,
-        "ui_module": True,  # We know this works from debug
-        "config_files": True,  # We know this works from debug
-        "enhanced_ui": ENHANCED_UI_AVAILABLE,
-        "diagnostics": DIAGNOSTICS_AVAILABLE
-    }
-    
-    return status
+    st.success(f"✅ Configuration '{config_name}' saved!")
 
 def main():
-    """Main function with enhanced UI support"""
+    """Main application function """
     add_custom_css()
 
     st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
@@ -323,107 +260,47 @@ def main():
     """)
     st.markdown("---")
     
-    # Check dependencies first
-    deps_status = check_dependencies()
-    if not deps_status["models_module"]:
-        st.error("Critical dependency missing: models module. Please check your installation.")
-        return
-    
-    # Use enhanced UI if available, otherwise fallback to original
-    if ENHANCED_UI_AVAILABLE:
-        try:
-            # Use the enhanced main function from ui.py
-            enhanced_main()
-            return
-        except Exception as e:
-            st.error(f"Enhanced UI failed: {e}. Falling back to basic UI.")
-            logger.error(f"Enhanced UI error: {e}")
-    
-    # Fallback to original main function
-    original_main()
-
-def original_main():
-    """Original main function as fallback"""
     # Get user inputs from sidebar
     try:
-        # Use enhanced sidebar if available, otherwise use original
-        if ENHANCED_UI_AVAILABLE:
-            try:
-                user_inputs = enhanced_sidebar_inputs()
-            except:
-                user_inputs = sidebar_inputs()
-        else:
-            user_inputs = sidebar_inputs()
+        user_inputs = sidebar_inputs()
             
         selected_model = user_inputs.get('selected_model')
         submit = user_inputs.get('submit', False)
+        save_config = user_inputs.get('save_config', False)
+        config_name = user_inputs.get('config_name', '')
         team_size = user_inputs.get('project_prf_max_team_size', 5)
+        
+        # Handle save configuration
+        if save_config and config_name.strip():
+            save_current_configuration(user_inputs, config_name.strip())
+            
     except Exception as e:
         st.error(f"Error in sidebar inputs: {str(e)}")
         logger.error(f"Sidebar error: {str(e)}")
         return
 
-    # Validate inputs if submission attempted
-    if submit:
-        try:
-            errors, warnings = validate_user_inputs(user_inputs)
-            
-            if errors:
-                for error in errors:
-                    st.error(error)
-                submit = False  # Prevent submission with errors
-            
-            if warnings:
-                for warning in warnings:
-                    st.warning(warning)
-        except Exception as e:
-            st.warning(f"Input validation error: {str(e)}")
-
+    # Create tabs
     tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
 
     with tab_results:
         try:
-            # Use safe display if available, otherwise use original
-            if ENHANCED_UI_AVAILABLE:
-                try:
-                    col2 = safe_display_inputs(user_inputs, selected_model)
-                except:
-                    col2 = display_inputs(user_inputs, selected_model)
-            else:
-                col2 = display_inputs(user_inputs, selected_model)
+            display_inputs(user_inputs, selected_model)
             
             if submit and selected_model:
                 with st.spinner("Calculating estimation..."):
                     try:
-                        # Use the dict directly for prediction - models.py will handle preprocessing
                         prediction = predict_man_hours(user_inputs, selected_model)
-                        
-                        # Use safe show prediction if available
-                        if ENHANCED_UI_AVAILABLE:
-                            try:
-                                safe_show_prediction(col2, prediction, team_size)
-                            except:
-                                show_prediction(col2, prediction, team_size)
-                        else:
-                            show_prediction(col2, prediction, team_size)
-                        
-                        # Log successful prediction
+                        show_prediction(prediction, team_size)
                         logger.info(f"Successful prediction: {prediction} man-hours using model {selected_model}")
                         
                     except Exception as e:
                         st.error(f"Error during prediction: {str(e)}")
                         logger.error(f"Prediction error: {str(e)}")
-                        # Show additional debug info
-                        with st.expander("Debug Information"):
-                            st.write(f"**Model**: {selected_model}")
-                            st.write(f"**User inputs keys**: {list(user_inputs.keys())}")
-                            st.write(f"**Error type**: {type(e).__name__}")
-                            st.write(f"**Error message**: {str(e)}")
-                            
             elif submit and not selected_model:
-                col2.error("Please select a model before making a prediction.")
+                st.error("Please select a model before making a prediction.")
             else:
-                col2.info("Click the 'Predict Man-Hours' button to see the estimation result.")
+                st.info("Click the 'Predict Effort' button to see the estimation result.")
+                
         except Exception as e:
             st.error(f"Error in results tab: {str(e)}")
             logger.error(f"Results tab error: {str(e)}")
@@ -432,7 +309,7 @@ def original_main():
         try:
             if submit and selected_model:
                 # Show feature importance
-                show_feature_importance(selected_model, user_inputs, st)
+                show_feature_importance(selected_model, user_inputs)
                 
                 st.subheader("What-If Analysis")
                 st.write("See how changing one parameter affects the estimation:")
@@ -458,8 +335,6 @@ def original_main():
                 else:
                     st.warning("No numeric parameters available for what-if analysis.")
                     
-            elif not selected_model:
-                st.info("Please select a model first to see visualizations and what-if analysis.")
             else:
                 st.info("Make a prediction first to see visualizations and what-if analysis.")
         except Exception as e:
@@ -469,7 +344,6 @@ def original_main():
     with tab_help:
         try:
             about_section()
-            tips_section()
             show_disclaimer()
             
             # Add configuration info
@@ -576,8 +450,3 @@ if __name__ == "__main__":
         st.error(f"An error occurred in the application: {str(e)}")
         logger.exception("An error occurred in the application:")
         
-        # Show debug info
-        with st.expander("Debug Information"):
-            st.write("**Error Details:**")
-            import traceback
-            st.code(traceback.format_exc())
