@@ -1,5 +1,4 @@
 import streamlit as st
-from ui import initialize_session_state, set_sidebar_width
 
 # THIS MUST BE FIRST, before any other Streamlit call!
 st.set_page_config(
@@ -9,11 +8,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Style and session helpers
+from ui import set_sidebar_width, initialize_session_state
+
+import logging
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import logging
 import os
+
 
 # Import core functions from models
 from models import (
@@ -115,6 +118,7 @@ def check_dependencies():
     return status
 
 def main():
+    # --- Style and Session ---
     add_custom_css()
     set_sidebar_width()  # Call after set_page_config
     initialize_session_state()
@@ -126,10 +130,11 @@ def main():
     """)
     st.markdown("---")
     
-    # Get user inputs from sidebar
+    # --- User Inputs from Sidebar ---
     try:
         user_inputs = sidebar_inputs()
         selected_model = user_inputs.get('selected_model', None)
+        selected_models = [selected_model] if selected_model else []
 
         submit = user_inputs.get('submit', False)
         save_config = user_inputs.get('save_config', False)

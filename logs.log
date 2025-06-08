@@ -7511,3 +7511,480 @@ This will raise in a future version.
 2025-06-08 20:45:30,577:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
 2025-06-08 20:45:30,579:INFO:Initializing load_model()
 2025-06-08 20:45:30,579:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:14,395:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:05:14,395:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:05:14,396:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:05:14,396:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:05:22,278:INFO:Initializing load_model()
+2025-06-08 21:05:22,278:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:23,840:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-08 21:05:24,328:INFO:Initializing predict_model()
+2025-06-08 21:05:24,328:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000016E070EBF10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000016E0706BEC0>)
+2025-06-08 21:05:24,328:INFO:Checking exceptions
+2025-06-08 21:05:24,328:INFO:Preloading libraries
+2025-06-08 21:05:24,329:INFO:Set up data.
+2025-06-08 21:05:24,359:INFO:Set up index.
+2025-06-08 21:05:24,581:INFO:Initializing load_model()
+2025-06-08 21:05:24,581:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,613:INFO:Initializing load_model()
+2025-06-08 21:05:24,614:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,617:INFO:Initializing load_model()
+2025-06-08 21:05:24,617:INFO:load_model(model_name=models\p, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,620:INFO:Initializing load_model()
+2025-06-08 21:05:24,620:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,622:INFO:Initializing load_model()
+2025-06-08 21:05:24,622:INFO:load_model(model_name=models\m, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,625:INFO:Initializing load_model()
+2025-06-08 21:05:24,626:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,628:INFO:Initializing load_model()
+2025-06-08 21:05:24,628:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,631:INFO:Initializing load_model()
+2025-06-08 21:05:24,631:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,633:INFO:Initializing load_model()
+2025-06-08 21:05:24,633:INFO:load_model(model_name=models\l, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,635:INFO:Initializing load_model()
+2025-06-08 21:05:24,635:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,637:INFO:Initializing load_model()
+2025-06-08 21:05:24,637:INFO:load_model(model_name=models\2, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,639:INFO:Initializing load_model()
+2025-06-08 21:05:24,639:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,641:INFO:Initializing load_model()
+2025-06-08 21:05:24,641:INFO:load_model(model_name=models\E, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,643:INFO:Initializing load_model()
+2025-06-08 21:05:24,643:INFO:load_model(model_name=models\x, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,645:INFO:Initializing load_model()
+2025-06-08 21:05:24,645:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,646:INFO:Initializing load_model()
+2025-06-08 21:05:24,646:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,651:INFO:Initializing load_model()
+2025-06-08 21:05:24,651:INFO:load_model(model_name=models\a, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,655:INFO:Initializing load_model()
+2025-06-08 21:05:24,655:INFO:load_model(model_name=models\T, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,658:INFO:Initializing load_model()
+2025-06-08 21:05:24,658:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,661:INFO:Initializing load_model()
+2025-06-08 21:05:24,661:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,664:INFO:Initializing load_model()
+2025-06-08 21:05:24,664:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,666:INFO:Initializing load_model()
+2025-06-08 21:05:24,666:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,668:INFO:Initializing load_model()
+2025-06-08 21:05:24,668:INFO:load_model(model_name=models\R, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,670:INFO:Initializing load_model()
+2025-06-08 21:05:24,670:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,672:INFO:Initializing load_model()
+2025-06-08 21:05:24,672:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,674:INFO:Initializing load_model()
+2025-06-08 21:05:24,674:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,677:INFO:Initializing load_model()
+2025-06-08 21:05:24,677:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,679:INFO:Initializing load_model()
+2025-06-08 21:05:24,679:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,683:INFO:Initializing load_model()
+2025-06-08 21:05:24,683:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,685:INFO:Initializing load_model()
+2025-06-08 21:05:24,685:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:24,688:INFO:Initializing load_model()
+2025-06-08 21:05:24,688:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,209:INFO:Initializing load_model()
+2025-06-08 21:05:32,209:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,270:INFO:Initializing predict_model()
+2025-06-08 21:05:32,270:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000016E07260350>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000016E6120B2E0>)
+2025-06-08 21:05:32,270:INFO:Checking exceptions
+2025-06-08 21:05:32,270:INFO:Preloading libraries
+2025-06-08 21:05:32,270:INFO:Set up data.
+2025-06-08 21:05:32,301:INFO:Set up index.
+2025-06-08 21:05:32,506:INFO:Initializing load_model()
+2025-06-08 21:05:32,507:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,509:INFO:Initializing load_model()
+2025-06-08 21:05:32,509:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,511:INFO:Initializing load_model()
+2025-06-08 21:05:32,511:INFO:load_model(model_name=models\p, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,513:INFO:Initializing load_model()
+2025-06-08 21:05:32,513:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,515:INFO:Initializing load_model()
+2025-06-08 21:05:32,516:INFO:load_model(model_name=models\m, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,517:INFO:Initializing load_model()
+2025-06-08 21:05:32,517:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,519:INFO:Initializing load_model()
+2025-06-08 21:05:32,519:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,521:INFO:Initializing load_model()
+2025-06-08 21:05:32,521:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,523:INFO:Initializing load_model()
+2025-06-08 21:05:32,523:INFO:load_model(model_name=models\l, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,527:INFO:Initializing load_model()
+2025-06-08 21:05:32,527:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,529:INFO:Initializing load_model()
+2025-06-08 21:05:32,529:INFO:load_model(model_name=models\1, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,531:INFO:Initializing load_model()
+2025-06-08 21:05:32,531:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,533:INFO:Initializing load_model()
+2025-06-08 21:05:32,533:INFO:load_model(model_name=models\G, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,535:INFO:Initializing load_model()
+2025-06-08 21:05:32,535:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,537:INFO:Initializing load_model()
+2025-06-08 21:05:32,537:INFO:load_model(model_name=models\a, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,539:INFO:Initializing load_model()
+2025-06-08 21:05:32,539:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,541:INFO:Initializing load_model()
+2025-06-08 21:05:32,541:INFO:load_model(model_name=models\i, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,544:INFO:Initializing load_model()
+2025-06-08 21:05:32,544:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,546:INFO:Initializing load_model()
+2025-06-08 21:05:32,546:INFO:load_model(model_name=models\n, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,548:INFO:Initializing load_model()
+2025-06-08 21:05:32,548:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,550:INFO:Initializing load_model()
+2025-06-08 21:05:32,550:INFO:load_model(model_name=models\B, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,552:INFO:Initializing load_model()
+2025-06-08 21:05:32,552:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,554:INFO:Initializing load_model()
+2025-06-08 21:05:32,554:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,557:INFO:Initializing load_model()
+2025-06-08 21:05:32,558:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,560:INFO:Initializing load_model()
+2025-06-08 21:05:32,560:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,562:INFO:Initializing load_model()
+2025-06-08 21:05:32,562:INFO:load_model(model_name=models\i, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,564:INFO:Initializing load_model()
+2025-06-08 21:05:32,564:INFO:load_model(model_name=models\n, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,566:INFO:Initializing load_model()
+2025-06-08 21:05:32,566:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,568:INFO:Initializing load_model()
+2025-06-08 21:05:32,568:INFO:load_model(model_name=models\R, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,570:INFO:Initializing load_model()
+2025-06-08 21:05:32,570:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,573:INFO:Initializing load_model()
+2025-06-08 21:05:32,573:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,574:INFO:Initializing load_model()
+2025-06-08 21:05:32,575:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,577:INFO:Initializing load_model()
+2025-06-08 21:05:32,577:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,579:INFO:Initializing load_model()
+2025-06-08 21:05:32,579:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,581:INFO:Initializing load_model()
+2025-06-08 21:05:32,581:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,583:INFO:Initializing load_model()
+2025-06-08 21:05:32,583:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:05:32,585:INFO:Initializing load_model()
+2025-06-08 21:05:32,585:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:08,296:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:47:08,296:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:47:08,296:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:47:08,296:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:47:13,881:INFO:Initializing load_model()
+2025-06-08 21:47:13,881:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:14,709:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-08 21:47:15,093:INFO:Initializing predict_model()
+2025-06-08 21:47:15,093:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000019B06BA3B90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000019B06B5E5C0>)
+2025-06-08 21:47:15,093:INFO:Checking exceptions
+2025-06-08 21:47:15,093:INFO:Preloading libraries
+2025-06-08 21:47:15,094:INFO:Set up data.
+2025-06-08 21:47:15,139:INFO:Set up index.
+2025-06-08 21:47:15,433:INFO:Initializing load_model()
+2025-06-08 21:47:15,433:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,468:INFO:Initializing load_model()
+2025-06-08 21:47:15,468:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,471:INFO:Initializing load_model()
+2025-06-08 21:47:15,471:INFO:load_model(model_name=models\p, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,474:INFO:Initializing load_model()
+2025-06-08 21:47:15,474:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,477:INFO:Initializing load_model()
+2025-06-08 21:47:15,477:INFO:load_model(model_name=models\m, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,479:INFO:Initializing load_model()
+2025-06-08 21:47:15,479:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,482:INFO:Initializing load_model()
+2025-06-08 21:47:15,482:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,484:INFO:Initializing load_model()
+2025-06-08 21:47:15,484:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,486:INFO:Initializing load_model()
+2025-06-08 21:47:15,486:INFO:load_model(model_name=models\l, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,488:INFO:Initializing load_model()
+2025-06-08 21:47:15,489:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,491:INFO:Initializing load_model()
+2025-06-08 21:47:15,491:INFO:load_model(model_name=models\2, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,493:INFO:Initializing load_model()
+2025-06-08 21:47:15,493:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,495:INFO:Initializing load_model()
+2025-06-08 21:47:15,496:INFO:load_model(model_name=models\E, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,498:INFO:Initializing load_model()
+2025-06-08 21:47:15,498:INFO:load_model(model_name=models\x, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,499:INFO:Initializing load_model()
+2025-06-08 21:47:15,500:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,501:INFO:Initializing load_model()
+2025-06-08 21:47:15,501:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,503:INFO:Initializing load_model()
+2025-06-08 21:47:15,503:INFO:load_model(model_name=models\a, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,504:INFO:Initializing load_model()
+2025-06-08 21:47:15,505:INFO:load_model(model_name=models\T, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,506:INFO:Initializing load_model()
+2025-06-08 21:47:15,506:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,524:INFO:Initializing load_model()
+2025-06-08 21:47:15,524:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,588:INFO:Initializing load_model()
+2025-06-08 21:47:15,588:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,591:INFO:Initializing load_model()
+2025-06-08 21:47:15,591:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,594:INFO:Initializing load_model()
+2025-06-08 21:47:15,594:INFO:load_model(model_name=models\R, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,597:INFO:Initializing load_model()
+2025-06-08 21:47:15,597:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,599:INFO:Initializing load_model()
+2025-06-08 21:47:15,599:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,600:INFO:Initializing load_model()
+2025-06-08 21:47:15,601:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,602:INFO:Initializing load_model()
+2025-06-08 21:47:15,602:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,604:INFO:Initializing load_model()
+2025-06-08 21:47:15,604:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,606:INFO:Initializing load_model()
+2025-06-08 21:47:15,606:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,607:INFO:Initializing load_model()
+2025-06-08 21:47:15,607:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:15,623:INFO:Initializing load_model()
+2025-06-08 21:47:15,624:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,340:INFO:Initializing load_model()
+2025-06-08 21:47:22,340:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,410:INFO:Initializing predict_model()
+2025-06-08 21:47:22,411:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000019B13C6E5D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000019B5F2E8720>)
+2025-06-08 21:47:22,411:INFO:Checking exceptions
+2025-06-08 21:47:22,411:INFO:Preloading libraries
+2025-06-08 21:47:22,412:INFO:Set up data.
+2025-06-08 21:47:22,455:INFO:Set up index.
+2025-06-08 21:47:22,669:INFO:Initializing load_model()
+2025-06-08 21:47:22,670:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,673:INFO:Initializing load_model()
+2025-06-08 21:47:22,673:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,676:INFO:Initializing load_model()
+2025-06-08 21:47:22,676:INFO:load_model(model_name=models\p, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,678:INFO:Initializing load_model()
+2025-06-08 21:47:22,678:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,681:INFO:Initializing load_model()
+2025-06-08 21:47:22,681:INFO:load_model(model_name=models\m, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,684:INFO:Initializing load_model()
+2025-06-08 21:47:22,684:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,686:INFO:Initializing load_model()
+2025-06-08 21:47:22,686:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,688:INFO:Initializing load_model()
+2025-06-08 21:47:22,688:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,689:INFO:Initializing load_model()
+2025-06-08 21:47:22,690:INFO:load_model(model_name=models\l, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,692:INFO:Initializing load_model()
+2025-06-08 21:47:22,692:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,694:INFO:Initializing load_model()
+2025-06-08 21:47:22,694:INFO:load_model(model_name=models\1, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,696:INFO:Initializing load_model()
+2025-06-08 21:47:22,696:INFO:load_model(model_name=models\_, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,698:INFO:Initializing load_model()
+2025-06-08 21:47:22,698:INFO:load_model(model_name=models\G, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,700:INFO:Initializing load_model()
+2025-06-08 21:47:22,700:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,702:INFO:Initializing load_model()
+2025-06-08 21:47:22,702:INFO:load_model(model_name=models\a, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,704:INFO:Initializing load_model()
+2025-06-08 21:47:22,704:INFO:load_model(model_name=models\d, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,705:INFO:Initializing load_model()
+2025-06-08 21:47:22,705:INFO:load_model(model_name=models\i, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,708:INFO:Initializing load_model()
+2025-06-08 21:47:22,708:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,710:INFO:Initializing load_model()
+2025-06-08 21:47:22,710:INFO:load_model(model_name=models\n, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,714:INFO:Initializing load_model()
+2025-06-08 21:47:22,714:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,716:INFO:Initializing load_model()
+2025-06-08 21:47:22,716:INFO:load_model(model_name=models\B, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,718:INFO:Initializing load_model()
+2025-06-08 21:47:22,718:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,720:INFO:Initializing load_model()
+2025-06-08 21:47:22,720:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,722:INFO:Initializing load_model()
+2025-06-08 21:47:22,722:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,724:INFO:Initializing load_model()
+2025-06-08 21:47:22,724:INFO:load_model(model_name=models\t, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,726:INFO:Initializing load_model()
+2025-06-08 21:47:22,726:INFO:load_model(model_name=models\i, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,728:INFO:Initializing load_model()
+2025-06-08 21:47:22,728:INFO:load_model(model_name=models\n, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,730:INFO:Initializing load_model()
+2025-06-08 21:47:22,730:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,732:INFO:Initializing load_model()
+2025-06-08 21:47:22,732:INFO:load_model(model_name=models\R, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,734:INFO:Initializing load_model()
+2025-06-08 21:47:22,734:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,736:INFO:Initializing load_model()
+2025-06-08 21:47:22,736:INFO:load_model(model_name=models\g, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,739:INFO:Initializing load_model()
+2025-06-08 21:47:22,739:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,742:INFO:Initializing load_model()
+2025-06-08 21:47:22,742:INFO:load_model(model_name=models\e, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,744:INFO:Initializing load_model()
+2025-06-08 21:47:22,745:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,747:INFO:Initializing load_model()
+2025-06-08 21:47:22,747:INFO:load_model(model_name=models\s, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,749:INFO:Initializing load_model()
+2025-06-08 21:47:22,749:INFO:load_model(model_name=models\o, platform=None, authentication=None, verbose=True)
+2025-06-08 21:47:22,751:INFO:Initializing load_model()
+2025-06-08 21:47:22,751:INFO:load_model(model_name=models\r, platform=None, authentication=None, verbose=True)
+2025-06-08 21:58:06,880:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:58:06,880:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:58:06,880:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:58:06,880:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-08 21:58:13,296:INFO:Initializing load_model()
+2025-06-08 21:58:13,297:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:58:14,216:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-08 21:58:14,589:INFO:Initializing predict_model()
+2025-06-08 21:58:14,589:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000206EC53FF50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000206EC4DE840>)
+2025-06-08 21:58:14,589:INFO:Checking exceptions
+2025-06-08 21:58:14,590:INFO:Preloading libraries
+2025-06-08 21:58:14,590:INFO:Set up data.
+2025-06-08 21:58:14,622:INFO:Set up index.
+2025-06-08 21:58:14,906:INFO:Initializing load_model()
+2025-06-08 21:58:14,906:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:58:20,669:INFO:Initializing load_model()
+2025-06-08 21:58:20,670:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-08 21:58:20,726:INFO:Initializing predict_model()
+2025-06-08 21:58:20,726:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000206FA191C50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000206C4DA9620>)
+2025-06-08 21:58:20,726:INFO:Checking exceptions
+2025-06-08 21:58:20,727:INFO:Preloading libraries
+2025-06-08 21:58:20,727:INFO:Set up data.
+2025-06-08 21:58:20,774:INFO:Set up index.
+2025-06-08 21:58:20,992:INFO:Initializing load_model()
+2025-06-08 21:58:20,992:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)

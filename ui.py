@@ -143,6 +143,11 @@ def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label
     """Perform what-if analysis for a given parameter"""
     import matplotlib.pyplot as plt
 
+    if selected_models is None:
+        selected_models = []
+    elif isinstance(selected_models, str):
+        selected_models = [selected_models]
+
     def get_what_if_range_from_config(param_key, current_value):
         numeric_config = UI_CONFIG.get("numeric_field_config", {})
         if param_key in numeric_config:
@@ -459,7 +464,11 @@ def run_predictions(user_inputs, selected_models):
     
     predictions = {}
     team_size = user_inputs.get('project_prf_max_team_size', 5)
-    
+
+    if isinstance(selected_models, str):
+        selected_models = [selected_models]
+    assert isinstance(selected_models, list), "selected_models must be a list"
+
     for model in selected_models:
         try:
             model_display_name = get_model_display_name(model)
@@ -488,6 +497,10 @@ def run_predictions(user_inputs, selected_models):
 def run_single_prediction(user_inputs, selected_model):
     """Run prediction for a single model and add to history"""
     team_size = user_inputs.get('project_prf_max_team_size', 5)
+
+    if isinstance(selected_models, str):
+        selected_models = [selected_models]  # Convert single model to list
+    assert isinstance(selected_models, list), "selected_models must be a list"   
     
     with st.spinner(f"🤔 Analyzing project parameters with {get_model_display_name(selected_model)}..."):
         try:
@@ -757,6 +770,10 @@ def show_feature_importance(selected_model, features_dict):
         return
     
     try:
+        if isinstance(selected_models, str):
+            selected_models = [selected_models]  # Convert single model to list
+        assert isinstance(selected_models, list), "selected_models must be a list"   
+
         feature_importance = get_feature_importance(selected_model)
         if feature_importance is not None:
             st.subheader("📊 Feature Importance Analysis")
@@ -1101,6 +1118,7 @@ def sidebar_inputs():
             })
         
         user_inputs["selected_model"] = selected_model
+        user_inputs["selected_models"] = [selected_model] if selected_model else []
         user_inputs["submit"] = predict_button
         user_inputs["clear_results"] = clear_results
         user_inputs["show_history"] = show_history
@@ -1179,7 +1197,11 @@ def show_feature_importance(selected_models, features_dict):
             importance_data = {}
             exclude_keys = {'selected_models', 'submit', 'clear_results', 'comparison_mode'}
             feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
-            
+
+            if isinstance(selected_models, str):
+                selected_models = [selected_models]
+            assert isinstance(selected_models, list), "selected_models must be a list"
+
             for model in selected_models:
                 try:
                     feature_importance = get_feature_importance(model)
