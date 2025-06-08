@@ -13,7 +13,6 @@ import yaml
 from datetime import datetime
 try:
     from models import (
-        predict_with_training_features_optimized,
         predict_man_hours,
         list_available_models,
         check_required_models,
