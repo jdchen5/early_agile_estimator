@@ -144,7 +144,8 @@ def main():
 
     with tab_results:
         try:
-            display_inputs(user_inputs, selected_model)
+            display_inputs(user_inputs, [selected_model] if selected_model else [])
+
 
             if submit and selected_model:
                 with st.spinner("Calculating estimation..."):
