@@ -625,6 +625,7 @@ def apply_feature_engineering(
     STEP 2: Apply feature engineering to fill missing features that the model expects.
     
     Combines pipeline output with additional features that your trained model needs.
+    Creates one-hot encoded features as expected by the trained models.
     
     Args:
         ui_features: Original UI features
@@ -651,7 +652,11 @@ def apply_feature_engineering(
         essential_numeric = {
             'project_prf_year_of_project': ui_features.get('project_prf_year_of_project', 2024),
             'project_prf_max_team_size': ui_features.get('project_prf_max_team_size', 8),
-            'project_prf_functional_size': ui_features.get('project_prf_functional_size', 100)
+            'project_prf_functional_size': ui_features.get('project_prf_functional_size', 100),
+            'process_pmf_docs': 0,  # Default numeric value
+            'tech_tf_tools_used': 0,  # Default numeric value
+            'people_prf_personnel_changes': 0,  # Default numeric value
+            'people_prf_project_user_involvement': 0  # Default numeric value
         }
         
         for key, value in essential_numeric.items():
@@ -666,73 +671,377 @@ def apply_feature_engineering(
             complete_features['project_prf_normalised_work_effort'] = target_value
             logging.info(f"Added target as feature: project_prf_normalised_work_effort = {target_value:.3f}")
         
-        # === ADD ESSENTIAL CATEGORICAL FEATURES ===
-        essential_categorical = {
-            'external_eef_industry_sector': {
-                'input_key': 'external_eef_industry_sector',
-                'valid_values': ['Technology', 'Banking', 'Healthcare', 'Manufacturing', 'Government'],
-                'default': 'Missing'
-            },
-            'tech_tf_primary_programming_language': {
-                'input_key': 'tech_tf_primary_programming_language', 
-                'valid_values': ['Python', 'Java', 'JavaScript', 'C#', 'PHP', 'Ruby', 'C++', 'C'],
-                'default': 'Missing'
-            },
-            'external_eef_data_quality_rating': {
-                'input_key': 'external_eef_data_quality_rating',
-                'valid_values': ['A', 'B', 'C', 'D'],
-                'default': 'A'
-            }
+        # === ADD ONE-HOT ENCODED FEATURES ===
+        # Based on the feature_mapping.yaml configuration
+        
+        # 1. Application Group One-Hot Encoding
+        app_group = ui_features.get('project_prf_application_group', 'business_application')
+        app_group_mapping = {
+            'business_application': 'project_prf_application_group_business_application',
+            'infrastructure_software': 'project_prf_application_group_infrastructure_software',
+            'mathematically_intensive_application': 'project_prf_application_group_mathematically_intensive_application',
+            'real_time_application': 'project_prf_application_group_real_time_application'
+        }
+        # Set all to 0 first
+        for feature in app_group_mapping.values():
+            complete_features[feature] = 0
+        complete_features['project_prf_application_group_nan'] = 0
+        # Set the active one to 1
+        if app_group in app_group_mapping:
+            complete_features[app_group_mapping[app_group]] = 1
+        else:
+            complete_features['project_prf_application_group_nan'] = 1
+        
+        # 2. Client-Server Description One-Hot Encoding
+        clientserver_desc = calculate_derived_features(ui_features, complete_features).get('tech_tf_clientserver_description', 'web')
+        clientserver_mapping = {
+            'browser_server_architecture': 'tech_tf_clientserver_description_browser_server_architecture',
+            'client_server': 'tech_tf_clientserver_description_client_server',
+            'client_presentation': 'tech_tf_clientserver_description_client_presentation',
+            'client_presentation_processing': 'tech_tf_clientserver_description_client_presentation_processing',
+            'client_server_architecture': 'tech_tf_clientserver_description_client_server_architecture',
+            'client_server_architecture_p2p': 'tech_tf_clientserver_description_client_server_architecture_p2p',
+            'server_processing': 'tech_tf_clientserver_description_server_processing',
+            'stand_alone': 'tech_tf_clientserver_description_stand_alone',
+            'web': 'tech_tf_clientserver_description_web'
+        }
+        # Set all to 0 first
+        for feature in clientserver_mapping.values():
+            complete_features[feature] = 0
+        complete_features['tech_tf_clientserver_description_nan'] = 0
+        # Set the active one to 1
+        if clientserver_desc in clientserver_mapping:
+            complete_features[clientserver_mapping[clientserver_desc]] = 1
+        else:
+            complete_features['tech_tf_clientserver_description_nan'] = 1
+        
+        # 3. Data Quality Rating One-Hot Encoding
+        data_quality = ui_features.get('external_eef_data_quality_rating', 'a').lower()
+        data_quality_mapping = {
+            'a': 'external_eef_data_quality_rating_a',
+            'c': 'external_eef_data_quality_rating_c_lang',
+            'd': 'external_eef_data_quality_rating_d'
+        }
+        # Set all to 0 first
+        for feature in data_quality_mapping.values():
+            complete_features[feature] = 0
+        # Set the active one to 1
+        if data_quality in data_quality_mapping:
+            complete_features[data_quality_mapping[data_quality]] = 1
+        else:
+            complete_features['external_eef_data_quality_rating_a'] = 1  # Default to 'a'
+        
+        # 4. Development Type One-Hot Encoding
+        dev_type = calculate_derived_features(ui_features, complete_features).get('project_prf_development_type', 'new_development')
+        dev_type_mapping = {
+            'enhancement': 'project_prf_development_type_enhancement',
+            'new_development': 'project_prf_development_type_new_development',
+            'other': 'project_prf_development_type_other',
+            'poc': 'project_prf_development_type_poc',
+            'porting': 'project_prf_development_type_porting',
+            're_development': 'project_prf_development_type_re_development'
+        }
+        # Set all to 0 first
+        for feature in dev_type_mapping.values():
+            complete_features[feature] = 0
+        complete_features['project_prf_development_type_not_defined'] = 0
+        # Set the active one to 1
+        if dev_type in dev_type_mapping:
+            complete_features[dev_type_mapping[dev_type]] = 1
+        else:
+            complete_features['project_prf_development_type_not_defined'] = 1
+        
+        # 5. Development Platform One-Hot Encoding
+        dev_platform = calculate_derived_features(ui_features, complete_features).get('tech_tf_development_platform', 'pc')
+        platform_mapping = {
+            'mf': 'tech_tf_development_platform_mf',
+            'mr': 'tech_tf_development_platform_mr',
+            'multi': 'tech_tf_development_platform_multi',
+            'pc': 'tech_tf_development_platform_pc',
+            'proprietary': 'tech_tf_development_platform_proprietary'
+        }
+        # Set all to 0 first
+        for feature in platform_mapping.values():
+            complete_features[feature] = 0
+        complete_features['tech_tf_development_platform_nan'] = 0
+        complete_features['tech_tf_development_platform_hand_held'] = 0
+        # Set the active one to 1
+        if dev_platform in platform_mapping:
+            complete_features[platform_mapping[dev_platform]] = 1
+        else:
+            complete_features['tech_tf_development_platform_nan'] = 1
+        
+        # 6. Language Type One-Hot Encoding
+        lang_type = calculate_derived_features(ui_features, complete_features).get('tech_tf_language_type', '3gl')
+        lang_mapping = {
+            '2gl': 'tech_tf_language_type_2gl',
+            '3gl': 'tech_tf_language_type_3gl',
+            '4gl': 'tech_tf_language_type_4gl',
+            '5gl': 'tech_tf_language_type_5gl',
+            'apg': 'tech_tf_language_type_apg'
+        }
+        # Set all to 0 first
+        for feature in lang_mapping.values():
+            complete_features[feature] = 0
+        complete_features['tech_tf_language_type_nan'] = 0
+        # Set the active one to 1
+        if lang_type in lang_mapping:
+            complete_features[lang_mapping[lang_type]] = 1
+        else:
+            complete_features['tech_tf_language_type_nan'] = 1
+        
+        # 7. Relative Size One-Hot Encoding
+        rel_size = calculate_derived_features(ui_features, complete_features).get('project_prf_relative_size', 'm1')
+        size_mapping = {
+            'xxs': 'project_prf_relative_size_xxs',
+            'xs': 'project_prf_relative_size_xs',
+            's': 'project_prf_relative_size_s',
+            'm1': 'project_prf_relative_size_m1',
+            'm2': 'project_prf_relative_size_m2',
+            'l': 'project_prf_relative_size_l',
+            'xl': 'project_prf_relative_size_xl',
+            'xxl': 'project_prf_relative_size_xxl',
+            'xxxl': 'project_prf_relative_size_xxxl'
+        }
+        # Set all to 0 first
+        for feature in size_mapping.values():
+            complete_features[feature] = 0
+        complete_features['project_prf_relative_size_nan'] = 0
+        # Set the active one to 1
+        if rel_size in size_mapping:
+            complete_features[size_mapping[rel_size]] = 1
+        else:
+            complete_features['project_prf_relative_size_nan'] = 1
+        
+        # 8. Case Tool Used One-Hot Encoding
+        case_tool_features = [
+            'project_prf_case_tool_used_don_t_know',
+            'project_prf_case_tool_used_nan',
+            'project_prf_case_tool_used_no',
+            'project_prf_case_tool_used_yes'
+        ]
+        for feature in case_tool_features:
+            complete_features[feature] = 0
+        complete_features['project_prf_case_tool_used_no'] = 1  # Default to 'no'
+        
+        # 9. Prototyping Used One-Hot Encoding
+        proto_features = [
+            'process_pmf_prototyping_used_nan',
+            'process_pmf_prototyping_used_yes'
+        ]
+        for feature in proto_features:
+            complete_features[feature] = 0
+        complete_features['process_pmf_prototyping_used_nan'] = 1  # Default to 'nan'
+        
+        # 10. Architecture One-Hot Encoding
+        architecture = calculate_derived_features(ui_features, complete_features).get('tech_tf_architecture', 'multi_tier')
+        arch_mapping = {
+            'client_server': 'tech_tf_architecture_client_server',
+            'multi_tier': 'tech_tf_architecture_multi_tier',
+            'multi_tier_with_web_interface': 'tech_tf_architecture_multi_tier_with_web_interface',
+            'multi_tier_with_web_public_interface': 'tech_tf_architecture_multi_tier_with_web_public_interface',
+            'stand_alone': 'tech_tf_architecture_stand_alone',
+            'standalone': 'tech_tf_architecture_standalone'
+        }
+        # Set all to 0 first
+        for feature in arch_mapping.values():
+            complete_features[feature] = 0
+        complete_features['tech_tf_architecture_nan'] = 0
+        complete_features['tech_tf_architecture_multi_tier_client_server'] = 0
+        # Set the active one to 1
+        if architecture in arch_mapping:
+            complete_features[arch_mapping[architecture]] = 1
+        else:
+            complete_features['tech_tf_architecture_nan'] = 1
+        
+        # 11. Client Server One-Hot Encoding
+        client_server_features = [
+            'tech_tf_client_server_don_t_know',
+            'tech_tf_client_server_nan',
+            'tech_tf_client_server_no',
+            'tech_tf_client_server_yes',
+            'tech_tf_client_server_not_applicable'
+        ]
+        for feature in client_server_features:
+            complete_features[feature] = 0
+        complete_features['tech_tf_client_server_yes'] = 1  # Default to 'yes' for web apps
+        
+        # 12. Type of Server One-Hot Encoding
+        server_type_features = [
+            'tech_tf_type_of_server_back_end',
+            'tech_tf_type_of_server_client_server',
+            'tech_tf_type_of_server_lan_based',
+            'tech_tf_type_of_server_mainframe',
+            'tech_tf_type_of_server_multi_tier_with_web_public_interface',
+            'tech_tf_type_of_server_nan',
+            'tech_tf_type_of_server_standalone',
+            'tech_tf_type_of_server_unix',
+            'tech_tf_type_of_server_webserver',
+            'tech_tf_type_of_server_proprietary_midrange'
+        ]
+        for feature in server_type_features:
+            complete_features[feature] = 0
+        complete_features['tech_tf_type_of_server_webserver'] = 1  # Default to webserver
+        
+        # 13. Web Development One-Hot Encoding
+        web_dev = calculate_derived_features(ui_features, complete_features).get('tech_tf_web_development', 'web')
+        web_features = [
+            'tech_tf_web_development_nan',
+            'tech_tf_web_development_web'
+        ]
+        for feature in web_features:
+            complete_features[feature] = 0
+        if web_dev == 'web':
+            complete_features['tech_tf_web_development_web'] = 1
+        else:
+            complete_features['tech_tf_web_development_nan'] = 1
+        
+        # 14. DBMS Used One-Hot Encoding
+        dbms_features = [
+            'tech_tf_dbms_used_nan',
+            'tech_tf_dbms_used_no',
+            'tech_tf_dbms_used_yes'
+        ]
+        for feature in dbms_features:
+            complete_features[feature] = 0
+        complete_features['tech_tf_dbms_used_yes'] = 1  # Default to 'yes'
+        
+        # 15. User Involvement One-Hot Encoding
+        user_inv_features = [
+            'people_prf_project_user_involvement_best',
+            'people_prf_project_user_involvement_don_t_know',
+            'people_prf_project_user_involvement_low',
+            'people_prf_project_user_involvement_nan',
+            'people_prf_project_user_involvement_no',
+            'people_prf_project_user_involvement_yes'
+        ]
+        for feature in user_inv_features:
+            complete_features[feature] = 0
+        complete_features['people_prf_project_user_involvement_yes'] = 1  # Default to 'yes'
+        
+        # 16. Currency Multiple One-Hot Encoding
+        currency_features = [
+            'project_prf_currency_multiple_nan',
+            'project_prf_currency_multiple_no',
+            'project_prf_currency_multiple_yes_1_000',
+            'project_prf_currency_multiple_yes_10_000'
+        ]
+        for feature in currency_features:
+            complete_features[feature] = 0
+        complete_features['project_prf_currency_multiple_nan'] = 1  # Default to 'nan'
+        
+        # 17. Organisation Type Top One-Hot Encoding
+        org_type = calculate_derived_features(ui_features, complete_features).get('external_eef_organisation_type_top', 'computers & software')
+        org_type_features = [
+            'external_eef_organisation_type_top_insurance',
+            'external_eef_organisation_type_top_medical and health care',
+            'external_eef_organisation_type_top_manufacturing',
+            'external_eef_organisation_type_top_telecommunications',
+            'external_eef_organisation_type_top_government',
+            'external_eef_organisation_type_top_nan',
+            'external_eef_organisation_type_top_communications',
+            'external_eef_organisation_type_top_banking',
+            'external_eef_organisation_type_top_computers & software',
+            'external_eef_organisation_type_top_defence',
+            'external_eef_organisation_type_top_public administration',
+            'external_eef_organisation_type_top_aerospace / automotive',
+            'external_eef_organisation_type_top_transport & storage',
+            'external_eef_organisation_type_top_financial, property & business services',
+            'external_eef_organisation_type_top_education institution',
+            'external_eef_organisation_type_top_community services',
+            'external_eef_organisation_type_top_electricity, gas, water',
+            'external_eef_organisation_type_top_logistics',
+            'external_eef_organisation_type_top_wholesale & retail trade',
+            'external_eef_organisation_type_top_telecommunication',
+            'external_eef_organisation_type_other'
+        ]
+        for feature in org_type_features:
+            complete_features[feature] = 0
+        # Map common org types
+        if 'technology' in org_type.lower() or 'software' in org_type.lower():
+            complete_features['external_eef_organisation_type_top_computers & software'] = 1
+        elif 'bank' in org_type.lower():
+            complete_features['external_eef_organisation_type_top_banking'] = 1
+        elif 'government' in org_type.lower():
+            complete_features['external_eef_organisation_type_top_government'] = 1
+        else:
+            complete_features['external_eef_organisation_type_top_computers & software'] = 1  # Default
+        
+        # 18. Application Type Top One-Hot Encoding
+        app_type = calculate_derived_features(ui_features, complete_features).get('project_prf_application_type_top', 'business application')
+        app_type_features = [
+            'project_prf_application_type_top_financial transaction process/accounting',
+            'project_prf_application_type_top_not recorded',
+            'project_prf_application_type_top_nan',
+            'project_prf_application_type_top_unknown',
+            'project_prf_application_type_top_customer relationship management',
+            'project_prf_application_type_top_relatively complex application',
+            'project_prf_application_type_top_workflow support & management',
+            'project_prf_application_type_top_business application',
+            'project_prf_application_type_top_embedded system/real_time application',
+            'project_prf_application_type_top_online. esales',
+            'project_prf_application_type_top_management of licences and permits',
+            'project_prf_application_type_top_online analysis and reporting',
+            'project_prf_application_type_top_catalogue/register of things or events',
+            'project_prf_application_type_top_software for machine control',
+            'project_prf_application_type_top_document management',
+            'project_prf_application_type_top_electronic data interchange',
+            'project_prf_application_type_top_management information system',
+            'project_prf_application_type_top_data warehouse system',
+            'project_prf_application_type_top_stock control & order processing',
+            'project_prf_application_type_top_management or performance reporting',
+            'project_prf_application_type_other',
+            'project_prf_application_type_top_transaction/production system',
+            'project_prf_application_type_top_financial application area',
+            'project_prf_application_type_top_client-server',
+            'project_prf_application_type_top_customer billing/relationship management'
+        ]
+        for feature in app_type_features:
+            complete_features[feature] = 0
+        # Set based on app type
+        if 'business' in app_type.lower():
+            complete_features['project_prf_application_type_top_business application'] = 1
+        elif 'crm' in app_type.lower() or 'customer' in app_type.lower():
+            complete_features['project_prf_application_type_top_customer relationship management'] = 1
+        else:
+            complete_features['project_prf_application_type_top_business application'] = 1  # Default
+        
+        # === ADD CATEGORICAL FEATURES (non one-hot) ===
+        # These remain as categorical values
+        # Get derived features for categorical values
+        derived = calculate_derived_features(ui_features, complete_features)
+        
+        categorical_features = {
+            'external_eef_industry_sector': ui_features.get('external_eef_industry_sector', 'Technology'),
+            'tech_tf_primary_programming_language': ui_features.get('tech_tf_primary_programming_language', 'Python'),
+            'project_prf_team_size_group': derived.get('project_prf_team_size_group', '6-10'),
+            'tech_tf_clientserver_description': derived.get('tech_tf_clientserver_description', 'web')
         }
         
-        for feature_name, config in essential_categorical.items():
-            if feature_name not in complete_features:
-                input_value = ui_features.get(config['input_key'], config['default'])
-                if input_value in config['valid_values']:
-                    complete_features[feature_name] = input_value
-                else:
-                    complete_features[feature_name] = config['default']
-                logging.info(f"Added categorical feature: {feature_name} = {complete_features[feature_name]}")
-        
-        # === ADD DERIVED FEATURES ===
-        # Calculate features that depend on other features
-        derived_features = calculate_derived_features(ui_features, complete_features)
-        for key, value in derived_features.items():
+        for key, value in categorical_features.items():
             if key not in complete_features:
                 complete_features[key] = value
-                logging.info(f"Added derived feature: {key} = {value}")
+                logging.info(f"Added categorical feature: {key} = {value}")
         
         # === ADD DEFAULT FEATURES ===
         # Features that models expect but we don't actively collect
         default_features = {
             'process_pmf_development_methodologies': 'Missing',
             'tech_tf_client_roles': 'Missing',
-            'tech_tf_server_roles': 'Missing',
-            'process_pmf_docs': 'Missing',
-            'tech_tf_tools_used': 'Missing',
-            'project_prf_case_tool_used': 'Missing',
-            'process_pmf_prototyping_used': 'Missing',
-            'tech_tf_client_server': 'Missing',
-            'tech_tf_type_of_server': 'Missing',
-            'tech_tf_dbms_used': 'Missing',
-            'people_prf_project_user_involvement': 'Missing',
-            'project_prf_currency_multiple': 'Missing'
+            'tech_tf_server_roles': 'Missing'
         }
         
-        added_defaults = 0
         for key, value in default_features.items():
             if key not in complete_features:
                 complete_features[key] = value
-                added_defaults += 1
-        
-        if added_defaults > 0:
-            logging.info(f"Added {added_defaults} default features")
         
         logging.info(f"Feature engineering complete: {len(complete_features)} total features")
         return complete_features
         
     except Exception as e:
         logging.error(f"Feature engineering failed: {e}")
+        import traceback
+        logging.error(f"Traceback: {traceback.format_exc()}")
         return None
 
 

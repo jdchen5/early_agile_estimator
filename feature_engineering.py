@@ -8,12 +8,41 @@ Key insight: PyCaret treats the target column as an input feature during predict
 Separated from models.py to keep code organized and maintainable.
 """
 
+import os
 import logging
+import yaml
 from typing import Dict, Any, Optional, Tuple, List
+import pandas as pd
+import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Configuration paths
+CONFIG_FOLDER = 'config'
+FEATURE_MAPPING_FILE = os.path.join(CONFIG_FOLDER, 'feature_mapping.yaml')
+
+# Check if PyCaret is available
+try:
+    from pycaret.regression import predict_model
+    PYCARET_AVAILABLE = True
+except ImportError:
+    PYCARET_AVAILABLE = False
+    logger.warning("PyCaret not available")
+
+
+def load_yaml_config(path: str) -> Dict:
+    """Load YAML configuration file with error handling"""
+    try:
+        with open(path, "r") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logger.warning(f"Configuration file not found: {path}")
+        return {}
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing YAML file {path}: {e}")
+        return {}
 
 
 def create_training_compatible_features(input_features: Dict[str, Any]) -> Dict[str, Any]:
@@ -258,7 +287,7 @@ def calculate_derived_features(input_features: Dict[str, Any], features: Dict[st
     return derived
 
 
-def optimize_target_value(input_features: Dict[str, Any], model_name: str) -> Tuple[Optional[float], Optional[float]]:
+def optimize_target_value(input_features: Dict[str, Any], model_name: str, load_model_func) -> Tuple[Optional[float], Optional[float]]:
     """
     Find the optimal target value that produces realistic predictions.
     
@@ -268,14 +297,11 @@ def optimize_target_value(input_features: Dict[str, Any], model_name: str) -> Tu
     Args:
         input_features: Raw input features
         model_name: Name of the model to test with
+        load_model_func: Function to load the model (passed to avoid circular import)
         
     Returns:
         Tuple of (optimal_target_value, predicted_result) or (None, None)
     """
-    
-    # Import here to avoid circular imports
-    from models import load_model, PYCARET_AVAILABLE
-    import pandas as pd
     
     # Try different target values
     target_candidates = [0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0]
@@ -283,7 +309,7 @@ def optimize_target_value(input_features: Dict[str, Any], model_name: str) -> Tu
     results = []
     
     # Load model once
-    model = load_model(model_name)
+    model = load_model_func(model_name)
     if not model:
         logger.error(f"Failed to load model: {model_name}")
         return None, None
@@ -300,7 +326,6 @@ def optimize_target_value(input_features: Dict[str, Any], model_name: str) -> Tu
             # Test prediction
             if PYCARET_AVAILABLE:
                 try:
-                    from pycaret.regression import predict_model
                     predictions = predict_model(model, data=features_df)
                     
                     # Find prediction column
@@ -335,7 +360,7 @@ def optimize_target_value(input_features: Dict[str, Any], model_name: str) -> Tu
     return None, None
 
 
-def predict_with_target_as_feature(input_features: Dict[str, Any], model_name: str) -> Optional[float]:
+def predict_with_target_as_feature(input_features: Dict[str, Any], model_name: str, load_model_func) -> Optional[float]:
     """
     Make prediction using the corrected approach where target is included as feature.
     
@@ -344,21 +369,18 @@ def predict_with_target_as_feature(input_features: Dict[str, Any], model_name: s
     Args:
         input_features: Raw input features from UI
         model_name: Name of the trained model
+        load_model_func: Function to load the model (passed to avoid circular import)
         
     Returns:
         Predicted man-hours or None if prediction fails
     """
-    
-    # Import here to avoid circular imports
-    from models import load_model, PYCARET_AVAILABLE
-    import pandas as pd
     
     try:
         # Create training-compatible features (including target as feature!)
         features = create_training_compatible_features(input_features)
         
         # Load model
-        model = load_model(model_name)
+        model = load_model_func(model_name)
         if not model:
             logger.error(f"Failed to load model: {model_name}")
             return None
@@ -371,7 +393,6 @@ def predict_with_target_as_feature(input_features: Dict[str, Any], model_name: s
         # Make prediction using PyCaret
         if PYCARET_AVAILABLE:
             try:
-                from pycaret.regression import predict_model
                 predictions = predict_model(model, data=features_df)
                 
                 # Find prediction column
@@ -392,7 +413,7 @@ def predict_with_target_as_feature(input_features: Dict[str, Any], model_name: s
                 
                 # Try optimizing target value
                 logger.info("Trying to optimize target value...")
-                optimal_target, optimal_result = optimize_target_value(input_features, model_name)
+                optimal_target, optimal_result = optimize_target_value(input_features, model_name, load_model_func)
                 if optimal_result:
                     return optimal_result
         
@@ -510,6 +531,442 @@ def get_feature_summary(features: Dict[str, Any]) -> Dict[str, Any]:
             summary['key_features'][key] = features[key]
     
     return summary
+
+
+def get_model_expected_features(model_name: str, load_model_func) -> Optional[List[str]]:
+    """
+    Dynamically get the expected feature names from the trained model.
+    
+    Args:
+        model_name: Name of the model to load
+        load_model_func: Function to load the model (passed to avoid circular import)
+        
+    Returns:
+        List of expected feature names or None if failed
+    """
+    try:
+        # Load the model
+        model = load_model_func(model_name)
+        if not model:
+            logger.error(f"Failed to load model: {model_name}")
+            return None
+        
+        # Try different ways to get feature names from the model
+        feature_names = None
+        
+        # Method 1: Check if model has feature_names_in_ (sklearn models)
+        if hasattr(model, 'feature_names_in_'):
+            feature_names = list(model.feature_names_in_)
+            logger.info(f"Got {len(feature_names)} features from model.feature_names_in_")
+        
+        # Method 2: Check if it's a PyCaret pipeline with named steps
+        elif hasattr(model, 'named_steps'):
+            for step_name, step in model.named_steps.items():
+                if hasattr(step, 'feature_names_in_'):
+                    feature_names = list(step.feature_names_in_)
+                    logger.info(f"Got {len(feature_names)} features from {step_name}.feature_names_in_")
+                    break
+        
+        # Method 3: Try to get from the final estimator in pipeline
+        elif hasattr(model, '_final_estimator'):
+            final_estimator = model._final_estimator
+            if hasattr(final_estimator, 'feature_names_in_'):
+                feature_names = list(final_estimator.feature_names_in_)
+                logger.info(f"Got {len(feature_names)} features from final_estimator")
+        
+        # Method 4: Try PyCaret specific attributes
+        elif hasattr(model, 'X') and hasattr(model.X, 'columns'):
+            feature_names = list(model.X.columns)
+            logger.info(f"Got {len(feature_names)} features from model.X.columns")
+        
+        # Method 5: Create a dummy prediction to discover expected features
+        if feature_names is None:
+            logger.info("Trying dummy prediction to discover expected features...")
+            feature_names = discover_features_via_dummy_prediction(model, model_name)
+        
+        return feature_names
+        
+    except Exception as e:
+        logger.error(f"Error getting model expected features: {e}")
+        return None
+
+
+def discover_features_via_dummy_prediction(model, model_name: str) -> Optional[List[str]]:
+    """
+    Discover expected features by creating dummy data and seeing what the model expects.
+    """
+    try:
+        # Load feature configuration to create reasonable dummy data
+        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        if not feature_config:
+            logger.warning("No feature config available for dummy prediction")
+            return None
+        
+        # Create comprehensive dummy feature dict
+        dummy_features = create_comprehensive_dummy_features(feature_config)
+        
+        # Convert to DataFrame
+        dummy_df = pd.DataFrame([dummy_features])
+        
+        # Try prediction to see what features are expected
+        try:
+            if PYCARET_AVAILABLE:
+                # This will fail with the exact error message showing expected features
+                predictions = predict_model(model, data=dummy_df)
+                # If it succeeds, return the column names
+                return list(dummy_df.columns)
+            else:
+                # Try direct prediction
+                prediction = model.predict(dummy_df)
+                return list(dummy_df.columns)
+                
+        except Exception as prediction_error:
+            # Parse the error message to extract expected feature names
+            error_str = str(prediction_error)
+            if "not in index" in error_str:
+                expected_features = extract_features_from_error(error_str)
+                if expected_features:
+                    logger.info(f"Extracted {len(expected_features)} expected features from error message")
+                    return expected_features
+            
+            logger.error(f"Could not discover features from model: {error_str}")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error in dummy prediction discovery: {e}")
+        return None
+
+
+def extract_features_from_error(error_message: str) -> Optional[List[str]]:
+    """
+    Extract feature names from PyCaret error message like:
+    "['feature1', 'feature2', 'feature3'] not in index"
+    """
+    try:
+        # Find the part with the feature list
+        import re
+        
+        # Look for pattern like ['feature1', 'feature2', ...] 
+        pattern = r'\[([^\]]+)\]'
+        matches = re.findall(pattern, error_message)
+        
+        if matches:
+            # Take the longest match (most likely to be the feature list)
+            feature_string = max(matches, key=len)
+            
+            # Parse the feature names
+            features = []
+            # Split by comma and clean up
+            for feature in feature_string.split(','):
+                # Remove quotes and whitespace
+                clean_feature = feature.strip().strip("'\"")
+                if clean_feature:
+                    features.append(clean_feature)
+            
+            logger.info(f"Extracted {len(features)} features from error message")
+            return features
+    
+    except Exception as e:
+        logger.error(f"Error extracting features from error: {e}")
+    
+    return None
+
+
+def create_comprehensive_dummy_features(feature_config: Dict) -> Dict[str, Any]:
+    """
+    Create comprehensive dummy features covering all possible categories.
+    """
+    dummy_features = {
+        "project_prf_year_of_project": 2024,
+        "external_eef_industry_sector": "Technology",
+        "external_eef_organisation_type": "Large Enterprise", 
+        "project_prf_max_team_size": 8,
+        "project_prf_relative_size": "Medium",
+        "project_prf_application_type": "Web Application",
+        "project_prf_development_type": "New Development",
+        "tech_tf_architecture": "Microservices",
+        "tech_tf_development_platform": "Cloud",
+        "tech_tf_language_type": "Object-Oriented",
+        "tech_tf_primary_programming_language": "Python",
+        "project_prf_functional_size": 100
+    }
+    
+    # Add defaults for all configured features
+    if feature_config:
+        # Add numeric features
+        for feature in feature_config.get("numeric_features", []):
+            if feature not in dummy_features:
+                dummy_features[feature] = 100
+        
+        # Add categorical features with first option
+        for feature, config in feature_config.get("categorical_features", {}).items():
+            if feature not in dummy_features:
+                options = config.get("options", [])
+                dummy_features[feature] = options[0] if options else "default"
+        
+        # Add one-hot input fields
+        for group_name, group_config in feature_config.get("one_hot_features", {}).items():
+            input_key = group_config.get("input_key")
+            if input_key and input_key not in dummy_features:
+                mapping = group_config.get("mapping", {})
+                if mapping:
+                    dummy_features[input_key] = list(mapping.keys())[0]
+    
+    return dummy_features
+
+
+def apply_feature_engineering_dynamic(
+    ui_features: Dict[str, Any], 
+    pipeline_features: Optional[pd.DataFrame],
+    model_name: str,
+    load_model_func
+) -> Optional[Dict[str, Any]]:
+    """
+    DYNAMIC APPROACH: Get expected features from model and create them dynamically.
+    
+    Args:
+        ui_features: Raw UI features
+        pipeline_features: Features from pipeline transformation  
+        model_name: Name of the model to get expected features from
+        load_model_func: Function to load the model (passed to avoid circular import)
+        
+    Returns:
+        Complete feature dictionary matching model expectations
+    """
+    
+    try:
+        logger.info("=== DYNAMIC FEATURE ENGINEERING ===")
+        
+        # Step 1: Get expected features from the model
+        expected_features = get_model_expected_features(model_name, load_model_func)
+        if not expected_features:
+            logger.error("Could not determine expected features from model")
+            return None
+        
+        logger.info(f"Model expects {len(expected_features)} features")
+        
+        # Step 2: Start with pipeline features if available
+        complete_features = {}
+        if pipeline_features is not None and not pipeline_features.empty:
+            pipeline_dict = pipeline_features.iloc[0].to_dict()
+            complete_features.update(pipeline_dict)
+            logger.info(f"Added {len(pipeline_dict)} features from pipeline")
+        
+        # Step 3: Add essential numeric features
+        essential_numeric = {
+            'project_prf_year_of_project': ui_features.get('project_prf_year_of_project', 2024),
+            'project_prf_max_team_size': ui_features.get('project_prf_max_team_size', 8),
+            'project_prf_functional_size': ui_features.get('project_prf_functional_size', 100)
+        }
+        
+        for key, value in essential_numeric.items():
+            if key in expected_features and key not in complete_features:
+                complete_features[key] = value
+                logger.info(f"Added numeric feature: {key} = {value}")
+        
+        # Step 4: Add target as feature (critical for PyCaret)
+        target_feature = 'project_prf_normalised_work_effort'
+        if target_feature in expected_features and target_feature not in complete_features:
+            target_value = estimate_target_value(ui_features)
+            complete_features[target_feature] = target_value
+            logger.info(f"Added target feature: {target_value:.3f}")
+        
+        # Step 5: Create missing one-hot encoded features dynamically
+        missing_features = set(expected_features) - set(complete_features.keys())
+        logger.info(f"Creating {len(missing_features)} missing features dynamically")
+        
+        created_features = create_missing_features_intelligently(
+            missing_features, ui_features, complete_features
+        )
+        complete_features.update(created_features)
+        
+        # Step 6: Ensure all expected features are present
+        final_missing = set(expected_features) - set(complete_features.keys())
+        if final_missing:
+            logger.info(f"Setting {len(final_missing)} remaining features to default (0)")
+            for feature in final_missing:
+                complete_features[feature] = 0
+        
+        # Step 7: Remove any extra features not expected by model
+        extra_features = set(complete_features.keys()) - set(expected_features)
+        if extra_features:
+            logger.info(f"Removing {len(extra_features)} extra features")
+            for feature in extra_features:
+                del complete_features[feature]
+        
+        logger.info(f"✅ Dynamic feature engineering complete: {len(complete_features)} features")
+        logger.info(f"Expected: {len(expected_features)}, Created: {len(complete_features)}")
+        
+        return complete_features
+        
+    except Exception as e:
+        logger.error(f"Dynamic feature engineering failed: {e}")
+        return None
+
+
+def create_missing_features_intelligently(
+    missing_features: set, 
+    ui_features: Dict[str, Any], 
+    existing_features: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Intelligently create missing one-hot encoded features based on UI inputs.
+    """
+    
+    created_features = {}
+    
+    # Group missing features by prefix to understand structure
+    feature_groups = {}
+    for feature in missing_features:
+        # Extract base name (everything before last underscore)
+        parts = feature.split('_')
+        if len(parts) > 1:
+            base = '_'.join(parts[:-1])
+            if base not in feature_groups:
+                feature_groups[base] = []
+            feature_groups[base].append(feature)
+    
+    logger.info(f"Identified {len(feature_groups)} feature groups to process")
+    
+    # Process each feature group
+    for group_name, group_features in feature_groups.items():
+        
+        # Determine which feature in the group should be active
+        active_feature = determine_active_feature_in_group(
+            group_name, group_features, ui_features, existing_features
+        )
+        
+        # Set all features in group (one-hot encoding)
+        for feature in group_features:
+            created_features[feature] = 1 if feature == active_feature else 0
+        
+        if active_feature:
+            logger.info(f"Group '{group_name}': activated '{active_feature}'")
+    
+    return created_features
+
+
+def determine_active_feature_in_group(
+    group_name: str, 
+    group_features: List[str], 
+    ui_features: Dict[str, Any],
+    existing_features: Dict[str, Any]
+) -> Optional[str]:
+    """
+    Determine which feature in a one-hot encoded group should be active (=1).
+    """
+    
+    # Application group logic
+    if 'application_group' in group_name:
+        app_type = str(ui_features.get('project_prf_application_type', '')).upper()
+        if 'WEB' in app_type or 'BUSINESS' in app_type:
+            return find_feature_containing(group_features, ['business_application'])
+        else:
+            return find_feature_containing(group_features, ['nan', 'missing'])
+    
+    # Client server description logic
+    elif 'clientserver_description' in group_name:
+        arch = str(ui_features.get('tech_tf_architecture', '')).upper()
+        if 'MICRO' in arch or 'WEB' in arch:
+            return find_feature_containing(group_features, ['web'])
+        elif 'CLIENT' in arch:
+            return find_feature_containing(group_features, ['client_server'])
+        else:
+            return find_feature_containing(group_features, ['nan', 'missing'])
+    
+    # Development type logic
+    elif 'development_type' in group_name:
+        dev_type = str(ui_features.get('project_prf_development_type', '')).upper()
+        if 'NEW' in dev_type:
+            return find_feature_containing(group_features, ['new_development'])
+        elif 'ENHANCEMENT' in dev_type:
+            return find_feature_containing(group_features, ['enhancement'])
+        else:
+            return find_feature_containing(group_features, ['other', 'nan'])
+    
+    # Development platform logic
+    elif 'development_platform' in group_name:
+        platform = str(ui_features.get('tech_tf_development_platform', '')).upper()
+        if 'CLOUD' in platform or 'PC' in platform:
+            return find_feature_containing(group_features, ['pc'])
+        elif 'MULTI' in platform:
+            return find_feature_containing(group_features, ['multi'])
+        else:
+            return find_feature_containing(group_features, ['nan'])
+    
+    # Language type logic
+    elif 'language_type' in group_name:
+        lang_type = str(ui_features.get('tech_tf_language_type', '')).upper()
+        if 'OBJECT' in lang_type or '3GL' in lang_type:
+            return find_feature_containing(group_features, ['3gl'])
+        elif '4GL' in lang_type:
+            return find_feature_containing(group_features, ['4gl'])
+        else:
+            return find_feature_containing(group_features, ['nan'])
+    
+    # Relative size logic
+    elif 'relative_size' in group_name:
+        size = str(ui_features.get('project_prf_relative_size', '')).upper()
+        if 'MEDIUM' in size:
+            return find_feature_containing(group_features, ['m1', 'm2'])
+        elif 'LARGE' in size and 'XL' not in size:
+            return find_feature_containing(group_features, ['l'])
+        elif 'SMALL' in size and 'XS' not in size:
+            return find_feature_containing(group_features, ['s'])
+        elif 'XL' in size:
+            return find_feature_containing(group_features, ['xl'])
+        elif 'XS' in size:
+            return find_feature_containing(group_features, ['xs'])
+        else:
+            return find_feature_containing(group_features, ['nan'])
+    
+    # Architecture logic
+    elif 'architecture' in group_name:
+        arch = str(ui_features.get('tech_tf_architecture', '')).upper()
+        if 'MICRO' in arch or 'MULTI' in arch:
+            return find_feature_containing(group_features, ['multi_tier'])
+        elif 'CLIENT' in arch:
+            return find_feature_containing(group_features, ['client_server'])
+        else:
+            return find_feature_containing(group_features, ['nan', 'stand_alone'])
+    
+    # Data quality rating logic
+    elif 'data_quality_rating' in group_name:
+        return find_feature_containing(group_features, ['a'])  # Default to 'A'
+    
+    # Organization type logic
+    elif 'organisation_type' in group_name:
+        org = str(ui_features.get('external_eef_organisation_type', '')).upper()
+        if 'LARGE' in org or 'ENTERPRISE' in org:
+            return find_feature_containing(group_features, ['computers', 'software'])
+        elif 'BANKING' in org:
+            return find_feature_containing(group_features, ['banking'])
+        elif 'GOVERNMENT' in org:
+            return find_feature_containing(group_features, ['government'])
+        else:
+            return find_feature_containing(group_features, ['nan', 'other'])
+    
+    # Default logic - prefer 'nan', 'no', or first option
+    else:
+        # Try common defaults in order of preference
+        for default_suffix in ['nan', 'no', 'missing', 'other']:
+            match = find_feature_containing(group_features, [default_suffix])
+            if match:
+                return match
+        
+        # If no common default, return first feature
+        return group_features[0] if group_features else None
+
+
+def find_feature_containing(feature_list: List[str], keywords: List[str]) -> Optional[str]:
+    """
+    Find first feature in list that contains any of the keywords.
+    """
+    for keyword in keywords:
+        for feature in feature_list:
+            if keyword.lower() in feature.lower():
+                return feature
+    return None
 
 
 # === TEST FUNCTIONS ===
