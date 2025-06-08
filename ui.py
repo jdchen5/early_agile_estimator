@@ -130,6 +130,97 @@ def get_field_label(field_name):
     # Default conversion
     return field_name.replace('_', ' ').replace('prf', '').replace('eef', '').replace('tf', '').title().strip()
 
+def get_what_if_parameters():
+    """Get available parameters for what-if analysis from configuration"""
+    numeric_features = FEATURE_CONFIG.get("numeric_features", [])
+    what_if_params = {}
+    for feature in numeric_features:
+        label = get_field_label(feature)
+        what_if_params[label] = feature
+    return what_if_params
+
+def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label):
+    """Perform what-if analysis for a given parameter"""
+    import matplotlib.pyplot as plt
+
+    def get_what_if_range_from_config(param_key, current_value):
+        numeric_config = UI_CONFIG.get("numeric_field_config", {})
+        if param_key in numeric_config:
+            field_config = numeric_config[param_key]
+            min_val = field_config.get("min", 1)
+            max_val = field_config.get("max", 100)
+            range_size = min(50, (max_val - min_val) // 10)
+            start_val = max(min_val, current_value - range_size)
+            end_val = min(max_val, current_value + range_size)
+            return np.linspace(start_val, end_val, 11)
+        if param_key == "project_prf_year_of_project":
+            return np.arange(max(2015, current_value-5), min(2031, current_value+6))
+        elif param_key == "project_prf_functional_size":
+            return np.linspace(max(1, current_value-500), current_value+500, 11)
+        elif param_key == "project_prf_max_team_size":
+            return np.linspace(max(1, current_value-5), current_value+5, 11)
+        else:
+            return np.linspace(max(0, current_value-2), current_value+2, 11)
+
+    try:
+        current_value = user_inputs.get(param_key, 0)
+        what_if_values = get_what_if_range_from_config(param_key, current_value)
+        predictions = []
+        for val in what_if_values:
+            modified_features = user_inputs.copy()
+            modified_features[param_key] = val
+            prediction = predict_man_hours(modified_features, selected_model)
+            predictions.append(prediction if prediction is not None else 0)
+        valid_predictions = [(val, pred) for val, pred in zip(what_if_values, predictions) 
+                            if pred is not None and pred > 0]
+        if not valid_predictions:
+            st.error("All predictions failed. Please check your model and input parameters.")
+            return
+        valid_values, valid_preds = zip(*valid_predictions)
+        what_if_df = pd.DataFrame({
+            param_label: valid_values, 
+            "Estimated Man-Hours": valid_preds
+        })
+
+        chart_config = UI_CONFIG.get("feature_importance_display", {}).get("chart_size", {"width": 10, "height": 8})
+        fig, ax = plt.subplots(figsize=(chart_config["width"], chart_config["height"]))
+
+        ax.plot(what_if_df[param_label], what_if_df["Estimated Man-Hours"], 
+                marker='o', linewidth=2, markersize=6)
+        ax.set_xlabel(param_label)
+        ax.set_ylabel("Estimated Man-Hours")
+
+        model_display_name = get_model_display_name(selected_model)
+        ax.set_title(f"Impact of {param_label} on Estimation\nUsing {model_display_name}")
+        ax.grid(True, linestyle='--', alpha=0.7)
+
+        current_pred = predict_man_hours(user_inputs, selected_model)
+        if current_pred is not None:
+            ax.axhline(y=current_pred, color='r', linestyle='--',
+                       label=f"Current Estimation ({current_pred:.2f} man-hours)")
+            ax.legend()
+
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        precision = UI_CONFIG.get("feature_importance_display", {}).get("precision_decimals", 2)
+        st.dataframe(what_if_df.round(precision), use_container_width=True)
+
+        st.markdown(f"""
+        ### Interpretation
+        The graph above shows how the estimated man-hours change when varying **{param_label}** 
+        while keeping all other parameters constant. This analysis was performed using the 
+        **{model_display_name}** model.
+
+        **Current Value**: {current_value}  
+        **Range Analyzed**: {min(valid_values):.1f} to {max(valid_values):.1f}  
+        **Current Prediction**: {current_pred:.2f} man-hours (if available)
+        """)
+
+    except Exception as e:
+        st.error(f"Error in what-if analysis: {str(e)}")
+
+
 def is_mandatory_field(field_name):
     """Check if field is mandatory based on tab configuration"""
     # Try to get from tab configuration first

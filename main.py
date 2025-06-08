@@ -1,7 +1,5 @@
-# main.py 
-
 import streamlit as st
-from ui import initialize_session_state, set_sidebar_width  
+from ui import initialize_session_state, set_sidebar_width
 
 # THIS MUST BE FIRST, before any other Streamlit call!
 st.set_page_config(
@@ -27,8 +25,6 @@ from models import (
     check_required_models
 )
 
-
-
 # Import UI functions
 from ui import (
     sidebar_inputs, 
@@ -37,7 +33,10 @@ from ui import (
     about_section, 
     show_feature_importance,
     load_yaml_config,
-    get_field_label
+    get_field_label,
+    add_prediction_to_history,
+    show_prediction_history,
+    show_prediction_comparison_table
 )
 
 # Try to import pipeline-related functions with fallbacks
@@ -63,7 +62,6 @@ except ImportError:
     
     def get_feature_statistics():
         return {"error": "Pipeline module not available"}
-
 
 # Logging setup
 logging.basicConfig(
@@ -114,146 +112,11 @@ def check_dependencies():
         "ui_module": True,  # We know this works
         "config_files": True,  # We know this works
     }
-    
     return status
 
-
-def get_what_if_range_from_config(param_key, current_value):
-    """Get what-if analysis ranges from configuration or use smart defaults"""
-    # Get numeric field config to determine appropriate ranges
-    numeric_config = UI_CONFIG.get("numeric_field_config", {})
-    
-    if param_key in numeric_config:
-        field_config = numeric_config[param_key]
-        min_val = field_config.get("min", 1)
-        max_val = field_config.get("max", 100)
-        
-        # Create range around current value, bounded by config limits
-        range_size = min(50, (max_val - min_val) // 10)
-        start_val = max(min_val, current_value - range_size)
-        end_val = min(max_val, current_value + range_size)
-        
-        return np.linspace(start_val, end_val, 11)
-    
-    # Fallback defaults for specific fields
-    if param_key == "project_prf_year_of_project":
-        return np.arange(max(2015, current_value-5), min(2031, current_value+6))
-    elif param_key == "project_prf_functional_size":
-        return np.linspace(max(1, current_value-500), current_value+500, 11)
-    elif param_key == "project_prf_max_team_size":
-        return np.linspace(max(1, current_value-5), current_value+5, 11)
-    else:
-        # Generic range for other numeric fields
-        return np.linspace(max(0, current_value-2), current_value+2, 11)
-
-def get_what_if_parameters():
-    """Get available parameters for what-if analysis from configuration"""
-    # Get all numeric features from config
-    numeric_features = FEATURE_CONFIG.get("numeric_features", [])
-    
-    # Create dictionary of parameter labels to keys
-    what_if_params = {}
-    for feature in numeric_features:
-        label = get_field_label(feature)
-        what_if_params[label] = feature
-    
-    return what_if_params
-
-def perform_what_if_analysis(user_inputs, selected_model, param_key, param_label):
-    """Perform what-if analysis for a given parameter"""
-    try:
-        current_value = user_inputs.get(param_key, 0)
-        
-        # Get what-if range from configuration
-        what_if_values = get_what_if_range_from_config(param_key, current_value)
-        
-        predictions = []
-        for val in what_if_values:
-            modified_features = user_inputs.copy()
-            modified_features[param_key] = val
-            prediction = predict_man_hours(modified_features, selected_model)
-            predictions.append(prediction if prediction is not None else 0)
-        
-        # Filter out invalid predictions
-        valid_predictions = [(val, pred) for val, pred in zip(what_if_values, predictions) 
-                            if pred is not None and pred > 0]
-        
-        if not valid_predictions:
-            st.error("All predictions failed. Please check your model and input parameters.")
-            return
-        
-        valid_values, valid_preds = zip(*valid_predictions)
-        what_if_df = pd.DataFrame({
-            param_label: valid_values, 
-            "Estimated Man-Hours": valid_preds
-        })
-        
-        # Get chart configuration from UI config
-        chart_config = UI_CONFIG.get("feature_importance_display", {}).get("chart_size", {"width": 10, "height": 8})
-        
-        # Plot
-        fig, ax = plt.subplots(figsize=(chart_config["width"], chart_config["height"]))
-
-        ax.plot(what_if_df[param_label], what_if_df["Estimated Man-Hours"], 
-                marker='o', linewidth=2, markersize=6)
-        ax.set_xlabel(param_label)
-        ax.set_ylabel("Estimated Man-Hours")
-        
-        model_display_name = get_model_display_name(selected_model)
-        ax.set_title(f"Impact of {param_label} on Estimation\nUsing {model_display_name}")
-        ax.grid(True, linestyle='--', alpha=0.7)
-        
-        # Show current estimation as a red line
-        current_pred = predict_man_hours(user_inputs, selected_model)
-        if current_pred is not None:
-            ax.axhline(y=current_pred, color='r', linestyle='--',
-                       label=f"Current Estimation ({current_pred:.2f} man-hours)")
-            ax.legend()
-        
-        plt.tight_layout()
-        st.pyplot(fig)
-        
-        # Display data table with appropriate precision
-        precision = UI_CONFIG.get("feature_importance_display", {}).get("precision_decimals", 2)
-        st.dataframe(what_if_df.round(precision), use_container_width=True)
-        
-        st.markdown(f"""
-        ### Interpretation
-        The graph above shows how the estimated man-hours change when varying **{param_label}** 
-        while keeping all other parameters constant. This analysis was performed using the 
-        **{model_display_name}** model.
-        
-        **Current Value**: {current_value}  
-        **Range Analyzed**: {min(valid_values):.1f} to {max(valid_values):.1f}  
-        **Current Prediction**: {current_pred:.2f} man-hours (if available)
-        """)
-        
-    except Exception as e:
-        st.error(f"Error in what-if analysis: {str(e)}")
-        logger.error(f"What-if analysis error: {str(e)}")
-
-def save_current_configuration(user_inputs, config_name):
-    """Save current configuration to file"""
-    from datetime import datetime
-    import json
-    
-    config = user_inputs.copy()
-    config.pop('submit', None)
-    config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
-    
-    configs_dir = "saved_configs"
-    os.makedirs(configs_dir, exist_ok=True)
-    
-    config_file = f'{configs_dir}/{config_name}.json'
-    with open(config_file, 'w') as f:
-        json.dump(config, f, indent=2, default=str)
-    
-    st.success(f"✅ Configuration '{config_name}' saved!")
-
 def main():
-    """Main application function """
     add_custom_css()
-    set_sidebar_width()  # <-- Must be called AFTER st.set_page_config()
+    set_sidebar_width()  # Call after set_page_config
     initialize_session_state()
 
     st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
@@ -266,36 +129,35 @@ def main():
     # Get user inputs from sidebar
     try:
         user_inputs = sidebar_inputs()
-            
         selected_model = user_inputs.get('selected_model')
         submit = user_inputs.get('submit', False)
         save_config = user_inputs.get('save_config', False)
         config_name = user_inputs.get('config_name', '')
         team_size = user_inputs.get('project_prf_max_team_size', 5)
-        
-        # Handle save configuration
-        if save_config and config_name.strip():
-            save_current_configuration(user_inputs, config_name.strip())
-            
     except Exception as e:
         st.error(f"Error in sidebar inputs: {str(e)}")
         logger.error(f"Sidebar error: {str(e)}")
         return
 
-    # Create tabs
     tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])
 
     with tab_results:
         try:
             display_inputs(user_inputs, selected_model)
-            
+
             if submit and selected_model:
                 with st.spinner("Calculating estimation..."):
                     try:
+                        # Run the prediction
                         prediction = predict_man_hours(user_inputs, selected_model)
-                        show_prediction(prediction, team_size)
-                        logger.info(f"Successful prediction: {prediction} man-hours using model {selected_model}")
-                        
+                        # Show current prediction (with model name)
+                        show_prediction(prediction, team_size, selected_model)
+                        # Save to history
+                        add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
+                        # Show ALL predictions (with model names, results, and timestamps)
+                        show_prediction_history()
+                        # (Optional) Show comparison table for quick view if more than 1 prediction
+                        show_prediction_comparison_table()
                     except Exception as e:
                         st.error(f"Error during prediction: {str(e)}")
                         logger.error(f"Prediction error: {str(e)}")
@@ -303,7 +165,7 @@ def main():
                 st.error("Please select a model before making a prediction.")
             else:
                 st.info("Click the 'Predict Effort' button to see the estimation result.")
-                
+
         except Exception as e:
             st.error(f"Error in results tab: {str(e)}")
             logger.error(f"Results tab error: {str(e)}")
@@ -318,11 +180,11 @@ def main():
                 st.write("See how changing one parameter affects the estimation:")
                 
                 # Get available parameters dynamically from configuration
+                from ui import get_what_if_parameters, perform_what_if_analysis
                 what_if_params = get_what_if_parameters()
                 
                 if what_if_params:
                     what_if_param = st.selectbox("Select parameter to vary", list(what_if_params.keys()))
-                    
                     if st.button("Run What-If Analysis"):
                         with st.spinner("Running what-if analysis..."):
                             try:
@@ -352,7 +214,6 @@ def main():
             # Add configuration info
             with st.expander("📋 Configuration Information"):
                 st.subheader("Loaded Configurations")
-                
                 col1, col2 = st.columns(2)
                 with col1:
                     st.write("**Feature Configuration:**")
@@ -360,13 +221,11 @@ def main():
                     st.write(f"- Categorical features: {len(FEATURE_CONFIG.get('categorical_features', {}))}")
                     st.write(f"- One-hot features: {len(FEATURE_CONFIG.get('one_hot_features', {}))}")
                     st.write(f"- Special cases: {len(FEATURE_CONFIG.get('special_cases', {}))}")
-                
                 with col2:
                     st.write("**UI Configuration:**")
                     st.write(f"- Field labels: {len(UI_CONFIG.get('field_labels', {}))}")
                     st.write(f"- Tab organization: {len(UI_CONFIG.get('tab_organization', {}))}")
                     st.write(f"- Numeric field configs: {len(UI_CONFIG.get('numeric_field_config', {}))}")
-                    
                 # Show current field organization
                 if st.checkbox("Show Field Organization"):
                     tab_org = UI_CONFIG.get('tab_organization', {})
@@ -377,13 +236,11 @@ def main():
             with st.expander("🔧 System Status"):
                 st.subheader("Module Status")
                 deps = check_dependencies()
-                
                 for module, status in deps.items():
                     if status:
                         st.success(f"✅ {module.replace('_', ' ').title()}")
                     else:
                         st.warning(f"⚠️ {module.replace('_', ' ').title()}")
-                
                 # Model status
                 st.subheader("Model Status")
                 try:
@@ -402,19 +259,15 @@ def main():
             if PIPELINE_AVAILABLE:
                 with st.expander("🔧 Preprocessing Pipeline Information"):
                     st.subheader("Pipeline Status")
-                    
                     try:
                         pipeline_info = get_preprocessing_pipeline_info()
-                        
                         if pipeline_info.get("available", False):
                             st.success("✅ Preprocessing pipeline is available")
                             st.write(f"**Pipeline Steps:** {pipeline_info.get('step_count', 0)}")
-                            
                             if st.checkbox("Show Pipeline Details"):
                                 steps = pipeline_info.get("steps", [])
                                 for i, step in enumerate(steps, 1):
                                     st.write(f"{i}. {step}")
-                            
                             # Check compatibility
                             try:
                                 compat_info = check_preprocessing_pipeline_compatibility()
@@ -426,14 +279,11 @@ def main():
                                         st.write(f"- {rec}")
                             except Exception as e:
                                 st.warning(f"Could not check pipeline compatibility: {str(e)}")
-                                    
                         else:
                             st.warning("⚠️ No preprocessing pipeline found")
                             st.info("Models will use basic feature processing. For best results, train models with preprocessing pipeline.")
-                            
                             if "error" in pipeline_info:
                                 st.error(f"Error: {pipeline_info['error']}")
-                                
                     except Exception as e:
                         st.error(f"Error checking pipeline status: {str(e)}")
                         st.info("Pipeline integration may not be available. Basic feature processing will be used.")
@@ -441,7 +291,6 @@ def main():
                 with st.expander("⚠️ Pipeline Information"):
                     st.warning("Preprocessing pipeline module not available")
                     st.info("The application will use basic feature processing. All core functionality should still work.")
-                    
         except Exception as e:
             st.error(f"Error in help tab: {str(e)}")
             logger.error(f"Help tab error: {str(e)}")
@@ -452,4 +301,3 @@ if __name__ == "__main__":
     except Exception as e:
         st.error(f"An error occurred in the application: {str(e)}")
         logger.exception("An error occurred in the application:")
-        
