@@ -1,6 +1,7 @@
 # main.py 
 
 import streamlit as st
+from ui import initialize_session_state, set_sidebar_width  
 
 # THIS MUST BE FIRST, before any other Streamlit call!
 st.set_page_config(
@@ -252,6 +253,8 @@ def save_current_configuration(user_inputs, config_name):
 def main():
     """Main application function """
     add_custom_css()
+    set_sidebar_width()  # <-- Must be called AFTER st.set_page_config()
+    initialize_session_state()
 
     st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
     st.markdown("""

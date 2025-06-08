@@ -38,15 +38,17 @@ except ImportError as e:
 
 
 # Minimal CSS for sidebar width only
-st.markdown("""
-<style>
-section[data-testid="stSidebar"] {
-    width: 350px !important;  /* Change this value */
-    min-width: 350px !important;
-    max-width: 350px !important;
-}
-</style>
-""", unsafe_allow_html=True)
+def set_sidebar_width():
+    st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] {
+        width: 350px !important;
+        min-width: 350px !important;
+        max-width: 350px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 # --- Configuration Loading ---
 def load_yaml_config(path):
@@ -694,7 +696,7 @@ def show_feature_importance(selected_model, features_dict):
     
     except Exception as e:
         st.info(f"Feature importance analysis not available: {e}")
-        
+
 def display_historical_comparison():
     """Display historical comparison of all predictions with trend analysis"""
     if len(st.session_state.prediction_history) < 2:
