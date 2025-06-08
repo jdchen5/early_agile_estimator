@@ -16,7 +16,7 @@ field_help:
     help: "Identifies the type of organisation that submitted the project (e.g., Banking, Manufacturing, Retail)."
 
   project_prf_team_size_group:
-    title: "Team Size Group"
+    title: "Individual Team Size Group"
     help: "Individual team size: 1 = 1.55, 2 = 1.55 to <2.5, 3-4 = 2.5 to <4.5, 5-8 = 4.5 to <8.5, etc. See ISBSG definition for more details."
 
   project_prf_max_team_size:
@@ -24,7 +24,7 @@ field_help:
     help: "The maximum number of team members that will work on this project simultaneously. Include developers, testers, analysts, and other active contributors."
 
   project_prf_relative_size:
-    title: "Relative Size"
+    title: "Relative Functional Size"
     help: "Categories the Functional Size (or Adjusted Function Points) by relative sizes: XXS, XS, S, M1, M2, L, XL, XXL, XXXL. See ISBSG for numeric boundaries."
 
   project_prf_application_group:
@@ -48,7 +48,7 @@ field_help:
     help: "Defines the primary development platform (as determined by the operating system used): PC, Mid Range, Main Frame, or Multi platform. This affects complexity and development approach."
 
   tech_tf_language_type:
-    title: "Language Type"
+    title: "Programming Language Type"
     help: "Defines the language type used for the project (e.g., 3GL, 4GL, Application Generator, etc.)."
 
   tech_tf_primary_programming_language:
