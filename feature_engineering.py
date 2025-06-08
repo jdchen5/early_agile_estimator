@@ -533,62 +533,36 @@ def get_feature_summary(features: Dict[str, Any]) -> Dict[str, Any]:
     return summary
 
 
-def get_model_expected_features(model_name: str, load_model_func) -> Optional[List[str]]:
+def get_model_expected_features(model, config_fallback=None):
     """
-    Dynamically get the expected feature names from the trained model.
-    
-    Args:
-        model_name: Name of the model to load
-        load_model_func: Function to load the model (passed to avoid circular import)
-        
-    Returns:
-        List of expected feature names or None if failed
+    Return a list of expected feature names in prediction order from the loaded model.
     """
-    try:
-        # Load the model
-        model = load_model_func(model_name)
-        if not model:
-            logger.error(f"Failed to load model: {model_name}")
-            return None
-        
-        # Try different ways to get feature names from the model
-        feature_names = None
-        
-        # Method 1: Check if model has feature_names_in_ (sklearn models)
-        if hasattr(model, 'feature_names_in_'):
-            feature_names = list(model.feature_names_in_)
-            logger.info(f"Got {len(feature_names)} features from model.feature_names_in_")
-        
-        # Method 2: Check if it's a PyCaret pipeline with named steps
-        elif hasattr(model, 'named_steps'):
-            for step_name, step in model.named_steps.items():
-                if hasattr(step, 'feature_names_in_'):
-                    feature_names = list(step.feature_names_in_)
-                    logger.info(f"Got {len(feature_names)} features from {step_name}.feature_names_in_")
-                    break
-        
-        # Method 3: Try to get from the final estimator in pipeline
-        elif hasattr(model, '_final_estimator'):
-            final_estimator = model._final_estimator
-            if hasattr(final_estimator, 'feature_names_in_'):
-                feature_names = list(final_estimator.feature_names_in_)
-                logger.info(f"Got {len(feature_names)} features from final_estimator")
-        
-        # Method 4: Try PyCaret specific attributes
-        elif hasattr(model, 'X') and hasattr(model.X, 'columns'):
-            feature_names = list(model.X.columns)
-            logger.info(f"Got {len(feature_names)} features from model.X.columns")
-        
-        # Method 5: Create a dummy prediction to discover expected features
-        if feature_names is None:
-            logger.info("Trying dummy prediction to discover expected features...")
-            feature_names = discover_features_via_dummy_prediction(model, model_name)
-        
-        return feature_names
-        
-    except Exception as e:
-        logger.error(f"Error getting model expected features: {e}")
-        return None
+    # 1. sklearn >=1.0, PyCaret models
+    if hasattr(model, 'feature_names_in_'):
+        return list(model.feature_names_in_)
+    # 2. sklearn pipeline
+    if hasattr(model, 'named_steps'):
+        for step in model.named_steps.values():
+            if hasattr(step, 'feature_names_in_'):
+                return list(step.feature_names_in_)
+    # 3. PyCaret pipeline X attribute
+    if hasattr(model, 'X') and hasattr(model.X, 'columns'):
+        return list(model.X.columns)
+    # 4. Fallback to config (as you already do)
+    if config_fallback:
+        return config_fallback
+    # 5. Give up
+    return []
+
+def align_features_to_model(complete_features: dict, model_expected: list) -> dict:
+    """
+    Return a dict with the same order and set of columns as the model expects.
+    Missing features are set to 0, extras are dropped.
+    """
+    out = {}
+    for feat in model_expected:
+        out[feat] = complete_features.get(feat, 0)  # or np.nan if you prefer for numerics
+    return out
 
 
 def discover_features_via_dummy_prediction(model, model_name: str) -> Optional[List[str]]:

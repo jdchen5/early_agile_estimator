@@ -7,9 +7,9 @@
   preferred model and Click "Predict Man-Hours"
 
     SEQUENTIAL APPROACH:
-    1. UI Input → Pipeline Transformation (your existing pipeline.py)
+    1. UI Input → Pipeline Transformation (pipeline.py)
     2. Pipeline Output → Feature Engineering (fill missing features)  
-    3. Complete Features → Model Prediction
+    3. Complete Features → Model Prediction (columns dynamically aligned to trained model)
 """
 
 import os
@@ -20,7 +20,8 @@ import pandas as pd
 import logging
 import yaml
 from typing import Dict, List, Optional, Union, Any, Tuple
-# Import your existing pipeline functions
+
+# Import  existing pipeline functions
 try:
     from pipeline import convert_feature_dict_to_dataframe, create_preprocessing_pipeline
     PIPELINE_AVAILABLE = True
@@ -155,6 +156,7 @@ def validate_feature_dict_against_config(feature_dict: Dict) -> Dict[str, Any]:
         'provided_count': len(provided_features)
     }
 
+
 def create_feature_vector_from_dict(feature_dict: Dict, expected_features: Optional[List[str]] = None) -> np.ndarray:
     """
     Create a properly ordered feature vector from a feature dictionary.
@@ -180,6 +182,30 @@ def create_feature_vector_from_dict(feature_dict: Dict, expected_features: Optio
             feature_vector.append(0.0)
     
     return np.array(feature_vector)
+
+# === Dynamic Feature Alignment Utilities ===
+
+def get_model_expected_features(model) -> List[str]:
+    """Get expected feature names from model, robustly."""
+    if hasattr(model, 'feature_names_in_'):
+        return list(model.feature_names_in_)
+    if hasattr(model, 'named_steps'):
+        for step in model.named_steps.values():
+            if hasattr(step, 'feature_names_in_'):
+                return list(step.feature_names_in_)
+    if hasattr(model, 'X') and hasattr(model.X, 'columns'):
+        return list(model.X.columns)
+    return []
+
+def align_features_to_model(feature_dict: Dict[str, Any], model_features: List[str]) -> Dict[str, Any]:
+    """Align dict to model columns. Missing columns = 0, extras dropped."""
+    return {f: feature_dict.get(f, 0) for f in model_features}
+
+def align_df_to_model(df: pd.DataFrame, model_features: List[str]) -> pd.DataFrame:
+    for col in model_features:
+        if col not in df.columns:
+            df[col] = 0
+    return df[model_features]
 
 def ensure_models_folder():
     """Ensure the models folder directory exists."""
@@ -494,547 +520,57 @@ def get_expected_feature_names_from_model(model=None) -> List[str]:
     # Fallback to configuration-based feature names
     return get_expected_feature_names()
 
-def predict_with_sequential_approach(
-    ui_features: Dict[str, Any], 
-    model_name: str
-) -> Optional[float]:
-    """
-    MAIN PREDICTION FUNCTION using the sequential approach:
-    
-    Step 1: UI Input → Pipeline Transformation
-    Step 2: Pipeline Output → Feature Engineering (fill gaps)
-    Step 3: Complete Features → Model Prediction
-    
-    Args:
-        ui_features: Raw features from Streamlit UI
-        model_name: Name of the trained model
-        
-    Returns:
-        Predicted man-hours or None if prediction fails
-    """
-    
-    try:
-        logging.info("=== STARTING SEQUENTIAL PREDICTION ===")
-        
-        # STEP 1: Apply Pipeline Transformation
-        logging.info("Step 1: Applying pipeline transformation...")
-        pipeline_features = apply_pipeline_transformation(ui_features)
-        
-        if pipeline_features is None:
-            logging.error("Pipeline transformation failed")
-            return None
-        
-        logging.info(f"Pipeline produced {pipeline_features.shape[1]} features")
-        
-        # STEP 2: Feature Engineering - Fill Missing Features
-        logging.info("Step 2: Applying feature engineering to fill gaps...")
-        complete_features = apply_feature_engineering(ui_features, pipeline_features)
-        
-        if complete_features is None:
-            logging.error("Feature engineering failed")
-            return None
-        
-        logging.info(f"Feature engineering produced {len(complete_features)} complete features")
-        
-        # STEP 3: Model Prediction
-        logging.info("Step 3: Making model prediction...")
-        prediction = make_model_prediction(complete_features, model_name)
-        
-        if prediction is not None:
-            logging.info(f"✅ Sequential prediction successful: {prediction:.2f} hours")
-        else:
-            logging.error("❌ Model prediction failed")
-        
-        return prediction
-        
-    except Exception as e:
-        logging.error(f"Sequential prediction failed: {e}")
-        import traceback
-        logging.error(f"Full traceback: {traceback.format_exc()}")
-        return None
-
+# === Sequential Prediction Core Functions ===
 
 def apply_pipeline_transformation(ui_features: Dict[str, Any]) -> Optional[pd.DataFrame]:
-    """
-    STEP 1: Apply your existing pipeline transformation to UI features.
-    
-    Args:
-        ui_features: Raw features from UI
-        
-    Returns:
-        DataFrame with pipeline-transformed features or None if failed
-    """
-    
     if not PIPELINE_AVAILABLE:
         logging.warning("Pipeline not available, skipping pipeline transformation")
         return None
-    
     try:
-        # Load feature config for pipeline
         feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
         if not feature_config:
             logging.warning("Feature config not available for pipeline")
             return None
-        
-        # Step 1a: Convert UI features to DataFrame format expected by pipeline
         logging.info("Converting UI features to DataFrame...")
         initial_df = convert_feature_dict_to_dataframe(ui_features, feature_config)
-        
         if initial_df is None or initial_df.empty:
             logging.error("Failed to convert UI features to DataFrame")
             return None
-        
         logging.info(f"Initial DataFrame shape: {initial_df.shape}")
-        
-        # Step 1b: Create and apply preprocessing pipeline
         logging.info("Creating preprocessing pipeline...")
         pipeline = create_preprocessing_pipeline(
-            target_col=None,  # No target for prediction
+            target_col=None,
             high_missing_threshold=0.9,
             max_categorical_cardinality=20
         )
-        
         if pipeline is None:
             logging.error("Failed to create preprocessing pipeline")
             return None
-        
-        # Step 1c: Apply pipeline transformation
         logging.info("Applying pipeline transformation...")
         transformed_df = pipeline.fit_transform(initial_df)
-        
-        # Step 1d: Remove any target-related columns that might have been created
         target_related_cols = [col for col in transformed_df.columns 
-                             if any(keyword in col.lower() for keyword in ['target', 'effort', 'work_effort'])]
+                               if any(keyword in col.lower() for keyword in ['target', 'effort', 'work_effort'])]
         if target_related_cols:
             transformed_df = transformed_df.drop(columns=target_related_cols)
             logging.info(f"Removed target-related columns: {target_related_cols}")
-        
         logging.info(f"Pipeline transformation successful: {transformed_df.shape}")
         return transformed_df
-        
     except Exception as e:
         logging.error(f"Pipeline transformation failed: {e}")
         return None
-
 
 def apply_feature_engineering(
     ui_features: Dict[str, Any], 
     pipeline_features: Optional[pd.DataFrame]
 ) -> Optional[Dict[str, Any]]:
-    """
-    STEP 2: Apply feature engineering to fill missing features that the model expects.
-    
-    Combines pipeline output with additional features that your trained model needs.
-    Creates one-hot encoded features as expected by the trained models.
-    
-    Args:
-        ui_features: Original UI features
-        pipeline_features: Features from pipeline transformation (can be None)
-        
-    Returns:
-        Complete feature dictionary ready for prediction
-    """
-    
     try:
         complete_features = {}
-        
-        # Start with pipeline features if available
         if pipeline_features is not None and not pipeline_features.empty:
-            # Convert pipeline DataFrame to dictionary (take first row)
             pipeline_dict = pipeline_features.iloc[0].to_dict()
             complete_features.update(pipeline_dict)
             logging.info(f"Added {len(pipeline_dict)} features from pipeline")
         else:
-            logging.info("No pipeline features available, starting with empty feature set")
-        
-        # === ADD ESSENTIAL NUMERIC FEATURES ===
-        # These are core features that models expect
-        essential_numeric = {
-            'project_prf_year_of_project': ui_features.get('project_prf_year_of_project', 2024),
-            'project_prf_max_team_size': ui_features.get('project_prf_max_team_size', 8),
-            'project_prf_functional_size': ui_features.get('project_prf_functional_size', 100),
-            'process_pmf_docs': 0,  # Default numeric value
-            'tech_tf_tools_used': 0,  # Default numeric value
-            'people_prf_personnel_changes': 0,  # Default numeric value
-            'people_prf_project_user_involvement': 0  # Default numeric value
-        }
-        
-        for key, value in essential_numeric.items():
-            if key not in complete_features:
-                complete_features[key] = value
-                logging.info(f"Added missing numeric feature: {key} = {value}")
-        
-        # === ADD THE CRITICAL TARGET FEATURE ===
-        # This is what PyCaret expects as an input feature!
-        if 'project_prf_normalised_work_effort' not in complete_features:
-            target_value = estimate_target_value(ui_features)
-            complete_features['project_prf_normalised_work_effort'] = target_value
-            logging.info(f"Added target as feature: project_prf_normalised_work_effort = {target_value:.3f}")
-        
-        # === ADD ONE-HOT ENCODED FEATURES ===
-        # Based on the feature_mapping.yaml configuration
-        
-        # 1. Application Group One-Hot Encoding
-        app_group = ui_features.get('project_prf_application_group', 'business_application')
-        app_group_mapping = {
-            'business_application': 'project_prf_application_group_business_application',
-            'infrastructure_software': 'project_prf_application_group_infrastructure_software',
-            'mathematically_intensive_application': 'project_prf_application_group_mathematically_intensive_application',
-            'real_time_application': 'project_prf_application_group_real_time_application'
-        }
-        # Set all to 0 first
-        for feature in app_group_mapping.values():
-            complete_features[feature] = 0
-        complete_features['project_prf_application_group_nan'] = 0
-        # Set the active one to 1
-        if app_group in app_group_mapping:
-            complete_features[app_group_mapping[app_group]] = 1
-        else:
-            complete_features['project_prf_application_group_nan'] = 1
-        
-        # 2. Client-Server Description One-Hot Encoding
-        clientserver_desc = calculate_derived_features(ui_features, complete_features).get('tech_tf_clientserver_description', 'web')
-        clientserver_mapping = {
-            'browser_server_architecture': 'tech_tf_clientserver_description_browser_server_architecture',
-            'client_server': 'tech_tf_clientserver_description_client_server',
-            'client_presentation': 'tech_tf_clientserver_description_client_presentation',
-            'client_presentation_processing': 'tech_tf_clientserver_description_client_presentation_processing',
-            'client_server_architecture': 'tech_tf_clientserver_description_client_server_architecture',
-            'client_server_architecture_p2p': 'tech_tf_clientserver_description_client_server_architecture_p2p',
-            'server_processing': 'tech_tf_clientserver_description_server_processing',
-            'stand_alone': 'tech_tf_clientserver_description_stand_alone',
-            'web': 'tech_tf_clientserver_description_web'
-        }
-        # Set all to 0 first
-        for feature in clientserver_mapping.values():
-            complete_features[feature] = 0
-        complete_features['tech_tf_clientserver_description_nan'] = 0
-        # Set the active one to 1
-        if clientserver_desc in clientserver_mapping:
-            complete_features[clientserver_mapping[clientserver_desc]] = 1
-        else:
-            complete_features['tech_tf_clientserver_description_nan'] = 1
-        
-        # 3. Data Quality Rating One-Hot Encoding
-        data_quality = ui_features.get('external_eef_data_quality_rating', 'a').lower()
-        data_quality_mapping = {
-            'a': 'external_eef_data_quality_rating_a',
-            'c': 'external_eef_data_quality_rating_c_lang',
-            'd': 'external_eef_data_quality_rating_d'
-        }
-        # Set all to 0 first
-        for feature in data_quality_mapping.values():
-            complete_features[feature] = 0
-        # Set the active one to 1
-        if data_quality in data_quality_mapping:
-            complete_features[data_quality_mapping[data_quality]] = 1
-        else:
-            complete_features['external_eef_data_quality_rating_a'] = 1  # Default to 'a'
-        
-        # 4. Development Type One-Hot Encoding
-        dev_type = calculate_derived_features(ui_features, complete_features).get('project_prf_development_type', 'new_development')
-        dev_type_mapping = {
-            'enhancement': 'project_prf_development_type_enhancement',
-            'new_development': 'project_prf_development_type_new_development',
-            'other': 'project_prf_development_type_other',
-            'poc': 'project_prf_development_type_poc',
-            'porting': 'project_prf_development_type_porting',
-            're_development': 'project_prf_development_type_re_development'
-        }
-        # Set all to 0 first
-        for feature in dev_type_mapping.values():
-            complete_features[feature] = 0
-        complete_features['project_prf_development_type_not_defined'] = 0
-        # Set the active one to 1
-        if dev_type in dev_type_mapping:
-            complete_features[dev_type_mapping[dev_type]] = 1
-        else:
-            complete_features['project_prf_development_type_not_defined'] = 1
-        
-        # 5. Development Platform One-Hot Encoding
-        dev_platform = calculate_derived_features(ui_features, complete_features).get('tech_tf_development_platform', 'pc')
-        platform_mapping = {
-            'mf': 'tech_tf_development_platform_mf',
-            'mr': 'tech_tf_development_platform_mr',
-            'multi': 'tech_tf_development_platform_multi',
-            'pc': 'tech_tf_development_platform_pc',
-            'proprietary': 'tech_tf_development_platform_proprietary'
-        }
-        # Set all to 0 first
-        for feature in platform_mapping.values():
-            complete_features[feature] = 0
-        complete_features['tech_tf_development_platform_nan'] = 0
-        complete_features['tech_tf_development_platform_hand_held'] = 0
-        # Set the active one to 1
-        if dev_platform in platform_mapping:
-            complete_features[platform_mapping[dev_platform]] = 1
-        else:
-            complete_features['tech_tf_development_platform_nan'] = 1
-        
-        # 6. Language Type One-Hot Encoding
-        lang_type = calculate_derived_features(ui_features, complete_features).get('tech_tf_language_type', '3gl')
-        lang_mapping = {
-            '2gl': 'tech_tf_language_type_2gl',
-            '3gl': 'tech_tf_language_type_3gl',
-            '4gl': 'tech_tf_language_type_4gl',
-            '5gl': 'tech_tf_language_type_5gl',
-            'apg': 'tech_tf_language_type_apg'
-        }
-        # Set all to 0 first
-        for feature in lang_mapping.values():
-            complete_features[feature] = 0
-        complete_features['tech_tf_language_type_nan'] = 0
-        # Set the active one to 1
-        if lang_type in lang_mapping:
-            complete_features[lang_mapping[lang_type]] = 1
-        else:
-            complete_features['tech_tf_language_type_nan'] = 1
-        
-        # 7. Relative Size One-Hot Encoding
-        rel_size = calculate_derived_features(ui_features, complete_features).get('project_prf_relative_size', 'm1')
-        size_mapping = {
-            'xxs': 'project_prf_relative_size_xxs',
-            'xs': 'project_prf_relative_size_xs',
-            's': 'project_prf_relative_size_s',
-            'm1': 'project_prf_relative_size_m1',
-            'm2': 'project_prf_relative_size_m2',
-            'l': 'project_prf_relative_size_l',
-            'xl': 'project_prf_relative_size_xl',
-            'xxl': 'project_prf_relative_size_xxl',
-            'xxxl': 'project_prf_relative_size_xxxl'
-        }
-        # Set all to 0 first
-        for feature in size_mapping.values():
-            complete_features[feature] = 0
-        complete_features['project_prf_relative_size_nan'] = 0
-        # Set the active one to 1
-        if rel_size in size_mapping:
-            complete_features[size_mapping[rel_size]] = 1
-        else:
-            complete_features['project_prf_relative_size_nan'] = 1
-        
-        # 8. Case Tool Used One-Hot Encoding
-        case_tool_features = [
-            'project_prf_case_tool_used_don_t_know',
-            'project_prf_case_tool_used_nan',
-            'project_prf_case_tool_used_no',
-            'project_prf_case_tool_used_yes'
-        ]
-        for feature in case_tool_features:
-            complete_features[feature] = 0
-        complete_features['project_prf_case_tool_used_no'] = 1  # Default to 'no'
-        
-        # 9. Prototyping Used One-Hot Encoding
-        proto_features = [
-            'process_pmf_prototyping_used_nan',
-            'process_pmf_prototyping_used_yes'
-        ]
-        for feature in proto_features:
-            complete_features[feature] = 0
-        complete_features['process_pmf_prototyping_used_nan'] = 1  # Default to 'nan'
-        
-        # 10. Architecture One-Hot Encoding
-        architecture = calculate_derived_features(ui_features, complete_features).get('tech_tf_architecture', 'multi_tier')
-        arch_mapping = {
-            'client_server': 'tech_tf_architecture_client_server',
-            'multi_tier': 'tech_tf_architecture_multi_tier',
-            'multi_tier_with_web_interface': 'tech_tf_architecture_multi_tier_with_web_interface',
-            'multi_tier_with_web_public_interface': 'tech_tf_architecture_multi_tier_with_web_public_interface',
-            'stand_alone': 'tech_tf_architecture_stand_alone',
-            'standalone': 'tech_tf_architecture_standalone'
-        }
-        # Set all to 0 first
-        for feature in arch_mapping.values():
-            complete_features[feature] = 0
-        complete_features['tech_tf_architecture_nan'] = 0
-        complete_features['tech_tf_architecture_multi_tier_client_server'] = 0
-        # Set the active one to 1
-        if architecture in arch_mapping:
-            complete_features[arch_mapping[architecture]] = 1
-        else:
-            complete_features['tech_tf_architecture_nan'] = 1
-        
-        # 11. Client Server One-Hot Encoding
-        client_server_features = [
-            'tech_tf_client_server_don_t_know',
-            'tech_tf_client_server_nan',
-            'tech_tf_client_server_no',
-            'tech_tf_client_server_yes',
-            'tech_tf_client_server_not_applicable'
-        ]
-        for feature in client_server_features:
-            complete_features[feature] = 0
-        complete_features['tech_tf_client_server_yes'] = 1  # Default to 'yes' for web apps
-        
-        # 12. Type of Server One-Hot Encoding
-        server_type_features = [
-            'tech_tf_type_of_server_back_end',
-            'tech_tf_type_of_server_client_server',
-            'tech_tf_type_of_server_lan_based',
-            'tech_tf_type_of_server_mainframe',
-            'tech_tf_type_of_server_multi_tier_with_web_public_interface',
-            'tech_tf_type_of_server_nan',
-            'tech_tf_type_of_server_standalone',
-            'tech_tf_type_of_server_unix',
-            'tech_tf_type_of_server_webserver',
-            'tech_tf_type_of_server_proprietary_midrange'
-        ]
-        for feature in server_type_features:
-            complete_features[feature] = 0
-        complete_features['tech_tf_type_of_server_webserver'] = 1  # Default to webserver
-        
-        # 13. Web Development One-Hot Encoding
-        web_dev = calculate_derived_features(ui_features, complete_features).get('tech_tf_web_development', 'web')
-        web_features = [
-            'tech_tf_web_development_nan',
-            'tech_tf_web_development_web'
-        ]
-        for feature in web_features:
-            complete_features[feature] = 0
-        if web_dev == 'web':
-            complete_features['tech_tf_web_development_web'] = 1
-        else:
-            complete_features['tech_tf_web_development_nan'] = 1
-        
-        # 14. DBMS Used One-Hot Encoding
-        dbms_features = [
-            'tech_tf_dbms_used_nan',
-            'tech_tf_dbms_used_no',
-            'tech_tf_dbms_used_yes'
-        ]
-        for feature in dbms_features:
-            complete_features[feature] = 0
-        complete_features['tech_tf_dbms_used_yes'] = 1  # Default to 'yes'
-        
-        # 15. User Involvement One-Hot Encoding
-        user_inv_features = [
-            'people_prf_project_user_involvement_best',
-            'people_prf_project_user_involvement_don_t_know',
-            'people_prf_project_user_involvement_low',
-            'people_prf_project_user_involvement_nan',
-            'people_prf_project_user_involvement_no',
-            'people_prf_project_user_involvement_yes'
-        ]
-        for feature in user_inv_features:
-            complete_features[feature] = 0
-        complete_features['people_prf_project_user_involvement_yes'] = 1  # Default to 'yes'
-        
-        # 16. Currency Multiple One-Hot Encoding
-        currency_features = [
-            'project_prf_currency_multiple_nan',
-            'project_prf_currency_multiple_no',
-            'project_prf_currency_multiple_yes_1_000',
-            'project_prf_currency_multiple_yes_10_000'
-        ]
-        for feature in currency_features:
-            complete_features[feature] = 0
-        complete_features['project_prf_currency_multiple_nan'] = 1  # Default to 'nan'
-        
-        # 17. Organisation Type Top One-Hot Encoding
-        org_type = calculate_derived_features(ui_features, complete_features).get('external_eef_organisation_type_top', 'computers & software')
-        org_type_features = [
-            'external_eef_organisation_type_top_insurance',
-            'external_eef_organisation_type_top_medical and health care',
-            'external_eef_organisation_type_top_manufacturing',
-            'external_eef_organisation_type_top_telecommunications',
-            'external_eef_organisation_type_top_government',
-            'external_eef_organisation_type_top_nan',
-            'external_eef_organisation_type_top_communications',
-            'external_eef_organisation_type_top_banking',
-            'external_eef_organisation_type_top_computers & software',
-            'external_eef_organisation_type_top_defence',
-            'external_eef_organisation_type_top_public administration',
-            'external_eef_organisation_type_top_aerospace / automotive',
-            'external_eef_organisation_type_top_transport & storage',
-            'external_eef_organisation_type_top_financial, property & business services',
-            'external_eef_organisation_type_top_education institution',
-            'external_eef_organisation_type_top_community services',
-            'external_eef_organisation_type_top_electricity, gas, water',
-            'external_eef_organisation_type_top_logistics',
-            'external_eef_organisation_type_top_wholesale & retail trade',
-            'external_eef_organisation_type_top_telecommunication',
-            'external_eef_organisation_type_other'
-        ]
-        for feature in org_type_features:
-            complete_features[feature] = 0
-        # Map common org types
-        if 'technology' in org_type.lower() or 'software' in org_type.lower():
-            complete_features['external_eef_organisation_type_top_computers & software'] = 1
-        elif 'bank' in org_type.lower():
-            complete_features['external_eef_organisation_type_top_banking'] = 1
-        elif 'government' in org_type.lower():
-            complete_features['external_eef_organisation_type_top_government'] = 1
-        else:
-            complete_features['external_eef_organisation_type_top_computers & software'] = 1  # Default
-        
-        # 18. Application Type Top One-Hot Encoding
-        app_type = calculate_derived_features(ui_features, complete_features).get('project_prf_application_type_top', 'business application')
-        app_type_features = [
-            'project_prf_application_type_top_financial transaction process/accounting',
-            'project_prf_application_type_top_not recorded',
-            'project_prf_application_type_top_nan',
-            'project_prf_application_type_top_unknown',
-            'project_prf_application_type_top_customer relationship management',
-            'project_prf_application_type_top_relatively complex application',
-            'project_prf_application_type_top_workflow support & management',
-            'project_prf_application_type_top_business application',
-            'project_prf_application_type_top_embedded system/real_time application',
-            'project_prf_application_type_top_online. esales',
-            'project_prf_application_type_top_management of licences and permits',
-            'project_prf_application_type_top_online analysis and reporting',
-            'project_prf_application_type_top_catalogue/register of things or events',
-            'project_prf_application_type_top_software for machine control',
-            'project_prf_application_type_top_document management',
-            'project_prf_application_type_top_electronic data interchange',
-            'project_prf_application_type_top_management information system',
-            'project_prf_application_type_top_data warehouse system',
-            'project_prf_application_type_top_stock control & order processing',
-            'project_prf_application_type_top_management or performance reporting',
-            'project_prf_application_type_other',
-            'project_prf_application_type_top_transaction/production system',
-            'project_prf_application_type_top_financial application area',
-            'project_prf_application_type_top_client-server',
-            'project_prf_application_type_top_customer billing/relationship management'
-        ]
-        for feature in app_type_features:
-            complete_features[feature] = 0
-        # Set based on app type
-        if 'business' in app_type.lower():
-            complete_features['project_prf_application_type_top_business application'] = 1
-        elif 'crm' in app_type.lower() or 'customer' in app_type.lower():
-            complete_features['project_prf_application_type_top_customer relationship management'] = 1
-        else:
-            complete_features['project_prf_application_type_top_business application'] = 1  # Default
-        
-        # === ADD CATEGORICAL FEATURES (non one-hot) ===
-        # These remain as categorical values
-        # Get derived features for categorical values
-        derived = calculate_derived_features(ui_features, complete_features)
-        
-        categorical_features = {
-            'external_eef_industry_sector': ui_features.get('external_eef_industry_sector', 'Technology'),
-            'tech_tf_primary_programming_language': ui_features.get('tech_tf_primary_programming_language', 'Python'),
-            'project_prf_team_size_group': derived.get('project_prf_team_size_group', '6-10'),
-            'tech_tf_clientserver_description': derived.get('tech_tf_clientserver_description', 'web')
-        }
-        
-        for key, value in categorical_features.items():
-            if key not in complete_features:
-                complete_features[key] = value
-                logging.info(f"Added categorical feature: {key} = {value}")
-        
-        # === ADD DEFAULT FEATURES ===
-        # Features that models expect but we don't actively collect
-        default_features = {
-            'process_pmf_development_methodologies': 'Missing',
-            'tech_tf_client_roles': 'Missing',
-            'tech_tf_server_roles': 'Missing'
-        }
-        
-        for key, value in default_features.items():
-            if key not in complete_features:
-                complete_features[key] = value
-        
+            logging.info("No pipeline features available, starting with empty feature set")        
         logging.info(f"Feature engineering complete: {len(complete_features)} total features")
         return complete_features
         
@@ -1047,7 +583,7 @@ def apply_feature_engineering(
 
 def make_model_prediction(complete_features: Dict[str, Any], model_name: str) -> Optional[float]:
     """
-    STEP 3: Make prediction using the complete feature set.
+    STEP 3: Make prediction using the complete feature set (dynamically aligned).
     
     Args:
         complete_features: Complete feature dictionary 
@@ -1064,26 +600,27 @@ def make_model_prediction(complete_features: Dict[str, Any], model_name: str) ->
             logging.error(f"Failed to load model: {model_name}")
             return None
         
-        # Convert features to DataFrame
-        features_df = pd.DataFrame([complete_features])
+        # --- DYNAMIC COLUMN ALIGNMENT ---
+        model_expected_features = get_model_expected_features(model)
+        if not model_expected_features:
+            logging.warning("Could not extract expected features from model. Using all features as-is.")
+            features_df = pd.DataFrame([complete_features])
+        else:
+            aligned_features = align_features_to_model(complete_features, model_expected_features)
+            features_df = pd.DataFrame([aligned_features], columns=model_expected_features)
         logging.info(f"Created prediction DataFrame: {features_df.shape}")
-        
-        # Log key features for debugging
-        key_features = ['project_prf_normalised_work_effort', 'project_prf_max_team_size', 
-                       'external_eef_industry_sector', 'tech_tf_primary_programming_language']
+        key_features = [
+            'project_prf_normalised_work_effort', 'project_prf_max_team_size',
+            'external_eef_industry_sector', 'tech_tf_primary_programming_language'
+        ]
         for key in key_features:
             if key in complete_features:
                 logging.info(f"Key feature {key}: {complete_features[key]}")
-        
-        # Make prediction using PyCaret if available
         if PYCARET_AVAILABLE:
             try:
                 from pycaret.regression import predict_model
                 predictions = predict_model(model, data=features_df)
-                
-                # Find prediction column
-                pred_cols = ['prediction_label', 'Label', 'pred', 'prediction']
-                for col in pred_cols:
+                for col in ['prediction_label', 'Label', 'pred', 'prediction']:
                     if col in predictions.columns:
                         result = float(predictions[col].iloc[0])
                         logging.info(f"PyCaret prediction successful: {result:.2f}")
@@ -1109,6 +646,37 @@ def make_model_prediction(complete_features: Dict[str, Any], model_name: str) ->
         
     except Exception as e:
         logging.error(f"Model prediction failed: {e}")
+        return None
+
+def predict_with_sequential_approach(
+    ui_features: Dict[str, Any], 
+    model_name: str
+) -> Optional[float]:
+    try:
+        logging.info("=== STARTING SEQUENTIAL PREDICTION ===")
+        logging.info("Step 1: Applying pipeline transformation...")
+        pipeline_features = apply_pipeline_transformation(ui_features)
+        if pipeline_features is None:
+            logging.error("Pipeline transformation failed")
+            return None
+        logging.info(f"Pipeline produced {pipeline_features.shape[1]} features")
+        logging.info("Step 2: Applying feature engineering to fill gaps...")
+        complete_features = apply_feature_engineering(ui_features, pipeline_features)
+        if complete_features is None:
+            logging.error("Feature engineering failed")
+            return None
+        logging.info(f"Feature engineering produced {len(complete_features)} complete features")
+        logging.info("Step 3: Making model prediction...")
+        prediction = make_model_prediction(complete_features, model_name)
+        if prediction is not None:
+            logging.info(f"✅ Sequential prediction successful: {prediction:.2f} hours")
+        else:
+            logging.error("❌ Model prediction failed")
+        return prediction
+    except Exception as e:
+        logging.error(f"Sequential prediction failed: {e}")
+        import traceback
+        logging.error(f"Full traceback: {traceback.format_exc()}")
         return None
 
 
