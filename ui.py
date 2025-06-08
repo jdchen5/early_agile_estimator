@@ -455,6 +455,7 @@ def run_predictions(user_inputs, selected_models):
     """Run predictions for multiple models and return results dictionary"""
     if isinstance(selected_models, str):
         selected_models = [selected_models]  # Convert single model to list
+    assert isinstance(selected_models, list), "selected_models must be a list"   
     
     predictions = {}
     team_size = user_inputs.get('project_prf_max_team_size', 5)

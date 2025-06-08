@@ -129,7 +129,8 @@ def main():
     # Get user inputs from sidebar
     try:
         user_inputs = sidebar_inputs()
-        selected_model = user_inputs.get('selected_model')
+        selected_model = user_inputs.get('selected_model', None)
+
         submit = user_inputs.get('submit', False)
         save_config = user_inputs.get('save_config', False)
         config_name = user_inputs.get('config_name', '')
