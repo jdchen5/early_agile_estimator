@@ -1,6 +1,9 @@
 # ui.py - Completely Fixed Ultra-Compact Version
 """
-Fixed Streamlit UI with ultra-compact form design and proper field handling
+Streamlit UI for ML Project Effort Estimator
+This module provides a user interface for estimating project effort using machine learning models.
+It includes form inputs, model selection, prediction display, and feature importance analysis.
+It is designed to be ultra-compact and user-friendly, with a focus on essential features and minimal complexity.
 """
 
 import streamlit as st
@@ -401,10 +404,10 @@ def sidebar_inputs():
         if missing_fields:
             st.error(f"⚠️ Missing required fields: {', '.join(missing_fields)}")
         
-        # Action buttons - SIMPLIFIED
+        # Action buttons - Predict
         st.divider()
         
-        # Just one button - the main predict button
+        # Predict button
         predict_button = st.button(
             "🔮 Predict Effort",
             type="primary",
@@ -412,7 +415,41 @@ def sidebar_inputs():
             disabled=len(missing_fields) > 0 or not selected_model
         )
         
-        # Optional: Simple model check (remove if you don't need it)
+        # Save Configuration Section
+        st.subheader("💾 Save Configuration")
+        config_name = st.text_input(
+            "Configuration Name",
+            placeholder="e.g., Banking_Project_Template",
+            help="Enter a name to save current parameter settings"
+        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            save_button = st.button(
+                "💾 Save Config",
+                use_container_width=True,
+                disabled=not config_name.strip(),
+                help="Save current parameters for future use"
+            )
+        
+        with col2:
+            if st.button("📁 Load Config", use_container_width=True):
+                # Show available configs
+                configs_dir = "saved_configs"
+                if os.path.exists(configs_dir):
+                    config_files = [f.replace('.json', '') for f in os.listdir(configs_dir) if f.endswith('.json')]
+                    if config_files:
+                        st.info(f"Available configs: {', '.join(config_files)}")
+                    else:
+                        st.info("No saved configurations found")
+                else:
+                    st.info("No saved configurations found")
+        
+        # Handle save configuration
+        if save_button and config_name.strip():
+            save_current_configuration(user_inputs, config_name.strip())
+        
+        # Optional: Simple model check
         if st.button("Check Models", use_container_width=True):
             try:
                 model_status = check_required_models()
@@ -444,6 +481,7 @@ def save_current_configuration(user_inputs, config_name):
     """Save current configuration to file"""
     config = user_inputs.copy()
     config.pop('submit', None)
+    config.pop('selected_model', None)  # Don't save model selection
     config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     configs_dir = "saved_configs"
@@ -457,41 +495,40 @@ def save_current_configuration(user_inputs, config_name):
 
 # --- Display Functions ---
 def display_inputs(user_inputs, selected_model):
-    """Display input parameters summary"""
-    st.subheader("📋 Input Parameters Summary")
-    
-    # Filter and display parameters
-    display_params = {}
-    exclude_keys = {'selected_model', 'submit'}
-    
-    for key, value in user_inputs.items():
-        if key not in exclude_keys and value is not None and value != "":
-            label = get_field_title(key)
-            display_params[label] = str(value)
-    
-    if display_params:
-        # Display in columns for better layout
-        col1, col2 = st.columns(2)
-        items = list(display_params.items())
-        mid_point = len(items) // 2
+    """Display input parameters summary in a collapsible expander"""
+    with st.expander("📋 Input Parameters Summary", expanded=False):
+        # Filter and display parameters
+        display_params = {}
+        exclude_keys = {'selected_model', 'submit'}
         
-        with col1:
-            for param, value in items[:mid_point]:
-                st.text(f"**{param}:** {value}")
+        for key, value in user_inputs.items():
+            if key not in exclude_keys and value is not None and value != "":
+                label = get_field_title(key)
+                display_params[label] = str(value)
         
-        with col2:
-            for param, value in items[mid_point:]:
-                st.text(f"**{param}:** {value}")
-        
-        # Display selected model
-        if selected_model:
-            try:
-                model_display_name = get_model_display_name(selected_model)
-                st.info(f"🤖 **Model:** {model_display_name}")
-            except:
-                st.info(f"🤖 **Model:** {selected_model}")
-    else:
-        st.warning("No parameters to display")
+        if display_params:
+            # Display in columns for better layout
+            col1, col2 = st.columns(2)
+            items = list(display_params.items())
+            mid_point = len(items) // 2
+            
+            with col1:
+                for param, value in items[:mid_point]:
+                    st.text(f"**{param}:** {value}")
+            
+            with col2:
+                for param, value in items[mid_point:]:
+                    st.text(f"**{param}:** {value}")
+            
+            # Display selected model
+            if selected_model:
+                try:
+                    model_display_name = get_model_display_name(selected_model)
+                    st.info(f"🤖 **Model:** {model_display_name}")
+                except:
+                    st.info(f"🤖 **Model:** {selected_model}")
+        else:
+            st.warning("No parameters to display")
 
 def show_prediction(prediction, team_size):
     """Display prediction results"""
@@ -655,13 +692,20 @@ def main():
                 2. **Optional Parameters** - Add more details in the "Optional" tab for better accuracy  
                 3. **Select Model** - Choose from available ML models
                 4. **Get Prediction** - Click 'Predict Effort' to see your estimate
+                5. **Save Configuration** - Save your parameter settings for future use
                 
                 ### Tips for Better Estimates
                 - Provide accurate team size information
                 - Select the most appropriate technology stack
                 - Choose realistic project complexity levels
                 - Review historical similar projects if available
+
+                ### Configuration Management
+                - Save current parameter settings with a descriptive name
+                - Load previously saved configurations for similar projects
+                - Use saved configurations as templates for new estimates
                 
+                                            
                 ### Troubleshooting
                 - Use "Check Models" if no models appear in the dropdown
                 - Use "Test Model" to create a sample model for testing
