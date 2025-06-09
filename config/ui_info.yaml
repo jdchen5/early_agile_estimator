@@ -1,0 +1,255 @@
+fields:
+  project_prf_year_of_project:
+    label: "Year of Project"
+    title: "Year of Project"
+    help: "The year when the project was initiated or planned to start. This helps account for technological and methodological changes over time."
+    type: numeric
+    min: 2015
+    max: 2030
+    default: 2024
+    input_type: number_input
+    tab: "Required Fields"
+
+  external_eef_industry_sector:
+    label: "Industry Sector"
+    title: "Industry Sector"
+    help: "A derived field that summarizes the Organisation Type of the project into a single value of a defined set."
+    type: categorical
+    options: ["Banking", "Manufacturing", "Retail"]  # Add more as needed
+    tab: "Required Fields"
+
+  external_eef_organisation_type:
+    label: "Organisation Type"
+    title: "Organisation Type"
+    help: "Identifies the type of organisation that submitted the project (e.g., Banking, Manufacturing, Retail)."
+    type: categorical
+    options: ["SME", "Large Enterprise", "Startup", "Government"]  # Add more as needed
+    tab: "Required Fields"
+
+  project_prf_team_size_group:
+    label: "Individual Team Size Group"
+    title: "Individual Team Size Group"
+    help: "Individual team size: 1 = 1.55, 2 = 1.55 to <2.5, 3-4 = 2.5 to <4.5, 5-8 = 4.5 to <8.5, etc. See ISBSG definition for more details."
+    type: categorical
+    options: ["1", "2", "3-4", "5-8", "9+"]  # Adjust to your actual groups
+    tab: "Required Fields"
+
+  project_prf_max_team_size:
+    label: "Max Team Size"
+    title: "Max Team Size"
+    help: "The maximum number of team members that will work on this project simultaneously. Include developers, testers, analysts, and other active contributors."
+    type: numeric
+    min: 1
+    max: 200
+    default: 12
+    input_type: number_input
+    tab: "Required Fields"
+
+  project_prf_relative_size:
+    label: "Relative Functional Size"
+    title: "Relative Functional Size"
+    help: "Categories the Functional Size (or Adjusted Function Points) by relative sizes: XXS, XS, S, M1, M2, L, XL, XXL, XXXL. See ISBSG for numeric boundaries."
+    type: categorical
+    options: ["XXS", "XS", "S", "M1", "M2", "L", "XL", "XXL", "XXXL"]
+    tab: "Required Fields"
+
+  project_prf_application_type:
+    label: "Application Type"
+    title: "Application Type"
+    help: "Identifies the type of application being addressed by the project (e.g., information system, transaction/production system, process control)."
+    type: categorical
+    options: ["Business Application", "Real-Time Application", "Mathematically-Intensive Application", "Infrastructure Software"]  # Adjust as needed
+    tab: "Required Fields"
+
+  project_prf_development_type:
+    label: "Development Type"
+    title: "Development Type"
+    help: "Describes whether the development was a new development, enhancement, or re-development."
+    type: categorical
+    options: ["New Development", "Enhancement", "Redevelopment"]  # Adjust as needed
+    tab: "Required Fields"
+
+  tech_tf_architecture:
+    label: "Architecture"
+    title: "Architecture"
+    help: "Indicates if the application is Stand alone, Multi-tier, Client server, or Multi-tier with web public interface."
+    type: categorical
+    options: ["Standalone", "Multi-tier", "Client Server", "Multi-tier Web"]
+    tab: "Required Fields"
+
+  tech_tf_development_platform:
+    label: "Development Platform"
+    title: "Development Platform"
+    help: "Defines the primary development platform (as determined by the operating system used): PC, Mid Range, Main Frame, or Multi platform. This affects complexity and development approach."
+    type: categorical
+    options: ["PC", "Mid Range", "Main Frame", "Multi Platform"]
+    tab: "Required Fields"
+
+  tech_tf_language_type:
+    label: "Programming Language Type"
+    title: "Programming Language Type"
+    help: "Defines the language type used for the project (e.g., 3GL, 4GL, Application Generator, etc.)."
+    type: categorical
+    options: ["3GL", "4GL", "Application Generator"]  # Add more as needed
+    tab: "Required Fields"
+
+  tech_tf_primary_programming_language:
+    label: "Primary Programming Language"
+    title: "Primary Programming Language"
+    help: "Primary programming language(s) used in the project. Select the main language or framework that will be used for development."
+    type: categorical
+    options: ["Java", "Python", "C#", "JavaScript"]  # Add more as needed
+    tab: "Required Fields"
+
+  # Optional fields
+  project_prf_functional_size:
+    label: "Functional Size"
+    title: "Functional Size"
+    help: "The estimated functional size of the project measured in function points, use cases, or similar metrics. This represents the scope of functionality to be delivered."
+    type: numeric
+    min: 1
+    max: 10000
+    default: 100
+    input_type: number_input
+    tab: "Optional Fields"
+
+  process_pmf_development_methodologies:
+    label: "Development Methodologies"
+    title: "Development Methodologies"
+    help: "Methodologies used during development (e.g., Agile, JAD, Waterfall etc.). These methods may apply to any part of the development lifecycle."
+    type: categorical
+    options: ["Agile", "JAD", "Waterfall", "Other"]
+    tab: "Optional Fields"
+
+  process_pmf_docs:
+    label: "Number of Documents Produced"
+    title: "Number of Documents Produced"
+    help: "Documents or work products produced during various project activities, including planning, specification, design, build, testing, and implementation."
+    type: numeric
+    min: 0
+    max: 100
+    default: 0
+    input_type: number_input
+    tab: "Optional Fields"
+
+  tech_tf_client_roles:
+    label: "Client Roles"
+    title: "Client Roles"
+    help: "The roles performed by the computers that provide interface to the software’s external users."
+    type: categorical
+    options: ["UI", "API", "Mobile"]
+    tab: "Optional Fields"
+
+  tech_tf_server_roles:
+    label: "Server Roles"
+    title: "Server Roles"
+    help: "The services provided by the host/server computer(s) to the software application or product."
+    type: categorical
+    options: ["Database", "Web Server", "App Server"]
+    tab: "Optional Fields"
+
+  tech_tf_tools_used:
+    label: "Number of Tools Used"
+    title: "Number of Tools Used"
+    help: "Any software engineering, database, testing, or other tools used during project development or maintenance."
+    type: numeric
+    min: 0
+    max: 50
+    default: 1
+    input_type: number_input
+    tab: "Optional Fields"
+
+  tech_tf_web_development:
+    label: "Web Development"
+    title: "Web Development"
+    help: "A derived indicator of whether the project data includes any comment that it is a web-development project."
+    type: boolean
+    tab: "Optional Fields"
+
+  tech_tf_dbms_used:
+    label: "DBMS Used"
+    title: "DBMS Used"
+    help: "Indicates whether the project used a database management system, either in primary or secondary platforms."
+    type: boolean
+    tab: "Optional Fields"
+
+  project_prf_case_tool_used:
+    label: "CASE Tool Used"
+    title: "CASE Tool Used"
+    help: "Whether the project used any Computer-Aided Software Engineering (CASE) tool, such as Upper CASE tool, Lower CASE tool, or Integrated CASE tool."
+    type: boolean
+    tab: "Optional Fields"
+
+  process_pmf_prototyping_used:
+    label: "Prototyping Used"
+    title: "Prototyping Used"
+    help: "Whether the project used any prototyping techniques during development."
+    type: boolean
+    tab: "Optional Fields"
+
+  people_prf_project_user_involvement:
+    label: "Number of Business User Involved"
+    title: "Number of Business User Involved"
+    help: "Indicator of whether business users were assigned to the project."
+    type: numeric
+    min: 0
+    max: 100
+    default: 0
+    input_type: number_input
+    tab: "Optional Fields"
+
+# Tab configuration
+tab_organization:
+  "Required Fields":
+    - project_prf_year_of_project
+    - external_eef_industry_sector
+    - external_eef_organisation_type
+    - project_prf_team_size_group
+    - project_prf_max_team_size
+    - project_prf_relative_size
+    - project_prf_application_type
+    - project_prf_development_type
+    - tech_tf_architecture
+    - tech_tf_development_platform
+    - tech_tf_language_type
+    - tech_tf_primary_programming_language
+
+  "Optional Fields":
+    - project_prf_functional_size
+    - people_prf_personnel_changes
+    - process_pmf_development_methodologies
+    - tech_tf_server_roles
+    - tech_tf_client_roles
+    - tech_tf_client_server
+    - tech_tf_web_development
+    - tech_tf_dbms_used
+    - process_pmf_prototyping_used
+    - project_prf_case_tool_used
+    - tech_tf_tools_used
+    - process_pmf_docs
+    - people_prf_project_user_involvement
+
+# Additional settings (copy your display, behavior, and thresholds as needed)
+feature_importance_display:
+  max_features_shown: 15
+  precision_decimals: 3
+  chart_size:
+    width: 10
+    height: 8
+
+prediction_thresholds:
+  low_prediction_warning: 10
+  high_prediction_warning: 5000
+
+ui_behavior:
+  multiselect_threshold: 10
+  radio_threshold: 4
+  selectbox_threshold: 8
+
+display_config:
+  key_parameters_for_summary:
+    - project_prf_year_of_project
+    - project_prf_functional_size
+    - project_prf_max_team_size
+    - project_prf_duration_months
+    - project_prf_effort_person_months
