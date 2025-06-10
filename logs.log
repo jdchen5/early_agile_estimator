@@ -7988,3 +7988,395 @@ This will raise in a future version.
 2025-06-08 21:58:20,774:INFO:Set up index.
 2025-06-08 21:58:20,992:INFO:Initializing load_model()
 2025-06-08 21:58:20,992:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:31:44,934:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 15:31:44,934:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 15:31:44,934:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 15:31:44,934:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 15:31:58,748:INFO:Initializing load_model()
+2025-06-09 15:31:58,748:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:32:00,109:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-09 15:32:00,703:INFO:Initializing predict_model()
+2025-06-09 15:32:00,703:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000247F729FBD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000247F720FB00>)
+2025-06-09 15:32:00,703:INFO:Checking exceptions
+2025-06-09 15:32:00,703:INFO:Preloading libraries
+2025-06-09 15:32:00,703:INFO:Set up data.
+2025-06-09 15:32:00,750:INFO:Set up index.
+2025-06-09 15:32:01,023:INFO:Initializing load_model()
+2025-06-09 15:32:01,023:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:32:07,370:INFO:Initializing load_model()
+2025-06-09 15:32:07,370:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:32:07,432:INFO:Initializing predict_model()
+2025-06-09 15:32:07,432:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000024784FD1590>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000024785B37420>)
+2025-06-09 15:32:07,433:INFO:Checking exceptions
+2025-06-09 15:32:07,433:INFO:Preloading libraries
+2025-06-09 15:32:07,433:INFO:Set up data.
+2025-06-09 15:32:07,456:INFO:Set up index.
+2025-06-09 15:32:07,682:INFO:Initializing load_model()
+2025-06-09 15:32:07,682:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:32:13,399:INFO:Initializing load_model()
+2025-06-09 15:32:13,399:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 15:32:13,601:INFO:Initializing predict_model()
+2025-06-09 15:32:13,602:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000024785BD0610>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 RandomForestRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000024785B37600>)
+2025-06-09 15:32:13,602:INFO:Checking exceptions
+2025-06-09 15:32:13,602:INFO:Preloading libraries
+2025-06-09 15:32:13,602:INFO:Set up data.
+2025-06-09 15:32:13,626:INFO:Set up index.
+2025-06-09 15:32:13,845:INFO:Initializing load_model()
+2025-06-09 15:32:13,845:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:27:47,447:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 21:27:47,447:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 21:27:47,447:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 21:27:47,447:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-09 21:28:17,072:INFO:Initializing load_model()
+2025-06-09 21:28:17,072:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:28:18,049:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-09 21:28:18,509:INFO:Initializing predict_model()
+2025-06-09 21:28:18,509:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B074BFC50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B73A39760>)
+2025-06-09 21:28:18,509:INFO:Checking exceptions
+2025-06-09 21:28:18,509:INFO:Preloading libraries
+2025-06-09 21:28:18,509:INFO:Set up data.
+2025-06-09 21:28:18,538:INFO:Set up index.
+2025-06-09 21:28:18,758:INFO:Initializing load_model()
+2025-06-09 21:28:18,758:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:28:25,339:INFO:Initializing load_model()
+2025-06-09 21:28:25,339:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:28:25,404:INFO:Initializing predict_model()
+2025-06-09 21:28:25,404:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B61303350>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B06F907C0>)
+2025-06-09 21:28:25,405:INFO:Checking exceptions
+2025-06-09 21:28:25,405:INFO:Preloading libraries
+2025-06-09 21:28:25,405:INFO:Set up data.
+2025-06-09 21:28:25,454:INFO:Set up index.
+2025-06-09 21:28:25,703:INFO:Initializing load_model()
+2025-06-09 21:28:25,703:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:28:33,268:INFO:Initializing load_model()
+2025-06-09 21:28:33,269:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-09 21:28:33,473:INFO:Initializing predict_model()
+2025-06-09 21:28:33,473:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B15DD5C90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 RandomForestRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B15D7BCE0>)
+2025-06-09 21:28:33,473:INFO:Checking exceptions
+2025-06-09 21:28:33,473:INFO:Preloading libraries
+2025-06-09 21:28:33,473:INFO:Set up data.
+2025-06-09 21:28:33,493:INFO:Set up index.
+2025-06-09 21:28:33,727:INFO:Initializing load_model()
+2025-06-09 21:28:33,727:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:14,208:INFO:Initializing load_model()
+2025-06-10 11:46:14,208:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:14,485:INFO:Initializing predict_model()
+2025-06-10 11:46:14,486:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B15DD7310>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B15E50EA0>)
+2025-06-10 11:46:14,486:INFO:Checking exceptions
+2025-06-10 11:46:14,486:INFO:Preloading libraries
+2025-06-10 11:46:14,486:INFO:Set up data.
+2025-06-10 11:46:14,510:INFO:Set up index.
+2025-06-10 11:46:14,755:INFO:Initializing load_model()
+2025-06-10 11:46:14,755:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:22,251:INFO:Initializing load_model()
+2025-06-10 11:46:22,251:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:22,317:INFO:Initializing predict_model()
+2025-06-10 11:46:22,317:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B15233690>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B15E51120>)
+2025-06-10 11:46:22,318:INFO:Checking exceptions
+2025-06-10 11:46:22,318:INFO:Preloading libraries
+2025-06-10 11:46:22,318:INFO:Set up data.
+2025-06-10 11:46:22,350:INFO:Set up index.
+2025-06-10 11:46:22,550:INFO:Initializing load_model()
+2025-06-10 11:46:22,550:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:27,770:INFO:Initializing load_model()
+2025-06-10 11:46:27,770:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:27,980:INFO:Initializing predict_model()
+2025-06-10 11:46:27,981:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B1459C590>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 RandomForestRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B15E52160>)
+2025-06-10 11:46:27,981:INFO:Checking exceptions
+2025-06-10 11:46:27,981:INFO:Preloading libraries
+2025-06-10 11:46:27,981:INFO:Set up data.
+2025-06-10 11:46:28,010:INFO:Set up index.
+2025-06-10 11:46:28,241:INFO:Initializing load_model()
+2025-06-10 11:46:28,241:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:34,906:INFO:Initializing load_model()
+2025-06-10 11:46:34,906:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:35,174:INFO:Initializing predict_model()
+2025-06-10 11:46:35,174:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B15D91A90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B612E2E80>)
+2025-06-10 11:46:35,174:INFO:Checking exceptions
+2025-06-10 11:46:35,174:INFO:Preloading libraries
+2025-06-10 11:46:35,175:INFO:Set up data.
+2025-06-10 11:46:35,208:INFO:Set up index.
+2025-06-10 11:46:35,468:INFO:Initializing load_model()
+2025-06-10 11:46:35,468:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:47,144:INFO:Initializing load_model()
+2025-06-10 11:46:47,144:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:47,210:INFO:Initializing predict_model()
+2025-06-10 11:46:47,210:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B072CD590>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model', GradientBoostingRegressor(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B074456C0>)
+2025-06-10 11:46:47,210:INFO:Checking exceptions
+2025-06-10 11:46:47,210:INFO:Preloading libraries
+2025-06-10 11:46:47,211:INFO:Set up data.
+2025-06-10 11:46:47,249:INFO:Set up index.
+2025-06-10 11:46:47,491:INFO:Initializing load_model()
+2025-06-10 11:46:47,491:INFO:load_model(model_name=models\top_model_1_GradientBoostingRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:54,189:INFO:Initializing load_model()
+2025-06-10 11:46:54,189:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 11:46:54,377:INFO:Initializing predict_model()
+2025-06-10 11:46:54,377:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B612E6DD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 RandomForestRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B15E52980>)
+2025-06-10 11:46:54,377:INFO:Checking exceptions
+2025-06-10 11:46:54,377:INFO:Preloading libraries
+2025-06-10 11:46:54,377:INFO:Set up data.
+2025-06-10 11:46:54,408:INFO:Set up index.
+2025-06-10 11:46:54,658:INFO:Initializing load_model()
+2025-06-10 11:46:54,658:INFO:load_model(model_name=models\top_model_3_RandomForestRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 12:20:55,360:INFO:Initializing load_model()
+2025-06-10 12:20:55,360:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 12:20:55,571:INFO:Initializing predict_model()
+2025-06-10 12:20:55,571:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000015B15E94D10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000015B612E2FC0>)
+2025-06-10 12:20:55,571:INFO:Checking exceptions
+2025-06-10 12:20:55,571:INFO:Preloading libraries
+2025-06-10 12:20:55,572:INFO:Set up data.
+2025-06-10 12:20:55,598:INFO:Set up index.
+2025-06-10 12:20:55,853:INFO:Initializing load_model()
+2025-06-10 12:20:55,853:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)

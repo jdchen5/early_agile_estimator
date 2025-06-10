@@ -14,4 +14,4 @@ scikit-learn>=1.4.0  # Required by pycaret 3.3.2
 
 # AutoML
 pycaret==3.3.2
-
+pyyaml>=6.0
