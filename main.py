@@ -38,7 +38,11 @@ from ui import (
     get_field_label,
     add_prediction_to_history,
     show_prediction_history,
-    show_prediction_comparison_table
+    show_prediction_comparison_table,
+    get_what_if_parameters,
+    perform_what_if_analysis,
+    run_predictions,
+    display_prediction_results
 )
 
 # Try to import pipeline-related functions with fallbacks
@@ -76,8 +80,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load configurations
-UI_CONFIG = load_yaml_config("config/ui_config.yaml")
+# Load merged configuration
+UI_INFO_CONFIG = load_yaml_config("config/ui_info.yaml")
 FEATURE_CONFIG = load_yaml_config("config/feature_mapping.yaml")
 
 def add_custom_css():
@@ -133,7 +137,7 @@ def main():
     try:
         user_inputs = sidebar_inputs()
         selected_model = user_inputs.get('selected_model', None)
-        selected_models = [selected_model] if selected_model else []
+        selected_models = user_inputs.get('selected_models', [])
 
         submit = user_inputs.get('submit', False)
         save_config = user_inputs.get('save_config', False)
@@ -148,26 +152,29 @@ def main():
 
     with tab_results:
         try:
-            display_inputs(user_inputs, [selected_model] if selected_model else [])
+            display_inputs(user_inputs, selected_models)
 
-            if submit and selected_model:
+            if submit and selected_models:
                 with st.spinner("Calculating estimation..."):
                     try:
-                        # Run the prediction
-                        prediction = predict_man_hours(user_inputs, selected_model)
-                        # Show current prediction (with model name)
-                        show_prediction(prediction, team_size, selected_model)
-                        # Save to history
-                        add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
-                        # Show ALL predictions (with model names, results, and timestamps)
+                        # Support both single and multi-model workflows
+                        comparison_mode = len(selected_models) > 1
+                        
+                        # Run predictions using the sophisticated workflow
+                        new_predictions = run_predictions(user_inputs, selected_models)
+                        
+                        # Display results using the comprehensive display function
+                        display_prediction_results(selected_models, new_predictions, team_size, comparison_mode)
+                        
+                        # Show historical views
                         show_prediction_history()
-                        # (Optional) Show comparison table for quick view if more than 1 prediction
                         show_prediction_comparison_table()
+                        
                     except Exception as e:
                         st.error(f"Error during prediction: {str(e)}")
                         logger.error(f"Prediction error: {str(e)}")
-            elif submit and not selected_model:
-                st.error("Please select a model before making a prediction.")
+            elif submit and not selected_models:
+                st.error("Please select at least one model before making a prediction.")
             else:
                 st.info("Click the 'Predict Effort' button to see the estimation result.")
 
@@ -185,7 +192,6 @@ def main():
                 st.write("See how changing one parameter affects the estimation:")
                 
                 # Get available parameters dynamically from configuration
-                from ui import get_what_if_parameters, perform_what_if_analysis
                 what_if_params = get_what_if_parameters()
                 
                 if what_if_params:
@@ -221,19 +227,32 @@ def main():
                 st.subheader("Loaded Configurations")
                 col1, col2 = st.columns(2)
                 with col1:
+                    st.write("**UI Info Configuration:**")
+                    fields_count = len(UI_INFO_CONFIG.get('fields', {}))
+                    tabs_count = len(UI_INFO_CONFIG.get('tab_organization', {}))
+                    st.write(f"- Fields configured: {fields_count}")
+                    st.write(f"- Tabs organized: {tabs_count}")
+                    
                     st.write("**Feature Configuration:**")
                     st.write(f"- Numeric features: {len(FEATURE_CONFIG.get('numeric_features', []))}")
                     st.write(f"- Categorical features: {len(FEATURE_CONFIG.get('categorical_features', {}))}")
                     st.write(f"- One-hot features: {len(FEATURE_CONFIG.get('one_hot_features', {}))}")
                     st.write(f"- Special cases: {len(FEATURE_CONFIG.get('special_cases', {}))}")
                 with col2:
-                    st.write("**UI Configuration:**")
-                    st.write(f"- Field labels: {len(UI_CONFIG.get('field_labels', {}))}")
-                    st.write(f"- Tab organization: {len(UI_CONFIG.get('tab_organization', {}))}")
-                    st.write(f"- Numeric field configs: {len(UI_CONFIG.get('numeric_field_config', {}))}")
+                    st.write("**UI Behavior Settings:**")
+                    ui_behavior = UI_INFO_CONFIG.get('ui_behavior', {})
+                    st.write(f"- Multiselect threshold: {ui_behavior.get('multiselect_threshold', 'Not set')}")
+                    st.write(f"- Radio threshold: {ui_behavior.get('radio_threshold', 'Not set')}")
+                    st.write(f"- Selectbox threshold: {ui_behavior.get('selectbox_threshold', 'Not set')}")
+                    
+                    st.write("**Display Settings:**")
+                    feature_display = UI_INFO_CONFIG.get('feature_importance_display', {})
+                    st.write(f"- Max features shown: {feature_display.get('max_features_shown', 'Not set')}")
+                    st.write(f"- Precision decimals: {feature_display.get('precision_decimals', 'Not set')}")
+                
                 # Show current field organization
                 if st.checkbox("Show Field Organization"):
-                    tab_org = UI_CONFIG.get('tab_organization', {})
+                    tab_org = UI_INFO_CONFIG.get('tab_organization', {})
                     for tab_name, fields in tab_org.items():
                         st.write(f"**{tab_name} Tab:** {', '.join(fields)}")
             
