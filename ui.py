@@ -63,6 +63,8 @@ def initialize_session_state():
         st.session_state.prediction_history = []
     if 'comparison_results' not in st.session_state:
         st.session_state.comparison_results = []
+    if 'form_attempted' not in st.session_state:
+        st.session_state['form_attempted'] = False
 
 # --- Configuration Loading ---
 def load_yaml_config(path):
@@ -83,6 +85,10 @@ FEATURE_IMPORTANCE_DISPLAY = UI_INFO_CONFIG.get('feature_importance_display', {}
 PREDICTION_THRESHOLDS = UI_INFO_CONFIG.get('prediction_thresholds', {})
 DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
 
+FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
+CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
+
+
 # --- Field helper functions using merged config ---
 def get_field_label(field_name):
     """Get display label for a field"""
@@ -95,6 +101,12 @@ def get_field_title(field_name):
 def get_field_help(field_name):
     """Get help text for a field"""
     return FIELDS.get(field_name, {}).get("help", "")
+
+def get_field_options(field_name):
+    opts = None
+    if field_name in CATEGORICAL_MAPPING:
+        opts = CATEGORICAL_MAPPING[field_name].get('options')
+    return opts
 
 def get_tab_organization():
     """Get tab organization from configuration"""
@@ -183,8 +195,19 @@ def render_field(field_name, config, is_required=False):
             label, min_value=min_val, max_value=max_val, value=value, help=help_text, key=field_name
         )
     elif field_type == "categorical":
-        options = config.get("options", [])
-        field_value = st.selectbox(label, options, index=0 if options else None, help=help_text, key=field_name)
+        options = get_field_options(field_name)
+        default = config.get("default", options[0] if options else None)
+        
+        try:
+            default_index = options.index(default)
+        except (ValueError, IndexError):
+            default_index = 0
+        field_value = st.selectbox(
+            label, options,
+            index=default_index if options else None,
+            help=help_text,
+            key=field_name
+        )
     elif field_type == "boolean":
         field_value = st.checkbox(label, value=bool(value), help=help_text, key=field_name)
     else:
@@ -273,7 +296,7 @@ def sidebar_inputs():
             if value is None or value == "" or value == []:
                 missing_fields.append(get_field_label(field))
 
-        if missing_fields:
+        if missing_fields and st.session_state.get('form_attempted'):
             st.error(f"⚠️ Missing required fields: {', '.join(missing_fields)}")
 
         st.divider()
@@ -283,6 +306,8 @@ def sidebar_inputs():
             use_container_width=True,
             disabled=len(missing_fields) > 0 or not selected_models
         )
+        if predict_button:
+            st.session_state['form_attempted'] = True
 
         # Prediction history management
         st.subheader("📈 Prediction History")

@@ -10068,3 +10068,205 @@ This will raise in a future version.
 'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
 2025-06-10 20:21:30,700:WARNING:
 'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:47:36,192:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:47:36,194:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:47:36,194:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:47:36,194:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:53:33,608:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:53:33,608:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:53:33,608:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:53:33,608:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:57:31,468:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:57:31,468:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:57:31,468:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 20:57:31,468:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:00:59,346:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:00:59,346:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:00:59,346:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:00:59,346:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:08:21,852:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:08:21,852:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:08:21,852:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:08:21,852:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-10 21:09:27,786:INFO:Initializing load_model()
+2025-06-10 21:09:27,787:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-10 21:09:29,228:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,710:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,725:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,726:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,726:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,726:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,727:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,727:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,727:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,728:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,728:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,728:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,729:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,729:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,729:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,729:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,731:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,731:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,732:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,733:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,734:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,735:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,736:WARNING:C:\Users\jdche\Documents\GitHub\early_agile_estimator\models.py:175: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df[col] = 0
+
+2025-06-10 21:09:29,751:INFO:Initializing predict_model()
+2025-06-10 21:09:29,751:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000022026AE4910>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'project_prf_max_team_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_application_group_business_application',
+                                             'project_prf_application_group_infrastructure_software',
+                                             'project_prf_applic...
+                                             'tech_tf_server_roles'],
+                                    transformer=TargetEncoder(cols=['tech_tf_primary_programming_language',
+                                                                    'tech_tf_server_roles'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('trained_model',
+                 ExtraTreesRegressor(n_jobs=-1, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000022001BB11C0>)
+2025-06-10 21:09:29,751:INFO:Checking exceptions
+2025-06-10 21:09:29,751:INFO:Preloading libraries
+2025-06-10 21:09:29,751:INFO:Set up data.
+2025-06-10 21:09:29,784:INFO:Set up index.
+2025-06-10 21:09:30,072:INFO:Initializing load_model()
+2025-06-10 21:09:30,072:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
