@@ -15,7 +15,8 @@ fields:
     title: "Industry Sector"
     help: "A derived field that summarizes the Organisation Type of the project into a single value of a defined set."
     type: categorical
-    options: ["Banking", "Manufacturing", "Retail"]  # Add more as needed
+    options: ["Missing", "Banking", "Manufacturing", "Retail"]  # Add more as needed
+    default: "Missing"
     tab: "Required Fields"
 
   external_eef_organisation_type:
@@ -23,7 +24,8 @@ fields:
     title: "Organisation Type"
     help: "Identifies the type of organisation that submitted the project (e.g., Banking, Manufacturing, Retail)."
     type: categorical
-    options: ["SME", "Large Enterprise", "Startup", "Government"]  # Add more as needed
+    options: ["Missing", "SME", "Large Enterprise", "Startup", "Government"]  # Add more as needed
+    default: "Missing"
     tab: "Required Fields"
 
   project_prf_team_size_group:
@@ -31,7 +33,8 @@ fields:
     title: "Individual Team Size Group"
     help: "Individual team size: 1 = 1.55, 2 = 1.55 to <2.5, 3-4 = 2.5 to <4.5, 5-8 = 4.5 to <8.5, etc. See ISBSG definition for more details."
     type: categorical
-    options: ["1", "2", "3-4", "5-8", "9+"]  # Adjust to your actual groups
+    options: ["Missing", "1", "2", "3-4", "5-8", "9+"]  # Adjust to your actual groups
+    default: "Missing"
     tab: "Required Fields"
 
   project_prf_max_team_size:
@@ -41,7 +44,7 @@ fields:
     type: numeric
     min: 1
     max: 200
-    default: 12
+    default: 10
     input_type: number_input
     tab: "Required Fields"
 
@@ -50,7 +53,8 @@ fields:
     title: "Relative Functional Size"
     help: "Categories the Functional Size (or Adjusted Function Points) by relative sizes: XXS, XS, S, M1, M2, L, XL, XXL, XXXL. See ISBSG for numeric boundaries."
     type: categorical
-    options: ["XXS", "XS", "S", "M1", "M2", "L", "XL", "XXL", "XXXL"]
+    options: ["Missing", "XXS", "XS", "S", "M1", "M2", "L", "XL", "XXL", "XXXL"]
+    default: "Missing"
     tab: "Required Fields"
 
   project_prf_application_type:
@@ -58,7 +62,8 @@ fields:
     title: "Application Type"
     help: "Identifies the type of application being addressed by the project (e.g., information system, transaction/production system, process control)."
     type: categorical
-    options: ["Business Application", "Real-Time Application", "Mathematically-Intensive Application", "Infrastructure Software"]  # Adjust as needed
+    options: ["Missing", "Business Application", "Real-Time Application", "Mathematically-Intensive Application", "Infrastructure Software"]  # Adjust as needed
+    default: "Missing"
     tab: "Required Fields"
 
   project_prf_development_type:
@@ -66,7 +71,8 @@ fields:
     title: "Development Type"
     help: "Describes whether the development was a new development, enhancement, or re-development."
     type: categorical
-    options: ["New Development", "Enhancement", "Redevelopment"]  # Adjust as needed
+    options: ["Missing", "New Development", "Enhancement", "Redevelopment"]  # Adjust as needed
+    default: "Missing"
     tab: "Required Fields"
 
   tech_tf_architecture:
@@ -74,7 +80,8 @@ fields:
     title: "Architecture"
     help: "Indicates if the application is Stand alone, Multi-tier, Client server, or Multi-tier with web public interface."
     type: categorical
-    options: ["Standalone", "Multi-tier", "Client Server", "Multi-tier Web"]
+    options: ["Missing", "Standalone", "Multi-tier", "Client Server", "Multi-tier Web"]
+    default: "Missing"
     tab: "Required Fields"
 
   tech_tf_development_platform:
@@ -82,7 +89,8 @@ fields:
     title: "Development Platform"
     help: "Defines the primary development platform (as determined by the operating system used): PC, Mid Range, Main Frame, or Multi platform. This affects complexity and development approach."
     type: categorical
-    options: ["PC", "Mid Range", "Main Frame", "Multi Platform"]
+    options: ["Missing", "PC", "Mid Range", "Main Frame", "Multi Platform"]
+    default: "Missing"
     tab: "Required Fields"
 
   tech_tf_language_type:
@@ -90,7 +98,8 @@ fields:
     title: "Programming Language Type"
     help: "Defines the language type used for the project (e.g., 3GL, 4GL, Application Generator, etc.)."
     type: categorical
-    options: ["3GL", "4GL", "Application Generator"]  # Add more as needed
+    options: ["Missing", "3GL", "4GL", "Application Generator"]  # Add more as needed
+    default: "Missing"
     tab: "Required Fields"
 
   tech_tf_primary_programming_language:
@@ -98,7 +107,8 @@ fields:
     title: "Primary Programming Language"
     help: "Primary programming language(s) used in the project. Select the main language or framework that will be used for development."
     type: categorical
-    options: ["Java", "Python", "C#", "JavaScript"]  # Add more as needed
+    options: ["Missing", "Java", "Python", "C#", "JavaScript"]  # Add more as needed
+    default: "Missing"
     tab: "Required Fields"
 
   # Optional fields
@@ -111,14 +121,6 @@ fields:
     max: 10000
     default: 100
     input_type: number_input
-    tab: "Optional Fields"
-
-  process_pmf_development_methodologies:
-    label: "Development Methodologies"
-    title: "Development Methodologies"
-    help: "Methodologies used during development (e.g., Agile, JAD, Waterfall etc.). These methods may apply to any part of the development lifecycle."
-    type: categorical
-    options: ["Agile", "JAD", "Waterfall", "Other"]
     tab: "Optional Fields"
 
   process_pmf_docs:
@@ -137,7 +139,8 @@ fields:
     title: "Client Roles"
     help: "The roles performed by the computers that provide interface to the software’s external users."
     type: categorical
-    options: ["UI", "API", "Mobile"]
+    options: ["Missing", "UI", "API", "Mobile"]
+    default: "Missing"
     tab: "Optional Fields"
 
   tech_tf_server_roles:
@@ -145,7 +148,8 @@ fields:
     title: "Server Roles"
     help: "The services provided by the host/server computer(s) to the software application or product."
     type: categorical
-    options: ["Database", "Web Server", "App Server"]
+    options: ["Missing", "Database", "Web Server", "App Server"]
+    default: "Missing"
     tab: "Optional Fields"
 
   tech_tf_tools_used:
@@ -155,7 +159,7 @@ fields:
     type: numeric
     min: 0
     max: 50
-    default: 1
+    default: 0
     input_type: number_input
     tab: "Optional Fields"
 
@@ -164,6 +168,7 @@ fields:
     title: "Web Development"
     help: "A derived indicator of whether the project data includes any comment that it is a web-development project."
     type: boolean
+    default: "Missing"
     tab: "Optional Fields"
 
   tech_tf_dbms_used:
@@ -171,6 +176,7 @@ fields:
     title: "DBMS Used"
     help: "Indicates whether the project used a database management system, either in primary or secondary platforms."
     type: boolean
+    default: "Missing"
     tab: "Optional Fields"
 
   project_prf_case_tool_used:
@@ -178,6 +184,7 @@ fields:
     title: "CASE Tool Used"
     help: "Whether the project used any Computer-Aided Software Engineering (CASE) tool, such as Upper CASE tool, Lower CASE tool, or Integrated CASE tool."
     type: boolean
+    default: "Missing"
     tab: "Optional Fields"
 
   process_pmf_prototyping_used:
@@ -185,6 +192,7 @@ fields:
     title: "Prototyping Used"
     help: "Whether the project used any prototyping techniques during development."
     type: boolean
+    default: "Missing"
     tab: "Optional Fields"
 
   people_prf_project_user_involvement:

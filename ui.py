@@ -195,6 +195,7 @@ def render_field(field_name, config, is_required=False):
 def sidebar_inputs():
     """Create sidebar inputs"""
     with st.sidebar:
+        st.write("HELLO SIDEBAR!")  # Should always show at the very top!
         st.title("🔮 Project Parameters")
         st.info("Required fields (marked with ⭐)")
         user_inputs = {}
@@ -226,6 +227,8 @@ def sidebar_inputs():
                 available_models = list_available_models()
                 if available_models:
                     model_options = {m['display_name']: m['technical_name'] for m in available_models}
+                    #st.write("DEBUG: Model mapping", model_options)
+                    #st.write("DEBUG: available_models", available_models)
                     
                     # Support both single and multi-model selection
                     selection_mode = st.radio(
@@ -327,7 +330,8 @@ def sidebar_inputs():
         user_inputs["submit"] = predict_button
         user_inputs["clear_results"] = clear_results
         user_inputs["show_history"] = show_history
-        
+
+
         return user_inputs
 
 # --- Configuration Management ---
@@ -610,7 +614,7 @@ def show_prediction_history():
     for entry in st.session_state.prediction_history:
         history_data.append({
             'Timestamp': entry['timestamp'],
-            'Model': entry['model'],
+            'Model': get_model_display_name(entry.get('model_technical', entry['model'])),
             'Hours': f"{entry['prediction_hours']:.0f}",
             'Days': f"{entry['prediction_hours']/8:.1f}",
             'Team Size': entry['team_size']
@@ -628,7 +632,7 @@ def show_prediction_comparison_table():
     st.subheader("🔍 Prediction Comparison")
     
     predictions = [entry['prediction_hours'] for entry in st.session_state.prediction_history]
-    models = [entry['model'] for entry in st.session_state.prediction_history]
+    models = [get_model_display_name(entry.get('model_technical', entry['model'])) for entry in st.session_state.prediction_history]
     
     comparison_data = {
         'Model': models,
@@ -869,9 +873,11 @@ def main():
     initialize_session_state()
     
     # Main header
-    st.title("🔮 ML Project Effort Estimator")
+    st.title("🔮 ML Agile Software Project Effort Estimator")
     st.markdown("Get accurate effort estimates using machine learning models trained on historical project data.")
     
+    #st.write("DEBUG (main): Model mapping", model_options)
+    #st.write("DEBUG (main): available_models", list_available_models())
     try:
         # Get user inputs from sidebar
         user_inputs = sidebar_inputs()

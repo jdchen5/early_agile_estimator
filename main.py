@@ -2,7 +2,7 @@ import streamlit as st
 
 # THIS MUST BE FIRST, before any other Streamlit call!
 st.set_page_config(
-    page_title="ML Agile Project Effort Estimator", 
+    page_title="Machine Learing Agile Software Project Effort Estimator", 
     page_icon="⏱️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -126,7 +126,7 @@ def main():
     set_sidebar_width()  # Call after set_page_config
     initialize_session_state()
 
-    st.title("⏱️ Machine Learning for Early Estimation in Agile Projects")
+    st.title("⏱️ Machine Learning for Early Estimation in Agile Software Projects")
     st.markdown("""
     This application helps project managers and team leads estimate the effort required for
     agile software projects using machine learning models trained on historical project data.
