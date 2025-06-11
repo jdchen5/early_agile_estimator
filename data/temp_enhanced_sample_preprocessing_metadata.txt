@@ -1,8 +1,8 @@
 ISBSG Data Preprocessing Metadata
 ========================================
-original_shape: (153, 156)
-processed_shape: (153, 164)
-processing_timestamp: 2025-06-01T20:58:02.449478
+original_shape: (2277, 52)
+processed_shape: (2277, 71)
+processing_timestamp: 2025-06-11T16:50:49.071543
 target_column_standardized: project_prf_normalised_work_effort
-target_column_original: project_prf_normalised_work_effort
-pipeline_steps: ['column_standardizer', 'missing_handler', 'cat_value_cleaner', 'semicolon_processor', 'cat_value_standardizer', 'multi_value_encoder', 'categorical_encoder', 'column_fixer', 'validator']
+target_column_original: Project_PRF_Normalised Work Effort
+pipeline_steps: ['column_standardizer', 'missing_handler', 'semicolon_processor', 'multi_value_encoder', 'categorical_encoder', 'column_fixer', 'validator']
