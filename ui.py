@@ -44,6 +44,8 @@ UI_BEHAVIOR = {}
 FEATURE_IMPORTANCE_DISPLAY = {}
 PREDICTION_THRESHOLDS = {}
 DISPLAY_CONFIG = {}
+IMPORTANT_TABS = "Important Features"
+NICE_TABS = "Nice Features"
 
 # Minimal CSS for sidebar width only
 def set_sidebar_width():
@@ -65,12 +67,17 @@ def initialize_session_state():
         st.session_state.comparison_results = []
     if 'form_attempted' not in st.session_state:
         st.session_state['form_attempted'] = False
+    if "prf_size_label2code" not in st.session_state:
+        st.session_state.prf_size_label2code = {}
+    if "prf_size_code2mid" not in st.session_state:
+        st.session_state.prf_size_code2mid = {}
+
 
 # --- Configuration Loading ---
 def load_yaml_config(path):
     """Load YAML configuration file with error handling"""
     try:
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except Exception as e:
         st.error(f"Error loading YAML file {path}: {e}")
@@ -104,15 +111,38 @@ def get_field_help(field_name):
 
 def get_field_options(field_name):
     opts = None
-    if field_name in CATEGORICAL_MAPPING:
-        opts = CATEGORICAL_MAPPING[field_name].get('options')
-    return opts
+    raw_opts = None
+     # Make sure the field exists in the mapping and is not None
+    mapping = CATEGORICAL_MAPPING.get(field_name)
+    if not mapping:
+        return []
+
+    raw_opts = mapping.get('options')
+    if raw_opts is None:
+        return []
+    
+    # Special handling for project_prf_relative_size if it's a dict or list of dicts
+    if field_name == "project_prf_relative_size":
+        # List of dicts style
+        if isinstance(raw_opts, list) and raw_opts and isinstance(raw_opts[0], dict):
+            opts = [v['label'] for v in raw_opts]
+            # Save mappings in session state for later lookups
+            st.session_state.prf_size_label2code = {v['label']: v['code'] for v in raw_opts}
+            st.session_state.prf_size_code2mid = {v['code']: v['midpoint'] for v in raw_opts}
+            print(f"DEBUG: relative size options = {opts}")
+            return opts
+        else:
+            print(f"DEBUG: relative size options = {raw_opts}")
+            return raw_opts  # fallback
+    else:
+        return raw_opts
+
 
 def get_tab_organization():
     """Get tab organization from configuration"""
     return UI_INFO_CONFIG.get('tab_organization', {
-        "Required Fields": [],
-        "Optional Fields": []
+        "Important Features": [],
+        "Nice Features": []
     })
 
 def get_ui_behavior():
@@ -195,6 +225,9 @@ def render_field(field_name, config, is_required=False):
             label, min_value=min_val, max_value=max_val, value=value, help=help_text, key=field_name
         )
     elif field_type == "categorical":
+        #st.write("DEBUG: CATEGORICAL_MAPPING keys:", list(CATEGORICAL_MAPPING.keys()))
+        #st.write("DEBUG: CATEGORICAL_MAPPING['project_prf_relative_size']:", CATEGORICAL_MAPPING.get("project_prf_relative_size"))
+
         options = get_field_options(field_name)
         default = config.get("default", options[0] if options else None)
         
@@ -202,12 +235,28 @@ def render_field(field_name, config, is_required=False):
             default_index = options.index(default)
         except (ValueError, IndexError):
             default_index = 0
-        field_value = st.selectbox(
-            label, options,
-            index=default_index if options else None,
-            help=help_text,
-            key=field_name
-        )
+
+        # For project_prf_relative_size, show label, store code in user_inputs
+        if field_name == "project_prf_relative_size":
+            # Defensive: ensure mapping exists
+            if "prf_size_label2code" not in st.session_state:
+                get_field_options(field_name)
+            field_value_label = st.selectbox(
+                label, options,
+                index=default_index if options else None,
+                help=help_text,
+                key=field_name
+            )
+            # If user picks the empty or None, fallback to None or ""
+            field_value = st.session_state.prf_size_label2code.get(field_value_label, None)
+        else:
+            field_value = st.selectbox(
+                label, options,
+                index=default_index if options else None,
+                help=help_text,
+                key=field_name
+            )
+
     elif field_type == "boolean":
         field_value = st.checkbox(label, value=bool(value), help=help_text, key=field_name)
     else:
@@ -234,7 +283,19 @@ def sidebar_inputs():
                     if not config:
                         st.warning(f"⚠️ Field '{field_name}' not configured.")
                         continue
-                    is_required = tab_name == "Required Fields"
+                    
+                    # Dynamically set required based on YAML, default False
+                    is_required = config.get("mandatory", False)
+
+                    # 👉 Dynamic default for function_size:
+                    if field_name == "project_prf_functional_size":
+                        # Get the selected relative size code (which must already be chosen in this session)
+                        rel_code = user_inputs.get("project_prf_relative_size")  # or st.session_state.get("project_prf_relative_size")
+                        if rel_code and rel_code in st.session_state.prf_size_code2mid:
+                            config["default"] = st.session_state.prf_size_code2mid[rel_code]
+                        else:
+                            config["default"] = config.get("default", 5)  # fallback if none
+
                     field_value = render_field(field_name, config, is_required)
                     user_inputs[field_name] = field_value
 
@@ -289,7 +350,8 @@ def sidebar_inputs():
             selected_models = []
 
         # Required field check using dynamic tab organization
-        required_fields = [f for tab, fields in tab_org.items() if tab == "Required Fields" for f in fields]
+        # Dynamically set required based on YAML, default False
+        required_fields = [fname for fname, fdef in FIELDS.items() if fdef.get("mandatory", False)]
         missing_fields = []
         for field in required_fields:
             value = user_inputs.get(field)
@@ -449,7 +511,7 @@ def show_prediction(prediction, team_size, model_name):
         st.info(f"**Model Used:** {model_name}")
     
     # Main prediction metrics
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
         st.metric(
@@ -466,14 +528,7 @@ def show_prediction(prediction, team_size, model_name):
             help="Estimated working days (8 hours per day)"
         )
     
-    with col3:
-        per_person = prediction / team_size if team_size > 0 else prediction
-        st.metric(
-            label="👤 Per Person",
-            value=f"{per_person:.0f} hours",
-            help=f"Hours per team member (team size: {team_size})"
-        )
-    
+        
     # Additional breakdown
     col1, col2 = st.columns(2)
     with col1:
@@ -641,8 +696,8 @@ def show_prediction_history():
             'Timestamp': entry['timestamp'],
             'Model': get_model_display_name(entry.get('model_technical', entry['model'])),
             'Hours': f"{entry['prediction_hours']:.0f}",
-            'Days': f"{entry['prediction_hours']/8:.1f}",
-            'Team Size': entry['team_size']
+            'Days': f"{entry['prediction_hours']/8:.1f}"
+            #'Team Size': entry['team_size']
         })
     
     if history_data:
@@ -700,13 +755,13 @@ def show_multiple_predictions(new_predictions, team_size):
                 model_display_name = model_name
             
             days = prediction / 8
-            per_person = prediction / team_size if team_size > 0 else prediction
+            #per_person = prediction / team_size if team_size > 0 else prediction
             
             comparison_data.append({
                 'Model': model_display_name,
                 'Hours': f"{prediction:.0f}",
                 'Days': f"{days:.1f}",
-                'Per Person': f"{per_person:.0f}",
+                #'Per Person': f"{per_person:.0f}",
                 'Weeks': f"{days/5:.1f}"
             })
             predictions_list.append(prediction)
@@ -893,6 +948,7 @@ def about_section():
 # --- Main Application Function ---
 def main():
     """Main application function with full multi-model support"""
+
     
     # Initialize session state
     initialize_session_state()

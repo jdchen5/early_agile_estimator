@@ -144,8 +144,12 @@ def main():
         config_name = user_inputs.get('config_name', '')
         team_size = user_inputs.get('project_prf_max_team_size', 5)
     except Exception as e:
+        import traceback
+        # Handle any errors in sidebar inputs gracefully
         st.error(f"Error in sidebar inputs: {str(e)}")
         logger.error(f"Sidebar error: {str(e)}")
+        traceback.print_exc()        # << this will show you the real error and line number!
+        st.error(f"Sidebar error: {e}")
         return
 
     tab_results, tab_viz, tab_help = st.tabs(["Estimation Results", "Visualization", "Help & Documentation"])

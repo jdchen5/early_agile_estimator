@@ -10270,3 +10270,432 @@ This will raise in a future version.
 2025-06-10 21:09:29,784:INFO:Set up index.
 2025-06-10 21:09:30,072:INFO:Initializing load_model()
 2025-06-10 21:09:30,072:INFO:load_model(model_name=models\top_model_2_ExtraTreesRegressor, platform=None, authentication=None, verbose=True)
+2025-06-15 15:57:16,056:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 15:57:16,061:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 15:57:16,061:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 15:57:16,061:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:03:39,518:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:03:39,518:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:03:39,518:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:03:39,518:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:07:26,008:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:07:26,008:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:07:26,008:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:07:26,008:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:16:24,404:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:16:24,404:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:16:24,404:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:16:24,404:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:19:23,033:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:19:23,033:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:19:23,034:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:19:23,034:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:26:10,412:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:26:10,412:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:26:10,412:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:26:10,412:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:46:30,798:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:46:30,798:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:46:30,798:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:46:30,798:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:51:45,616:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:51:45,616:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:51:45,616:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:51:45,616:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:56:25,663:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:56:25,664:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:56:25,664:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:56:25,664:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:57:50,020:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:57:50,020:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:57:50,020:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 16:57:50,020:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:02:11,269:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:02:11,269:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:02:11,269:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:02:11,269:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:05:17,500:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:05:17,500:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:05:17,500:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:05:17,500:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:06:33,954:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:06:33,954:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:06:33,954:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:06:33,955:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 17:07:28,168:INFO:Initializing load_model()
+2025-06-15 17:07:28,168:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 17:07:29,036:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-15 17:07:29,694:INFO:Initializing predict_model()
+2025-06-15 17:07:29,694:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000014470B8AA90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000014472C4A5C0>)
+2025-06-15 17:07:29,694:INFO:Checking exceptions
+2025-06-15 17:07:29,694:INFO:Preloading libraries
+2025-06-15 17:07:29,694:INFO:Set up data.
+2025-06-15 17:07:29,708:INFO:Set up index.
+2025-06-15 17:07:29,910:INFO:Initializing load_model()
+2025-06-15 17:07:29,910:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 18:17:56,116:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:17:56,116:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:17:56,116:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:17:56,116:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:19:41,679:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:19:41,679:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:19:41,679:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:19:41,679:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:20:53,737:INFO:Initializing load_model()
+2025-06-15 18:20:53,737:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 18:20:54,382:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-15 18:20:54,782:INFO:Initializing predict_model()
+2025-06-15 18:20:54,782:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001AC66583290>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001AC665D6A20>)
+2025-06-15 18:20:54,782:INFO:Checking exceptions
+2025-06-15 18:20:54,782:INFO:Preloading libraries
+2025-06-15 18:20:54,782:INFO:Set up data.
+2025-06-15 18:20:54,796:INFO:Set up index.
+2025-06-15 18:20:54,950:INFO:Initializing load_model()
+2025-06-15 18:20:54,950:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 18:33:53,651:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:33:53,651:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:33:53,651:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:33:53,651:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-15 18:34:40,078:INFO:Initializing load_model()
+2025-06-15 18:34:40,078:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 18:34:40,883:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-15 18:34:41,357:INFO:Initializing predict_model()
+2025-06-15 18:34:41,357:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001CA26F12510>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001CA26F731A0>)
+2025-06-15 18:34:41,357:INFO:Checking exceptions
+2025-06-15 18:34:41,357:INFO:Preloading libraries
+2025-06-15 18:34:41,357:INFO:Set up data.
+2025-06-15 18:34:41,375:INFO:Set up index.
+2025-06-15 18:34:41,529:INFO:Initializing load_model()
+2025-06-15 18:34:41,529:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-15 18:35:08,243:INFO:Initializing load_model()
+2025-06-15 18:35:08,243:INFO:load_model(model_name=models\top_model_3_LassoLars, platform=None, authentication=None, verbose=True)
+2025-06-15 18:35:08,333:INFO:Initializing predict_model()
+2025-06-15 18:35:08,333:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001CA27A9A510>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', LassoLars(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001CA27A7E480>)
+2025-06-15 18:35:08,333:INFO:Checking exceptions
+2025-06-15 18:35:08,333:INFO:Preloading libraries
+2025-06-15 18:35:08,334:INFO:Set up data.
+2025-06-15 18:35:08,345:INFO:Set up index.
+2025-06-15 18:35:08,492:INFO:Initializing load_model()
+2025-06-15 18:35:08,492:INFO:load_model(model_name=models\top_model_3_LassoLars, platform=None, authentication=None, verbose=True)
+2025-06-15 18:35:17,539:INFO:Initializing load_model()
+2025-06-15 18:35:17,539:INFO:load_model(model_name=models\top_model_2_Lasso, platform=None, authentication=None, verbose=True)
+2025-06-15 18:35:17,627:INFO:Initializing predict_model()
+2025-06-15 18:35:17,627:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001CA27F1CED0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001CA27A7EFC0>)
+2025-06-15 18:35:17,627:INFO:Checking exceptions
+2025-06-15 18:35:17,627:INFO:Preloading libraries
+2025-06-15 18:35:17,627:INFO:Set up data.
+2025-06-15 18:35:17,648:INFO:Set up index.
+2025-06-15 18:35:17,821:INFO:Initializing load_model()
+2025-06-15 18:35:17,821:INFO:load_model(model_name=models\top_model_2_Lasso, platform=None, authentication=None, verbose=True)
+2025-06-22 19:58:22,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 19:58:22,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 19:58:22,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 19:58:22,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:14:07,439:INFO:Initializing load_model()
+2025-06-22 20:14:07,439:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-22 20:14:08,850:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-22 20:14:09,538:INFO:Initializing predict_model()
+2025-06-22 20:14:09,538:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001FD94D90DD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001FD94DF79C0>)
+2025-06-22 20:14:09,538:INFO:Checking exceptions
+2025-06-22 20:14:09,538:INFO:Preloading libraries
+2025-06-22 20:14:09,538:INFO:Set up data.
+2025-06-22 20:14:09,554:INFO:Set up index.
+2025-06-22 20:14:09,737:INFO:Initializing load_model()
+2025-06-22 20:14:09,737:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-22 20:44:28,910:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:44:28,911:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:44:28,911:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:44:28,911:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:45:03,943:INFO:Initializing load_model()
+2025-06-22 20:45:03,944:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-22 20:45:04,564:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-22 20:45:04,915:INFO:Initializing predict_model()
+2025-06-22 20:45:04,915:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001ECF07D5290>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001ECF084A660>)
+2025-06-22 20:45:04,915:INFO:Checking exceptions
+2025-06-22 20:45:04,915:INFO:Preloading libraries
+2025-06-22 20:45:04,915:INFO:Set up data.
+2025-06-22 20:45:04,936:INFO:Set up index.
+2025-06-22 20:45:05,092:INFO:Initializing load_model()
+2025-06-22 20:45:05,092:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-22 20:53:05,925:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:53:05,926:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:53:05,926:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:53:05,926:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-06-22 20:53:33,484:INFO:Initializing load_model()
+2025-06-22 20:53:33,485:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-06-22 20:53:34,099:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-06-22 20:53:34,454:INFO:Initializing predict_model()
+2025-06-22 20:53:34,454:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001E6D61A8D50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001E6D82A2D40>)
+2025-06-22 20:53:34,454:INFO:Checking exceptions
+2025-06-22 20:53:34,454:INFO:Preloading libraries
+2025-06-22 20:53:34,454:INFO:Set up data.
+2025-06-22 20:53:34,474:INFO:Set up index.
+2025-06-22 20:53:34,619:INFO:Initializing load_model()
+2025-06-22 20:53:34,619:INFO:load_model(model_name=models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)

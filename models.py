@@ -48,7 +48,7 @@ UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match m
 
 def load_yaml_config(path: str) -> Dict:
     try:
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
         logging.warning(f"Configuration file not found: {path}")
@@ -335,11 +335,16 @@ def get_model_display_name_from_config(model_filename: str, display_names_map: O
     if display_names_map is None:
         display_names_map = load_model_display_names()
     
-    # Check if we have a configured display name
+    # Try exact match first
     if model_filename in display_names_map:
         return display_names_map[model_filename]
-    
-    # Fallback to dynamic generation
+
+    # Try case-insensitive match
+    model_filename_lower = model_filename.lower()
+    for k, v in display_names_map.items():
+        if k.lower() == model_filename_lower:
+            return v
+    # Fallback
     return get_model_display_name(model_filename)
 
 def get_all_model_display_names() -> Dict[str, str]:

@@ -147,16 +147,36 @@ categorical_features:
       - Other
   project_prf_relative_size:
     options:
-      - 
-      - XXS (Extra Extra Small)
-      - XS (Extra Small)
-      - S (Small)
-      - M1 (Medium 1)
-      - M2 (Medium 2)
-      - L (Large)
-      - XL (Extra Large)
-      - XXL (Extra Extra Large)
-      - XXXL (Extra Extra Extra Large)
+      - code: ""
+        label: ""
+        midpoint: null
+      - code: XXS
+        label: "Extra Extra Small (0–<10)"
+        midpoint: 5
+      - code: XS
+        label: "Extra Small (10–<30)"
+        midpoint: 20
+      - code: S
+        label: "Small (30–<100)"
+        midpoint: 65
+      - code: M1
+        label: "Medium 1 (100–<300)"
+        midpoint: 200
+      - code: M2
+        label: "Medium 2 (300–<1000)"
+        midpoint: 650
+      - code: L
+        label: "Large (1,000–<3,000)"
+        midpoint: 2000
+      - code: XL
+        label: "Extra Large (3,000–<9,000)"
+        midpoint: 6000
+      - code: XXL
+        label: "Extra Extra Large (9,000–<18,000)"
+        midpoint: 13500
+      - code: XXXL
+        label: "Extra Extra Extra Large (≥18,000)"
+        midpoint: 18000
   tech_tf_architecture:
     options: ["", "Client-Server", "Multi-tier with Web Interface", "Stand-alone"]
   tech_tf_client_server:

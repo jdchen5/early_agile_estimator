@@ -84605,3 +84605,216 @@ lightgbm.basic.LightGBMError: Do not support special JSON characters in feature 
 2025-06-12 17:43:44,106:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_15076\3713906125.py:219: DtypeWarning: Columns (15) have mixed types. Specify dtype option on import or set low_memory=False.
   df = pd.read_csv(file_path)
 
+2025-06-15 13:55:10,611:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_e56c017c038240b9a865c275d891e51d
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_a03c1ee9bbf04243aa31c2cb25e92640_21dfe89f6411447b83c07e2e53c6592f
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_a54571eba7954cd4b9c67d5e37d14fda
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_69231e35f3ba4e248aba67b76d52aa41_e43226703d0d4da497c48a0624e4f00c
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_9e3f63c03ef94b15bd4361c232dcb3e5
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_f7a2f022a622426e86e7d8179ac1fa9b_75b81332eaca4bd6bc920d63431aa6f5
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_23a74986af7f41e4aa18439311ea4b11
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,612:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_d54af93befdf4c73855f4b646119266e_6f1572ccae314bd989c882fc1f30dcc6
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_e56e717d0a98445ab0c9baabefceb3af
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_f6f9ce8d6f0149e3a29f2a033ccb2e3f_8e631ae2fdd64e1cae78ac8a476722e1
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_e91681161cba454aaae6ff9abab52254
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ec724f63a3294e7e8724651452b937e8_3488614512e64909846ef6056f0ff75c
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_09bf7834dbd54bbd802a4396d34e60fc
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_88a7f302a3544488bce1ca04760adac7_1ffc53471b664cedbe762e03d6b95f50
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_7e0ba2a6e277472684e1a5e669a3f17c
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,613:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_484dbecce3c2458888942fcf15f86339_f46429dddb16475cb87f3feba3df92e9
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_5521561f97e244afb18e817c317a78a0
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_7068f7defe4f40598f265887766f774f_601d3eb89e7b4426bc3cab3aab6c427d
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_c3020f85fad94ae5b8a49a26c285ae25
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_5a04dfbb89544c9a99ba0e771969c927_0eae9bb8041946b38a4636122aff07c9
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_8142a31003f648039a7423d14c2839ee
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_168c5b22dbe246da975764ebe4afd9a9_080dfadc468742c4b6e46e27edb19ffa
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_ba19bf70707b41708d26f79fc05ca1e7
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,614:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_8e4abd80227c453d812a069dcbed4502_2a52357f835742368d69bb0eebee9d2d
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_da974f60e8914e828dcf321779ccde9a
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_76a31945728341f6be851050eada49b9_09be764ac4864ed1b32e773ab652e4eb
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_e51f2045987c4ee89d413deeed6960bd
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_9070e8177cce4014b991f2074b7ff6d9_6f04ce2b338c4ed39a62e0beff904c3b
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_05469aaaf39a418d9a9ee4ba3b44d488
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_e5ecd28ead184b19b1a97c8aeb56c188_e54e04094aaa4e1db8270dad8a100375
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_27824c7d988c4cbcaa4dcbcf555fe12e
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,615:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ce88cda752f64122af3ef46e485f04bd_c3e97e201754444396a90c23a86d53df
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_6535f8f565624c7ba5995315b8f5a9cb
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_45ae6ca1a82c485da5249b3832905e38_f3a1ed4af84e46e19fc5f2fb508231f9
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_53435793c4c64a708c69f3f090910f3b
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_0f79369f98fd4cc2947be4a951477d82_e01a68d11ff443e4a3133528d5d31b03
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_2c4b423e59214ea182d2fbedde3647ee
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_3a5c59e895e74811a47d16beb3b76725_65fd080964d647668547d7f9987e4978
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_c10650ca34844be8ac1957d6cb362790
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,616:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_bbaed464a3394184a8f43cdc2acc018e_87988b29eb9841a599a3446a143c02e4
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_fd7f13e3d3c149b19f6f9340b50588db
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_79dac444a2d3474b8e6061c1ca46a8c9_32801d7090e2475790c787810a7b147e
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_3ab0721a3b9e4a16ae33b7670c447877
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_2dd72eebbda542e480d769cbc1f95601_dd106b38ebf944d18b4cf2e38c0b4a3b
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_22099d328d30483aab931d3178225633
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_08dd7735c767447f967fe54021c6c743_2214188460d1463c8d2db18ce160adf4
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,617:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_ed14ff83377a42d98961573555c9fae4
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_25f244c45bd14659a65e747138faab4b_101b177674c74b9cb06d1226ba103a51
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_95d46d1150d545f49a395f30634e0790
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_cc8578e1f6e444f6aeb1c3889dec3bad_c7d7fecdde1b4cc49eb8a3782d0be27f
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_748dad8ff59d49cc937f382f1a17f226
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_51bf1b90fb0f44e49fa552f8cef5b585_e02b06e6b1494679a34a86791f4466f0
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_003075eb3d2b45daa6e7d226a2e76875
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ffe981e152ae4ed8b3d838726b43c8b6_b8174a6887e548a387269e6b3cbcb082
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_fdf55d56b927439bbcb0718925eb41b2
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:10,618:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\joblib\_memmapping_reducer.py:598: UserWarning: Failed to delete temporary folder: C:\Users\jdche\AppData\Local\Temp\joblib_memmapping_folder_15076_ee00d67e7e88419eaef423632773b2a4_561ae5bba6d948cba70f2d962a0c302b
+  warnings.warn("Failed to delete temporary folder: {}"
+
+2025-06-15 13:55:33,511:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:124: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-06-15 13:55:39,800:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:160: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-06-15 13:55:41,195:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-06-15 13:55:41,410:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-06-15 13:55:41,500:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-06-15 13:55:41,590:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-06-15 13:55:41,661:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:189: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-06-15 13:55:42,424:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+
+2025-06-15 13:55:42,472:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_3724\14068265.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+

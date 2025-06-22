@@ -1,4 +1,10 @@
 {
+    "top_model_1_BayesianRidge": "Bayesian Ridge Regression",
+    "top_model_1_bayesianridge": "Bayesian Ridge Regression",
+    "top_model_2_lasso": "Lasso Regression",
+    "top_model_2_Lasso": "Lasso Regression",
+    "top_model_3_LassoLars": "Lasso Least Angle Regression",
+    "top_model_3_lassolars": "Lasso Least Angle Regression",
     "top_model_1_GradientBoostingRegressor": "Gradient Boosting Regressor",
     "top_model_2_ExtraTreesRegressor": "Extra Trees Regressor",
     "top_model_3_RandomForestRegressor": "Random Forest Regressor",
