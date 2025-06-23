@@ -1148,6 +1148,553 @@ def get_feature_statistics():
     except Exception as e:
         return {"error": str(e)}
 
+def get_trained_model(model_name: str) -> Optional[Any]:
+    """
+    Get the actual trained model object for SHAP analysis.
+    This function returns the underlying model, not wrapped in PyCaret.
+    
+    Args:
+        model_name: Technical name of the model
+        
+    Returns:
+        The actual model object or None if loading fails
+    """
+    try:
+        # First load the model using existing function
+        model = load_model(model_name)
+        if model is None:
+            logging.error(f"Could not load model: {model_name}")
+            return None
+        
+        # Extract the actual estimator from PyCaret model
+        if hasattr(model, '_final_estimator'):
+            # PyCaret model - get the final estimator
+            actual_model = model._final_estimator
+            logging.info(f"Extracted final estimator from PyCaret model: {type(actual_model)}")
+            return actual_model
+            
+        elif hasattr(model, 'named_steps'):
+            # Pipeline model - get the final step
+            step_names = list(model.named_steps.keys())
+            if step_names:
+                final_step = model.named_steps[step_names[-1]]
+                logging.info(f"Extracted final step from pipeline: {type(final_step)}")
+                return final_step
+            
+        elif hasattr(model, 'steps'):
+            # Another type of pipeline
+            if len(model.steps) > 0:
+                final_step = model.steps[-1][1]  # Get the estimator from (name, estimator) tuple
+                logging.info(f"Extracted final step from steps pipeline: {type(final_step)}")
+                return final_step
+        
+        # If none of the above, assume it's already the actual model
+        logging.info(f"Using model directly: {type(model)}")
+        return model
+        
+    except Exception as e:
+        logging.error(f"Error getting trained model {model_name}: {e}")
+        return None
+
+def prepare_input_data(user_inputs: Dict[str, Any]) -> Optional[np.ndarray]:
+    """
+    Prepare user input data for SHAP analysis.
+    Converts user inputs to the format expected by the model.
+    
+    Args:
+        user_inputs: Dictionary of user inputs from UI
+        
+    Returns:
+        numpy array ready for model prediction, or None if preparation fails
+    """
+    try:
+        if not user_inputs:
+            logging.error("No user inputs provided")
+            return None
+        
+        logging.info(f"Preparing input data from {len(user_inputs)} user inputs")
+        
+        # Use the existing feature preparation pipeline
+        features_df = prepare_features_for_model(user_inputs)
+        if features_df is None or features_df.empty:
+            logging.error("Feature preparation failed")
+            return None
+        
+        # Convert to numpy array
+        input_array = features_df.values
+        
+        # Ensure it's a 2D array with single row
+        if input_array.ndim == 1:
+            input_array = input_array.reshape(1, -1)
+        
+        logging.info(f"Input data prepared successfully: shape {input_array.shape}")
+        return input_array
+        
+    except Exception as e:
+        logging.error(f"Error preparing input data: {e}")
+        return None
+
+def prepare_sample_data(n_samples: int = 100, use_training_data: bool = True) -> Optional[np.ndarray]:
+    """
+    Prepare sample data for SHAP baseline/background.
+    Uses actual ISBSG training dataset for more realistic baseline.
+    
+    Args:
+        n_samples: Number of sample instances to return
+        use_training_data: Whether to use training data (True) or generate synthetic (False)
+        
+    Returns:
+        numpy array with sample data, or None if loading fails
+    """
+    
+    if use_training_data:
+        # Try ISBSG dataset first
+        isbsg_data = prepare_isbsg_sample_data(n_samples)
+        if isbsg_data is not None:
+            return isbsg_data
+        
+        # Fallback to general training data loading
+        return prepare_sample_data_from_training_csv(n_samples)
+    else:
+        return prepare_sample_data_synthetic(n_samples)
+
+def prepare_sample_data_from_training_csv(n_samples: int = 100) -> Optional[np.ndarray]:
+    """
+    Load sample data from the original training CSV file.
+    This provides the most realistic baseline for SHAP analysis.
+    """
+    try:
+        # Define possible training data file locations (including your specific file)
+        possible_paths = [
+            'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv',  # training data file
+        ]
+        
+        training_data_path = None
+        
+        # Find the training data file
+        for path in possible_paths:
+            if os.path.exists(path):
+                training_data_path = path
+                logging.info(f"Found training data at: {path}")
+                break
+        
+        if training_data_path is None:
+            logging.warning("Training data CSV file not found. Falling back to synthetic data.")
+            return prepare_sample_data_synthetic(n_samples)
+        
+        # Load the training data
+        logging.info(f"Loading training data from: {training_data_path}")
+        df = pd.read_csv(training_data_path)
+        
+        # Remove target/label columns specific to your dataset
+        target_columns = [
+            # Common effort/prediction columns
+            'effort', 'hours', 'man_hours', 'total_effort', 'prediction', 
+            'target', 'label', 'actual_effort', 'estimated_effort',
+            # Your specific target columns (effort-related)
+            'project_prf_normalised_work_effort_level_1',
+            'project_prf_normalised_work_effort',
+            'project_prf_normalised_level_1_pdr_ufp',
+            'project_prf_normalised_pdr_ufp',
+            'project_prf_speed_of_delivery',
+            'project_prf_project_elapsed_time',
+            # ISBSG ID (not a feature)
+            'isbsg_project_id'
+        ]
+        
+        # Case-insensitive removal of target columns
+        columns_to_drop = []
+        for col in df.columns:
+            if any(target_col.lower() in col.lower() for target_col in target_columns):
+                columns_to_drop.append(col)
+        
+        if columns_to_drop:
+            df = df.drop(columns=columns_to_drop, errors='ignore')
+            logging.info(f"Removed target columns: {columns_to_drop}")
+        
+        # Handle missing values
+        df = df.fillna(0)
+        
+        # Sample the requested number of rows
+        if len(df) > n_samples:
+            # Random sampling for diversity
+            sample_df = df.sample(n=n_samples, random_state=42)
+            logging.info(f"Sampled {n_samples} rows from {len(df)} total rows")
+        else:
+            sample_df = df.copy()
+            logging.info(f"Using all {len(df)} rows (less than requested {n_samples})")
+        
+        # Convert to the expected feature format
+        expected_features = get_expected_feature_names_from_config()
+        
+        # Process each row through the feature preparation pipeline
+        processed_samples = []
+        
+        for idx, row in sample_df.iterrows():
+            try:
+                # Convert row to dictionary format expected by prepare_features_for_model
+                row_dict = row.to_dict()
+                
+                # Process through the same pipeline as user inputs
+                processed_features = prepare_features_for_model(row_dict)
+                
+                if processed_features is not None and not processed_features.empty:
+                    processed_samples.append(processed_features.values.flatten())
+                else:
+                    # Fallback: create feature vector directly
+                    feature_vector = create_feature_vector_from_dict(row_dict, expected_features)
+                    processed_samples.append(feature_vector)
+                    
+            except Exception as e:
+                logging.debug(f"Failed to process training sample {idx}: {e}")
+                # Skip this sample
+                continue
+        
+        if not processed_samples:
+            logging.error("No training samples could be processed")
+            return prepare_sample_data_synthetic(n_samples)
+        
+        # Convert to numpy array
+        sample_array = np.array(processed_samples)
+        
+        # Ensure proper shape
+        if sample_array.ndim == 1:
+            sample_array = sample_array.reshape(1, -1)
+        
+        logging.info(f"Training data sample prepared successfully: shape {sample_array.shape}")
+        return sample_array
+        
+    except Exception as e:
+        logging.error(f"Error loading training data: {e}")
+        logging.info("Falling back to synthetic sample data")
+        return prepare_sample_data_synthetic(n_samples)
+
+def prepare_sample_data_synthetic(n_samples: int = 100) -> Optional[np.ndarray]:
+    """
+    Fallback function to generate synthetic sample data.
+    Used when training data is not available.
+    """
+    try:
+        logging.info(f"Generating {n_samples} synthetic sample data points")
+        
+        expected_features = get_expected_feature_names_from_config()
+        n_features = len(expected_features)
+        
+        if n_features == 0:
+            logging.error("No features found in configuration")
+            return None
+        
+        # Generate random data scaled to reasonable ranges
+        sample_data = np.random.rand(n_samples, n_features)
+        
+        # Scale features based on their types from FIELDS
+        for i, feature_name in enumerate(expected_features):
+            feature_config = FIELDS.get(feature_name, {})
+            feature_type = feature_config.get('type', 'numeric')
+            
+            if feature_type == 'numeric':
+                min_val = feature_config.get('min', 1)
+                max_val = feature_config.get('max', 100)
+                sample_data[:, i] = sample_data[:, i] * (max_val - min_val) + min_val
+            else:
+                # For categorical/boolean, convert to small integers
+                sample_data[:, i] = (sample_data[:, i] * 5).astype(int)
+        
+        logging.info(f"Synthetic sample data generated: shape {sample_data.shape}")
+        return sample_data
+        
+    except Exception as e:
+        logging.error(f"Error generating synthetic sample data: {e}")
+        return None
+
+def get_training_data_info() -> Dict[str, Any]:
+    """
+    Get information about available training data for SHAP analysis.
+    """
+    try:
+        possible_paths = [
+            'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv',  # Training dataset specific file
+        ]
+        
+        info = {
+            'training_data_available': False,
+            'file_path': None,
+            'num_rows': 0,
+            'num_features': 0,
+            'file_size_mb': 0
+        }
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                try:
+                    df = pd.read_csv(path, nrows=1)  # Just read header
+                    file_size = os.path.getsize(path) / (1024 * 1024)  # MB
+                    
+                    # Get full row count
+                    full_df = pd.read_csv(path)
+                    
+                    info.update({
+                        'training_data_available': True,
+                        'file_path': path,
+                        'num_rows': len(full_df),
+                        'num_features': len(full_df.columns),
+                        'file_size_mb': round(file_size, 2)
+                    })
+                    break
+                    
+                except Exception as e:
+                    logging.debug(f"Could not read {path}: {e}")
+                    continue
+        
+        return info
+        
+    except Exception as e:
+        logging.error(f"Error getting training data info: {e}")
+        return {'error': str(e)}
+
+def prepare_isbsg_sample_data(n_samples: int = 100) -> Optional[np.ndarray]:
+    """
+    Specifically load sample data from your ISBSG dataset.
+    Optimized for the synthetic_isbsg2016r1_1_finance_sdv_generated.csv file.
+    """
+    try:
+        file_path = 'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+        
+        if not os.path.exists(file_path):
+            logging.error(f"ISBSG dataset not found at: {file_path}")
+            return prepare_sample_data_synthetic(n_samples)
+        
+        logging.info(f"Loading ISBSG training data from: {file_path}")
+        
+        # Load the dataset
+        df = pd.read_csv(file_path)
+        logging.info(f"Loaded ISBSG dataset: {df.shape[0]} rows, {df.shape[1]} columns")
+        
+        # Remove target columns and ID columns
+        columns_to_remove = [
+            'isbsg_project_id',  # ID column
+            'project_prf_normalised_work_effort_level_1',  # Target
+            'project_prf_normalised_work_effort',  # Target
+            'project_prf_normalised_level_1_pdr_ufp',  # Target
+            'project_prf_normalised_pdr_ufp',  # Target
+            'project_prf_speed_of_delivery',  # Target
+            'project_prf_project_elapsed_time'  # Target
+        ]
+        
+        # Remove columns that exist
+        existing_columns_to_remove = [col for col in columns_to_remove if col in df.columns]
+        if existing_columns_to_remove:
+            df = df.drop(columns=existing_columns_to_remove)
+            logging.info(f"Removed target/ID columns: {existing_columns_to_remove}")
+        
+        # Handle missing values
+        df = df.fillna(0)
+        
+        # Sample the data
+        if len(df) > n_samples:
+            # Stratified sampling to ensure good representation
+            sample_df = df.sample(n=n_samples, random_state=42)
+            logging.info(f"Sampled {n_samples} rows from {len(df)} total ISBSG rows")
+        else:
+            sample_df = df.copy()
+            logging.info(f"Using all {len(df)} ISBSG rows")
+        
+        # Convert to numpy array format expected by models
+        sample_array = sample_df.values
+        
+        # Ensure numeric types
+        sample_array = sample_array.astype(float)
+        
+        logging.info(f"ISBSG sample data prepared: shape {sample_array.shape}")
+        logging.info(f"Sample data statistics - Mean: {sample_array.mean():.2f}, Std: {sample_array.std():.2f}")
+        
+        return sample_array
+        
+    except Exception as e:
+        logging.error(f"Error loading ISBSG sample data: {e}")
+        return prepare_sample_data_synthetic(n_samples)
+
+def get_isbsg_dataset_info() -> Dict[str, Any]:
+    """
+    Get detailed information about your ISBSG dataset.
+    """
+    try:
+        file_path = 'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+        
+        if not os.path.exists(file_path):
+            return {'available': False, 'error': 'ISBSG dataset not found'}
+        
+        # Read just the header first
+        df_sample = pd.read_csv(file_path, nrows=100)
+        
+        # Get file size
+        file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+        
+        # Analyze column types
+        feature_columns = [col for col in df_sample.columns 
+                          if col not in ['isbsg_project_id', 
+                                       'project_prf_normalised_work_effort_level_1',
+                                       'project_prf_normalised_work_effort',
+                                       'project_prf_normalised_level_1_pdr_ufp',
+                                       'project_prf_normalised_pdr_ufp',
+                                       'project_prf_speed_of_delivery',
+                                       'project_prf_project_elapsed_time']]
+        
+        numeric_cols = df_sample[feature_columns].select_dtypes(include=[np.number]).columns.tolist()
+        boolean_cols = [col for col in feature_columns if col not in numeric_cols]
+        
+        # Get full dataset info
+        full_df = pd.read_csv(file_path)
+        
+        info = {
+            'available': True,
+            'file_path': file_path,
+            'total_rows': len(full_df),
+            'total_columns': len(full_df.columns),
+            'feature_columns': len(feature_columns),
+            'numeric_features': len(numeric_cols),
+            'boolean_features': len(boolean_cols),
+            'file_size_mb': round(file_size_mb, 2),
+            'target_columns': [
+                'project_prf_normalised_work_effort_level_1',
+                'project_prf_normalised_work_effort',
+                'project_prf_speed_of_delivery'
+            ],
+            'sample_statistics': {
+                'functional_size_mean': df_sample['project_prf_functional_size'].mean() if 'project_prf_functional_size' in df_sample.columns else None,
+                'team_size_mean': df_sample['project_prf_max_team_size'].mean() if 'project_prf_max_team_size' in df_sample.columns else None,
+                'missing_values': df_sample.isnull().sum().sum()
+            }
+        }
+        
+        return info
+        
+    except Exception as e:
+        return {'available': False, 'error': str(e)}
+
+def set_training_data_path(file_path: str) -> bool:
+    """
+    Set a custom path for training data.
+    You can call this function to specify where your training data is located.
+    """
+    try:
+        if not os.path.exists(file_path):
+            logging.error(f"Training data file not found: {file_path}")
+            return False
+        
+        # Test if we can read the file
+        test_df = pd.read_csv(file_path, nrows=5)
+        logging.info(f"Training data path set successfully: {file_path}")
+        logging.info(f"Training data shape: {test_df.shape}")
+        
+        # You could store this path in a configuration file or global variable
+        # For now, we'll just validate it works
+        return True
+        
+    except Exception as e:
+        logging.error(f"Error setting training data path: {e}")
+        return False
+    
+def validate_shap_compatibility(model_name: str) -> Dict[str, Any]:
+    """
+    Validate if a model is compatible with SHAP analysis.
+    
+    Args:
+        model_name: Technical name of the model
+        
+    Returns:
+        Dictionary with compatibility information
+    """
+    try:
+        result = {
+            'compatible': False,
+            'explainer_type': None,
+            'issues': [],
+            'recommendations': []
+        }
+        
+        # Load the model
+        model = get_trained_model(model_name)
+        if model is None:
+            result['issues'].append("Could not load model")
+            return result
+        
+        model_type = type(model).__name__
+        logging.info(f"Checking SHAP compatibility for model type: {model_type}")
+        
+        # Check for tree-based models (best SHAP support)
+        tree_models = [
+            'RandomForestRegressor', 'GradientBoostingRegressor', 'XGBRegressor',
+            'LGBMRegressor', 'CatBoostRegressor', 'ExtraTreesRegressor',
+            'DecisionTreeRegressor'
+        ]
+        
+        if any(tree_model in model_type for tree_model in tree_models):
+            result['compatible'] = True
+            result['explainer_type'] = 'TreeExplainer'
+            result['recommendations'].append("Excellent SHAP support with TreeExplainer")
+        
+        # Check for linear models
+        elif any(linear_model in model_type for linear_model in ['LinearRegression', 'Ridge', 'Lasso', 'ElasticNet']):
+            result['compatible'] = True
+            result['explainer_type'] = 'LinearExplainer'
+            result['recommendations'].append("Good SHAP support with LinearExplainer")
+        
+        # Check if model has predict method (required for KernelExplainer)
+        elif hasattr(model, 'predict'):
+            result['compatible'] = True
+            result['explainer_type'] = 'KernelExplainer'
+            result['recommendations'].append("Basic SHAP support with KernelExplainer (slower)")
+            result['issues'].append("KernelExplainer may be slow for complex models")
+        
+        else:
+            result['issues'].append(f"Model type {model_type} may not be fully compatible with SHAP")
+            result['recommendations'].append("Consider using a tree-based model for better SHAP support")
+        
+        return result
+        
+    except Exception as e:
+        return {
+            'compatible': False,
+            'explainer_type': None,
+            'issues': [f"Error checking compatibility: {e}"],
+            'recommendations': ["Ensure model can be loaded properly"]
+        }
+
+# Additional utility function for SHAP feature name mapping
+def get_shap_feature_names(model_name: str, user_inputs: Dict[str, Any]) -> List[str]:
+    """
+    Get feature names for SHAP analysis, ensuring they match the model's expected features.
+    
+    Args:
+        model_name: Technical name of the model
+        user_inputs: User input dictionary to prepare features from
+        
+    Returns:
+        List of feature names that match the model's expectations
+    """
+    try:
+        # Get model expected features
+        model = get_trained_model(model_name)
+        if model is None:
+            logging.error("Could not load model for feature name extraction")
+            return get_expected_feature_names_from_config()
+        
+        model_features = get_model_expected_features(model)
+        if model_features:
+            logging.info(f"Using model-specific feature names: {len(model_features)} features")
+            return model_features
+        
+        # Fallback to configuration-based features
+        config_features = get_expected_feature_names_from_config()
+        logging.info(f"Using configuration-based feature names: {len(config_features)} features")
+        return config_features
+        
+    except Exception as e:
+        logging.error(f"Error getting SHAP feature names: {e}")
+        return get_expected_feature_names_from_config()
+
+
 # Exports for Streamlit UI
 __all__ = [
     'list_available_models',
@@ -1170,5 +1717,11 @@ __all__ = [
     'get_all_model_display_names',
     'save_model_display_names',
     'prepare_features_for_model',
-    'validate_prepared_features'
+    'validate_prepared_features',
+    'get_trained_model',
+    'prepare_input_data', 
+    'prepare_sample_data',
+    'prepare_sample_data_from_history',
+    'validate_shap_compatibility',
+    'get_shap_feature_names'    
 ]

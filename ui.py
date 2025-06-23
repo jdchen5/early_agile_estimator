@@ -1,8 +1,8 @@
 # ui.py - with Multi-Model Support and Configuration Management
 """
-Streamlit UI for ML Project Effort Estimator with Multi-Model Support
+Streamlit UI for ML Project Effort Estimator with Multi-Model Support and Advanced SHAP Analysis
 This module provides a user interface for estimating project effort using machine learning models.
-It includes form inputs, multi-model selection, prediction comparison, and feature importance analysis.
+It includes form inputs, multi-model selection, prediction comparison, and comprehensive SHAP analysis.
 """
 
 import streamlit as st
@@ -13,13 +13,20 @@ import json
 import os
 import yaml
 from datetime import datetime
+import shap
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+
 try:
     from models import (
         predict_man_hours,
         list_available_models,
         check_required_models,
         get_feature_importance,
-        get_model_display_name
+        get_model_display_name,
+        get_trained_model,  # Add this function to get the actual model object
+        prepare_input_data  # Add this function to prepare data for SHAP
     )
     MODELS_AVAILABLE = True
 except ImportError as e:
@@ -35,6 +42,10 @@ except ImportError as e:
         return []
     def check_required_models():
         return {"models_available": False}
+    def get_trained_model(model_name):
+        return None
+    def prepare_input_data(inputs):
+        return None
 
 # Load merged configuration - will be called after load_yaml_config is defined
 UI_INFO_CONFIG = {}
@@ -46,6 +57,8 @@ PREDICTION_THRESHOLDS = {}
 DISPLAY_CONFIG = {}
 IMPORTANT_TABS = "Important Features"
 NICE_TABS = "Nice Features"
+CONFIG_FOLDER = "config"
+SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.json"
 
 # Minimal CSS for sidebar width only
 def set_sidebar_width():
@@ -71,6 +84,12 @@ def initialize_session_state():
         st.session_state.prf_size_label2code = {}
     if "prf_size_code2mid" not in st.session_state:
         st.session_state.prf_size_code2mid = {}
+    if 'current_shap_values' not in st.session_state:
+        st.session_state.current_shap_values = None
+    if 'current_model_explainer' not in st.session_state:
+        st.session_state.current_model_explainer = None
+    if 'last_prediction_inputs' not in st.session_state:
+        st.session_state.last_prediction_inputs = None
 
 
 # --- Configuration Loading ---
@@ -94,6 +113,502 @@ DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
 
 FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
 CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
+
+# --- SHAP Analysis Functions ---
+def get_shap_explainer(model_name):
+    """Get or create SHAP explainer for a model"""
+    try:
+        model = get_trained_model(model_name)
+        if model is None:
+            return None
+        
+        # Create appropriate explainer based on model type
+        if hasattr(model, 'predict_proba'):
+            # For classification models
+            explainer = shap.TreeExplainer(model)
+        elif hasattr(model, 'predict'):
+            # For regression models
+            explainer = shap.TreeExplainer(model)
+        else:
+            # Fallback to KernelExplainer
+            sample_data = prepare_sample_data()  # You'll need to implement this
+            explainer = shap.KernelExplainer(model.predict, sample_data)
+        
+        return explainer
+    except Exception as e:
+        st.error(f"Error creating SHAP explainer: {e}")
+        return None
+
+def prepare_sample_data(n_samples=100):
+    """Prepare sample data for SHAP analysis"""
+    # This should return a sample of your training data
+    # You'll need to implement this based on your data structure
+    # For now, return a placeholder
+    return np.random.rand(n_samples, 10)  # Adjust dimensions as needed
+
+def get_shap_values_for_input(user_inputs, model_name):
+    """Get SHAP values for specific user input"""
+    try:
+        explainer = get_shap_explainer(model_name)
+        if explainer is None:
+            return None
+        
+        # Prepare input data
+        input_data = prepare_input_data(user_inputs)
+        if input_data is None:
+            return None
+        
+        # Get SHAP values
+        shap_values = explainer.shap_values(input_data.reshape(1, -1))
+        
+        # Store in session state for reuse
+        st.session_state.current_shap_values = shap_values
+        st.session_state.current_model_explainer = explainer
+        st.session_state.last_prediction_inputs = user_inputs.copy()
+        
+        return shap_values
+    except Exception as e:
+        st.error(f"Error calculating SHAP values: {e}")
+        return None
+
+def display_instance_specific_shap(user_inputs, model_name):
+    """Display SHAP analysis for the current prediction"""
+    st.subheader("🎯 Your Prediction's Feature Impact")
+    
+    if not user_inputs:
+        st.warning("Please make a prediction first to see instance-specific SHAP analysis.")
+        return
+    
+    shap_values = get_shap_values_for_input(user_inputs, model_name)
+    if shap_values is None:
+        st.error("Could not generate SHAP values for your input.")
+        return
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Waterfall Plot - Feature Contributions**")
+        try:
+            # Create waterfall plot
+            fig, ax = plt.subplots(figsize=(10, 6))
+            
+            # Get feature names (you'll need to implement this)
+            feature_names = get_feature_names_from_inputs(user_inputs)
+            
+            # Create waterfall-style plot
+            shap_vals = shap_values[0] if isinstance(shap_values, list) else shap_values[0]
+            
+            # Sort by absolute value
+            sorted_indices = np.argsort(np.abs(shap_vals))[-10:]  # Top 10 features
+            sorted_values = shap_vals[sorted_indices]
+            sorted_names = [feature_names[i] for i in sorted_indices]
+            
+            colors = ['red' if x < 0 else 'blue' for x in sorted_values]
+            ax.barh(range(len(sorted_values)), sorted_values, color=colors)
+            ax.set_yticks(range(len(sorted_values)))
+            ax.set_yticklabels(sorted_names)
+            ax.set_xlabel('SHAP Value (Impact on Prediction)')
+            ax.set_title('Feature Impact on Your Prediction')
+            
+            st.pyplot(fig)
+            plt.close()
+            
+        except Exception as e:
+            st.error(f"Error creating waterfall plot: {e}")
+    
+    with col2:
+        st.write("**Feature Impact Summary**")
+        try:
+            # Create summary table
+            feature_names = get_feature_names_from_inputs(user_inputs)
+            shap_vals = shap_values[0] if isinstance(shap_values, list) else shap_values[0]
+            
+            summary_data = []
+            for i, (name, value) in enumerate(zip(feature_names, shap_vals)):
+                summary_data.append({
+                    'Feature': get_field_label(name),
+                    'Input Value': user_inputs.get(name, 'N/A'),
+                    'SHAP Impact': f"{value:.3f}",
+                    'Effect': 'Increases' if value > 0 else 'Decreases'
+                })
+            
+            # Sort by absolute impact
+            summary_data.sort(key=lambda x: abs(float(x['SHAP Impact'])), reverse=True)
+            
+            summary_df = pd.DataFrame(summary_data[:10])  # Top 10
+            st.dataframe(summary_df, use_container_width=True)
+            
+        except Exception as e:
+            st.error(f"Error creating impact summary: {e}")
+
+def display_what_if_shap_analysis(user_inputs, model_name):
+    """Interactive what-if analysis with SHAP"""
+    st.subheader("🔍 What-If SHAP Analysis")
+    
+    if not user_inputs:
+        st.warning("Please make a prediction first to enable what-if analysis.")
+        return
+    
+    # Parameter selection
+    numeric_params = get_what_if_parameters()
+    
+    if not numeric_params:
+        st.warning("No numeric parameters available for what-if analysis.")
+        return
+    
+    selected_param_label = st.selectbox(
+        "Select parameter to analyze:",
+        list(numeric_params.keys()),
+        help="Choose which parameter to vary for sensitivity analysis"
+    )
+    
+    selected_param = numeric_params[selected_param_label]
+    
+    # Get current value and create range
+    current_value = user_inputs.get(selected_param)
+    if current_value is None:
+        st.warning(f"No value found for parameter: {selected_param}")
+        return
+    
+    range_info = get_what_if_range_from_config(selected_param, current_value)
+    if range_info is None:
+        st.warning("Could not determine appropriate range for analysis.")
+        return
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        # Create range of values
+        num_points = st.slider("Number of analysis points:", 5, 20, 10)
+        values = np.linspace(range_info['min'], range_info['max'], num_points)
+        
+        predictions = []
+        shap_impacts = []
+        
+        progress_bar = st.progress(0)
+        
+        for i, val in enumerate(values):
+            temp_inputs = user_inputs.copy()
+            temp_inputs[selected_param] = val
+            
+            try:
+                # Get prediction
+                pred = predict_man_hours(temp_inputs, model_name)
+                predictions.append(pred if pred is not None else 0)
+                
+                # Get SHAP value for this parameter
+                shap_vals = get_shap_values_for_input(temp_inputs, model_name)
+                if shap_vals is not None:
+                    param_index = get_parameter_index(selected_param)
+                    if param_index is not None:
+                        shap_impact = shap_vals[0][param_index] if isinstance(shap_vals, list) else shap_vals[0][param_index]
+                        shap_impacts.append(shap_impact)
+                    else:
+                        shap_impacts.append(0)
+                else:
+                    shap_impacts.append(0)
+                    
+            except Exception as e:
+                predictions.append(0)
+                shap_impacts.append(0)
+            
+            progress_bar.progress((i + 1) / len(values))
+        
+        progress_bar.empty()
+        
+        # Create visualization
+        fig = make_subplots(
+            rows=2, cols=1,
+            subplot_titles=('Prediction vs Parameter Value', 'SHAP Impact vs Parameter Value'),
+            vertical_spacing=0.12
+        )
+        
+        # Prediction plot
+        fig.add_trace(
+            go.Scatter(x=values, y=predictions, mode='lines+markers', name='Prediction'),
+            row=1, col=1
+        )
+        
+        # SHAP impact plot
+        fig.add_trace(
+            go.Scatter(x=values, y=shap_impacts, mode='lines+markers', name='SHAP Impact', line=dict(color='red')),
+            row=2, col=1
+        )
+        
+        # Highlight current value
+        fig.add_vline(x=current_value, line_dash="dash", line_color="green", 
+                      annotation_text="Current", row=1, col=1)
+        fig.add_vline(x=current_value, line_dash="dash", line_color="green", 
+                      annotation_text="Current", row=2, col=1)
+        
+        fig.update_layout(height=600, title_text=f"What-If Analysis: {selected_param_label}")
+        fig.update_xaxes(title_text=selected_param_label, row=2, col=1)
+        fig.update_yaxes(title_text="Hours", row=1, col=1)
+        fig.update_yaxes(title_text="SHAP Value", row=2, col=1)
+        
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.write("**Analysis Summary**")
+        
+        # Summary statistics
+        min_pred = min(predictions)
+        max_pred = max(predictions)
+        current_pred = predict_man_hours(user_inputs, model_name)
+        
+        st.metric("Current Prediction", f"{current_pred:.0f} hours")
+        st.metric("Prediction Range", f"{min_pred:.0f} - {max_pred:.0f} hours")
+        st.metric("Max Variation", f"{max_pred - min_pred:.0f} hours")
+        
+        if shap_impacts:
+            avg_shap = np.mean(np.abs(shap_impacts))
+            st.metric("Avg SHAP Impact", f"{avg_shap:.3f}")
+        
+        # Sensitivity analysis
+        sensitivity = (max_pred - min_pred) / (range_info['max'] - range_info['min'])
+        st.info(f"**Sensitivity:** {sensitivity:.1f} hours per unit change")
+        
+        # Show data table
+        with st.expander("📋 View Analysis Data"):
+            analysis_df = pd.DataFrame({
+                selected_param_label: values,
+                'Prediction (Hours)': predictions,
+                'SHAP Impact': shap_impacts,
+                'Difference from Current': [p - current_pred for p in predictions]
+            })
+            st.dataframe(analysis_df, use_container_width=True)
+
+def display_scenario_comparison(user_inputs, model_name):
+    """Compare SHAP values across different project scenarios"""
+    st.subheader("📊 Scenario Comparison")
+    
+    # Define scenarios
+    scenarios = {
+        "Small Agile Project": {
+            "project_prf_max_team_size": 3,
+            "project_prf_functional_size": 5,
+            "project_tech_primary_programming_language": "Python"
+        },
+        "Medium Enterprise Project": {
+            "project_prf_max_team_size": 8,
+            "project_prf_functional_size": 15,
+            "project_tech_primary_programming_language": "Java"
+        },
+        "Large Enterprise Project": {
+            "project_prf_max_team_size": 15,
+            "project_prf_functional_size": 30,
+            "project_tech_primary_programming_language": "C#"
+        }
+    }
+    
+    # Add current project as a scenario
+    if user_inputs:
+        scenarios["Your Current Project"] = user_inputs.copy()
+    
+    # Calculate predictions and SHAP values for each scenario
+    scenario_results = {}
+    
+    for scenario_name, scenario_inputs in scenarios.items():
+        try:
+            # Merge with user inputs for missing values
+            if scenario_name != "Your Current Project":
+                full_inputs = user_inputs.copy() if user_inputs else {}
+                full_inputs.update(scenario_inputs)
+            else:
+                full_inputs = scenario_inputs
+            
+            # Get prediction
+            prediction = predict_man_hours(full_inputs, model_name)
+            
+            # Get SHAP values
+            shap_values = get_shap_values_for_input(full_inputs, model_name)
+            
+            scenario_results[scenario_name] = {
+                'prediction': prediction,
+                'shap_values': shap_values,
+                'inputs': full_inputs
+            }
+            
+        except Exception as e:
+            st.warning(f"Could not analyze scenario '{scenario_name}': {e}")
+    
+    if not scenario_results:
+        st.error("Could not analyze any scenarios.")
+        return
+    
+    # Display comparison
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # Create comparison chart
+        scenario_names = list(scenario_results.keys())
+        predictions = [scenario_results[name]['prediction'] for name in scenario_names]
+        
+        fig = go.Figure(data=[
+            go.Bar(x=scenario_names, y=predictions, 
+                   text=[f"{p:.0f}h" for p in predictions],
+                   textposition='auto')
+        ])
+        
+        fig.update_layout(
+            title="Effort Predictions by Scenario",
+            xaxis_title="Scenario",
+            yaxis_title="Predicted Hours",
+            height=400
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.write("**Scenario Details**")
+        for name, results in scenario_results.items():
+            with st.expander(f"{name}"):
+                st.metric("Prediction", f"{results['prediction']:.0f} hours")
+                
+                # Show key parameters
+                key_params = ['project_prf_max_team_size', 'project_prf_functional_size']
+                for param in key_params:
+                    if param in results['inputs']:
+                        st.write(f"**{get_field_label(param)}:** {results['inputs'][param]}")
+    
+    # SHAP comparison heatmap
+    st.write("**Feature Impact Comparison**")
+    
+    try:
+        # Create SHAP comparison matrix
+        feature_names = get_feature_names_from_inputs(user_inputs) if user_inputs else []
+        
+        if feature_names:
+            shap_matrix = []
+            for scenario_name in scenario_names:
+                if scenario_results[scenario_name]['shap_values'] is not None:
+                    shap_vals = scenario_results[scenario_name]['shap_values']
+                    if isinstance(shap_vals, list):
+                        shap_vals = shap_vals[0]
+                    else:
+                        shap_vals = shap_vals[0]
+                    shap_matrix.append(shap_vals[:len(feature_names)])
+                else:
+                    shap_matrix.append([0] * len(feature_names))
+            
+            if shap_matrix:
+                shap_df = pd.DataFrame(shap_matrix, 
+                                     index=scenario_names, 
+                                     columns=[get_field_label(name) for name in feature_names])
+                
+                # Show top features only (to avoid clutter)
+                avg_abs_impact = shap_df.abs().mean().sort_values(ascending=False)
+                top_features = avg_abs_impact.head(10).index
+                
+                fig = px.imshow(shap_df[top_features].T, 
+                              aspect="auto",
+                              color_continuous_scale="RdBu_r",
+                              title="SHAP Values by Scenario (Top 10 Features)")
+                
+                st.plotly_chart(fig, use_container_width=True)
+        
+    except Exception as e:
+        st.warning(f"Could not create SHAP comparison: {e}")
+
+def display_feature_interactions(user_inputs, model_name):
+    """Display feature interaction analysis"""
+    st.subheader("🔗 Feature Interactions")
+    
+    if not user_inputs:
+        st.warning("Please make a prediction first to analyze feature interactions.")
+        return
+    
+    try:
+        explainer = get_shap_explainer(model_name)
+        if explainer is None:
+            st.error("Could not create SHAP explainer for interaction analysis.")
+            return
+        
+        # Prepare input data
+        input_data = prepare_input_data(user_inputs)
+        if input_data is None:
+            st.error("Could not prepare input data for analysis.")
+            return
+        
+        # Calculate interaction values (this might be computationally expensive)
+        with st.spinner("Calculating feature interactions... This may take a moment."):
+            try:
+                # For tree-based models, we can get interaction values
+                if hasattr(explainer, 'shap_interaction_values'):
+                    interaction_values = explainer.shap_interaction_values(input_data.reshape(1, -1))
+                else:
+                    st.warning("Interaction analysis not available for this model type.")
+                    return
+                
+            except Exception as e:
+                st.error(f"Could not calculate interaction values: {e}")
+                return
+        
+        feature_names = get_feature_names_from_inputs(user_inputs)
+        
+        if interaction_values is not None and len(feature_names) > 1:
+            # Create interaction heatmap
+            interaction_matrix = interaction_values[0]  # For single prediction
+            
+            # Limit to top features to avoid clutter
+            n_features = min(15, len(feature_names))
+            
+            # Get feature importance to select top features
+            main_effects = np.diagonal(interaction_matrix)
+            top_indices = np.argsort(np.abs(main_effects))[-n_features:]
+            
+            selected_matrix = interaction_matrix[np.ix_(top_indices, top_indices)]
+            selected_names = [get_field_label(feature_names[i]) for i in top_indices]
+            
+            fig = px.imshow(selected_matrix, 
+                          x=selected_names, 
+                          y=selected_names,
+                          color_continuous_scale="RdBu_r",
+                          title=f"Feature Interaction Matrix (Top {n_features} Features)")
+            
+            fig.update_layout(height=600)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Show strongest interactions
+            st.write("**Strongest Feature Interactions**")
+            
+            interactions = []
+            for i in range(len(selected_matrix)):
+                for j in range(i+1, len(selected_matrix)):
+                    interaction_strength = abs(selected_matrix[i, j])
+                    if interaction_strength > 0.001:  # Threshold for significance
+                        interactions.append({
+                            'Feature 1': selected_names[i],
+                            'Feature 2': selected_names[j],
+                            'Interaction Strength': interaction_strength,
+                            'Effect': 'Positive' if selected_matrix[i, j] > 0 else 'Negative'
+                        })
+            
+            if interactions:
+                interaction_df = pd.DataFrame(interactions)
+                interaction_df = interaction_df.sort_values('Interaction Strength', ascending=False)
+                st.dataframe(interaction_df.head(10), use_container_width=True)
+            else:
+                st.info("No significant feature interactions detected.")
+        
+    except Exception as e:
+        st.error(f"Error in feature interaction analysis: {e}")
+
+# Helper functions for SHAP analysis
+def get_feature_names_from_inputs(user_inputs):
+    """Extract feature names from user inputs"""
+    exclude_keys = {'selected_model', 'selected_models', 'submit', 'clear_results', 'show_history'}
+    return [k for k in user_inputs.keys() if k not in exclude_keys]
+
+def get_parameter_index(parameter_name):
+    """Get the index of a parameter in the feature array"""
+    # This should return the index of the parameter in your model's feature array
+    # You'll need to implement this based on your feature ordering
+    try:
+        feature_names = list(FIELDS.keys())
+        return feature_names.index(parameter_name)
+    except ValueError:
+        return None
 
 
 # --- Field helper functions using merged config ---
@@ -897,6 +1412,163 @@ def display_previous_results_summary():
         with col3:
             st.metric("Range", f"{np.min(all_predictions):.0f} - {np.max(all_predictions):.0f}")
 
+def display_static_shap_analysis():
+    """Display static SHAP analysis from file"""
+    st.header("📈 Static SHAP Analysis - Model Feature Importance")
+
+    try:
+        with open(SHAP_ANALYSIS_FILE, "r", encoding="utf-8") as f:
+            shap_report_md = f.read()
+        st.markdown(shap_report_md, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Failed to load static SHAP analysis report: {e}")
+
+def display_visualizations_and_analysis():
+    """Display the Visualizations & Analysis tab content"""
+    st.header("📊 Visualizations & Analysis")
+    
+    # Check if we have a recent prediction to analyze
+    if not st.session_state.prediction_history:
+        st.warning("⚠️ Please make at least one prediction first to enable detailed analysis.")
+        return
+    
+    # Get the most recent prediction for analysis
+    latest_prediction = st.session_state.prediction_history[-1]
+    user_inputs = latest_prediction.get('inputs', {})
+    model_name = latest_prediction.get('model_technical')
+    
+    if not user_inputs or not model_name:
+        st.error("Cannot perform analysis - missing prediction data.")
+        return
+    
+    # Create sub-tabs for different analyses
+    analysis_tabs = st.tabs([
+        "🎯 Instance-Specific SHAP", 
+        "🔍 What-If Analysis", 
+        "📊 Scenario Comparison",
+        "🔗 Feature Interactions"
+    ])
+    
+    with analysis_tabs[0]:
+        display_instance_specific_shap(user_inputs, model_name)
+    
+    with analysis_tabs[1]:
+        display_what_if_shap_analysis(user_inputs, model_name)
+    
+    with analysis_tabs[2]:
+        display_scenario_comparison(user_inputs, model_name)
+    
+    with analysis_tabs[3]:
+        display_feature_interactions(user_inputs, model_name)
+
+def display_model_comparison():
+    """Display model comparison analysis"""
+    st.header("🤖 Model Comparison")
+    
+    if len(st.session_state.prediction_history) < 2:
+        st.warning("⚠️ Please make predictions with at least 2 different models to enable comparison.")
+        return
+    
+    # Group predictions by model
+    model_predictions = {}
+    for entry in st.session_state.prediction_history:
+        model_name = entry.get('model_technical', entry['model'])
+        if model_name not in model_predictions:
+            model_predictions[model_name] = []
+        model_predictions[model_name].append(entry['prediction_hours'])
+    
+    # Create comparison visualizations
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("📊 Model Performance Comparison")
+        
+        # Box plot for model predictions
+        comparison_data = []
+        for model, predictions in model_predictions.items():
+            for pred in predictions:
+                comparison_data.append({
+                    'Model': get_model_display_name(model),
+                    'Prediction (Hours)': pred
+                })
+        
+        if comparison_data:
+            comparison_df = pd.DataFrame(comparison_data)
+            
+            # Create box plot using plotly
+            fig = px.box(comparison_df, x='Model', y='Prediction (Hours)',
+                        title="Distribution of Predictions by Model")
+            st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.subheader("📈 Model Statistics")
+        
+        # Statistics table
+        stats_data = []
+        for model, predictions in model_predictions.items():
+            if predictions:
+                stats_data.append({
+                    'Model': get_model_display_name(model),
+                    'Count': len(predictions),
+                    'Mean': f"{np.mean(predictions):.0f}",
+                    'Std Dev': f"{np.std(predictions):.0f}",
+                    'Min': f"{np.min(predictions):.0f}",
+                    'Max': f"{np.max(predictions):.0f}"
+                })
+        
+        if stats_data:
+            stats_df = pd.DataFrame(stats_data)
+            st.dataframe(stats_df, use_container_width=True)
+    
+    # Model agreement analysis
+    st.subheader("🎯 Model Agreement Analysis")
+    
+    if len(model_predictions) >= 2:
+        # Find predictions made with same inputs across different models
+        input_signatures = {}
+        for entry in st.session_state.prediction_history:
+            # Create a signature from input parameters
+            inputs = entry.get('inputs', {})
+            exclude_keys = {'selected_model', 'selected_models', 'submit', 'clear_results', 'show_history'}
+            signature = tuple(sorted([(k, v) for k, v in inputs.items() if k not in exclude_keys]))
+            
+            if signature not in input_signatures:
+                input_signatures[signature] = {}
+            
+            model_name = entry.get('model_technical', entry['model'])
+            input_signatures[signature][model_name] = entry['prediction_hours']
+        
+        # Find cases where multiple models predicted same inputs
+        multi_model_cases = {sig: models for sig, models in input_signatures.items() if len(models) >= 2}
+        
+        if multi_model_cases:
+            agreement_data = []
+            for signature, model_preds in multi_model_cases.items():
+                predictions = list(model_preds.values())
+                variance = np.var(predictions)
+                agreement_score = 1 / (1 + variance/np.mean(predictions)**2) if np.mean(predictions) > 0 else 0
+                
+                agreement_data.append({
+                    'Input Set': f"Case {len(agreement_data) + 1}",
+                    'Models': len(model_preds),
+                    'Predictions': ', '.join([f"{p:.0f}h" for p in predictions]),
+                    'Variance': f"{variance:.0f}",
+                    'Agreement Score': f"{agreement_score:.3f}"
+                })
+            
+            if agreement_data:
+                st.dataframe(pd.DataFrame(agreement_data), use_container_width=True)
+                
+                avg_agreement = np.mean([float(row['Agreement Score']) for row in agreement_data])
+                if avg_agreement > 0.8:
+                    st.success(f"✅ High model agreement (avg: {avg_agreement:.3f})")
+                elif avg_agreement > 0.6:
+                    st.warning(f"⚠️ Moderate model agreement (avg: {avg_agreement:.3f})")
+                else:
+                    st.error(f"❌ Low model agreement (avg: {avg_agreement:.3f}) - consider reviewing inputs")
+        else:
+            st.info("No cases found where multiple models predicted the same inputs.")
+
 # --- About Section Function ---
 def about_section():
     """Display about section with tool information"""
@@ -910,7 +1582,7 @@ def about_section():
     - **Multiple ML Models**: Compare predictions from different machine learning models
     - **Comprehensive Parameters**: Considers project size, team composition, technology stack, and organizational factors
     - **Interactive Interface**: User-friendly form with real-time validation and feedback
-    - **Feature Importance**: Shows which factors most influence the effort estimation
+    - **Advanced SHAP Analysis**: Deep insights into feature importance and model behavior
     - **Configuration Management**: Save and load project configurations for reuse
     - **Historical Tracking**: Keep track of previous predictions for comparison
     
@@ -919,18 +1591,19 @@ def about_section():
     2. **Model Selection**: Choose one or multiple ML models for prediction/comparison
     3. **ML Prediction**: The tool applies trained machine learning models to generate effort estimates
     4. **Results Analysis**: View the predicted effort in hours, days, and per-person breakdowns
-    5. **Insights**: Understand which factors most influence your project's effort estimate
+    5. **Deep Analysis**: Understand which factors most influence your project's effort estimate using SHAP
     
-    #### Multi-Model Features:
-    - **Single Model**: Detailed prediction view with full analysis
-    - **Multiple Models**: Comparison table with statistics (average, min, max, standard deviation)
-    - **Compare Mode**: Keep previous results for historical comparison
-    - **Variance Detection**: Warnings when models disagree significantly
+    #### Advanced Analysis Features:
+    - **Instance-Specific SHAP**: See how each feature impacts your specific prediction
+    - **What-If Analysis**: Understand sensitivity to parameter changes
+    - **Scenario Comparison**: Compare different project types and approaches
+    - **Feature Interactions**: Discover how features work together
+    - **Model Comparison**: Analyze agreement and variance between different models
     
     #### Best Practices:
     - Provide accurate team size and project complexity information
     - Select multiple models to get a range of estimates and validate consistency
-    - Use comparison mode to see how parameter changes affect predictions
+    - Use the visualization tools to understand model behavior
     - Save configurations for similar future projects
     - Consider the tool's predictions as guidance alongside expert judgment
     
@@ -947,7 +1620,7 @@ def about_section():
 
 # --- Main Application Function ---
 def main():
-    """Main application function with full multi-model support"""
+    """Main application function with full multi-model support and enhanced SHAP analysis"""
 
     
     # Initialize session state
@@ -967,63 +1640,74 @@ def main():
         if user_inputs.get('clear_results', False):
             clear_prediction_results()
             st.rerun()
-        
-        # Main content area
-        if user_inputs.get('submit', False):
-            selected_model = user_inputs.get('selected_model')
-            selected_models = user_inputs.get('selected_models', [])
-            
-            if selected_model:
-                # Display input summary
-                display_inputs(user_inputs, [selected_model])
-                st.divider()
+
+        # --- Add tab navigation for main content ---
+        tab_names = ["Estimator", "Visualisations & Analysis", "Model Comparison", "Static SHAP Analysis", "Help"]
+        selected_tab = st.radio("Navigation", tab_names, horizontal=True)
+
+        if selected_tab == "Estimator":
+            if user_inputs.get('submit', False):
+                selected_model = user_inputs.get('selected_model')
+                selected_models = user_inputs.get('selected_models', [])
                 
-                # Run prediction(s)
-                with st.spinner("Calculating estimation..."):
-                    try:
-                        # Support both single and multi-model workflows
-                        if len(selected_models) <= 1:
-                            # Single model workflow
-                            prediction = predict_man_hours(user_inputs, selected_model)
-                            team_size = user_inputs.get('project_prf_max_team_size', 5)
+                if selected_model:
+                    # Display input summary
+                    display_inputs(user_inputs, [selected_model])
+                    st.divider()
+                    
+                    # Run prediction(s)
+                    with st.spinner("Calculating estimation..."):
+                        try:
+                            if len(selected_models) <= 1:
+                                # Single model workflow
+                                prediction = predict_man_hours(user_inputs, selected_model)
+                                team_size = user_inputs.get('project_prf_max_team_size', 5)
+                                
+                                # Show current prediction
+                                show_prediction(prediction, team_size, selected_model)
+                                
+                                # Add to history
+                                add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
+                                
+                            else:
+                                # Multi-model workflow
+                                new_predictions = run_predictions(user_inputs, selected_models)
+                                team_size = user_inputs.get('project_prf_max_team_size', 5)
+                                comparison_mode = user_inputs.get('comparison_mode', False)
+                                
+                                # Display results
+                                display_prediction_results(selected_models, new_predictions, team_size, comparison_mode)
                             
-                            # Show current prediction
-                            show_prediction(prediction, team_size, selected_model)
+                            # Show history and comparisons
+                            show_prediction_history()
+                            show_prediction_comparison_table()
                             
-                            # Add to history
-                            add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
+                            # Show feature importance
+                            st.divider()
+                            show_feature_importance(selected_model, user_inputs)
                             
-                        else:
-                            # Multi-model workflow
-                            new_predictions = run_predictions(user_inputs, selected_models)
-                            team_size = user_inputs.get('project_prf_max_team_size', 5)
-                            comparison_mode = user_inputs.get('comparison_mode', False)
-                            
-                            # Display results
-                            display_prediction_results(selected_models, new_predictions, team_size, comparison_mode)
-                        
-                        # Show history and comparisons
-                        show_prediction_history()
-                        show_prediction_comparison_table()
-                        
-                        # Show feature importance
-                        st.divider()
-                        show_feature_importance(selected_model, user_inputs)
-                        
-                    except Exception as e:
-                        st.error(f"Error during prediction: {e}")
-            
+                        except Exception as e:
+                            st.error(f"Error during prediction: {e}")
+                
+                else:
+                    st.warning("⚠️ Please select a model to make predictions")
             else:
-                st.warning("⚠️ Please select a model to make predictions")
-        
-        else:
-            # Welcome screen
-            st.info("👈 **Get Started:** Fill in the project parameters in the sidebar and click 'Predict Effort' to get your estimate.")
-            
-            # Show previous results summary if any
-            display_previous_results_summary()
-            
-            # Help section
+                # Welcome screen
+                st.info("👈 **Get Started:** Fill in the project parameters in the sidebar and click 'Predict Effort' to get your estimate.")
+                
+                # Show previous results summary if any
+                display_previous_results_summary()
+
+        elif selected_tab == "Visualisations & Analysis":
+            display_visualizations_and_analysis()
+
+        elif selected_tab == "Model Comparison":
+            display_model_comparison()
+
+        elif selected_tab == "Static SHAP Analysis":
+            display_static_shap_analysis()
+
+        elif selected_tab == "Help":            
             with st.expander("ℹ️ How to Use This Tool"):
                 st.markdown("""
                 ### Quick Start Guide
@@ -1032,7 +1716,15 @@ def main():
                 2. **Optional Parameters** - Add more details in the "Optional Fields" tab for better accuracy  
                 3. **Select Model** - Choose a model for prediction
                 4. **Get Prediction** - Click 'Predict Effort' to see your estimate
-                5. **Save Configuration** - Save your parameter settings for future use
+                5. **Analyze Results** - Use the Visualizations & Analysis tab for deep insights
+                6. **Save Configuration** - Save your parameter settings for future use
+                
+                ### New Analysis Features
+                - **Instance-Specific SHAP**: See how each feature impacts YOUR specific prediction
+                - **What-If Analysis**: Understand how changing parameters affects predictions
+                - **Scenario Comparison**: Compare your project against typical project types
+                - **Feature Interactions**: Discover how features work together
+                - **Model Comparison**: Analyze agreement between different models
                 
                 ### Multi-Model Features
                 - **Single Model**: Detailed prediction view with full analysis
@@ -1043,20 +1735,22 @@ def main():
                 ### Features
                 - **Detailed Predictions**: Hours, days, and per-person breakdowns
                 - **Prediction History**: Track and compare multiple predictions
-                - **Feature Importance**: See which factors matter most
-                - **What-If Analysis**: Understand parameter sensitivity
+                - **Advanced SHAP Analysis**: Deep understanding of feature importance
+                - **Interactive Visualizations**: Dynamic charts and plots
                 - **Configuration Save/Load**: Reuse settings for similar projects
                 
                 ### Tips for Better Estimates
                 - Fill in as many relevant fields as possible
                 - Use realistic team sizes and project characteristics
+                - Explore the Visualizations & Analysis tab after making predictions
                 - Compare multiple predictions to understand variability
                 - Save configurations for similar future projects
-                - Review variance between models - high variance may indicate parameter issues
+                - Use what-if analysis to understand parameter sensitivity
                 
                 ### Troubleshooting
                 - Ensure all required fields (⭐) are completed
                 - Check that models are available in the dropdown
+                - Make at least one prediction to enable analysis features
                 - Review field help text for guidance on values
                 - Use "Clear History" if you want to start fresh
                 """)
