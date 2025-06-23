@@ -1,0 +1,5 @@
+outs:
+- md5: 631536e6ba9dbf557f31abe0e4b39c53
+  size: 76060
+  hash: md5
+  path: top_model_3_LassoLars.pkl
