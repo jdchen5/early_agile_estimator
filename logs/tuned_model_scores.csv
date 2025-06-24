@@ -1,4 +1,4 @@
 Model,MAE,RMSE,R2
-BayesianRidge,,,
-Lasso,,,
-LassoLars,,,
+BayesianRidge,3045.3959,4623.5168,0.3787
+Lasso,3039.9852,4621.1475,0.3793
+LassoLars,3046.2654,4623.8788,0.3785

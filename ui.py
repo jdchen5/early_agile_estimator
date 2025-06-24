@@ -25,6 +25,7 @@ try:
         check_required_models,
         get_feature_importance,
         get_model_display_name,
+        get_model_display_name_from_config,
         get_trained_model,  # Add this function to get the actual model object
         prepare_input_data  # Add this function to prepare data for SHAP
     )
@@ -58,7 +59,7 @@ DISPLAY_CONFIG = {}
 IMPORTANT_TABS = "Important Features"
 NICE_TABS = "Nice Features"
 CONFIG_FOLDER = "config"
-SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.json"
+SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.md"
 
 # Minimal CSS for sidebar width only
 def set_sidebar_width():
@@ -73,23 +74,22 @@ def set_sidebar_width():
     """, unsafe_allow_html=True)
 
 def initialize_session_state():
-    """Initialize session state variables"""
-    if 'prediction_history' not in st.session_state:
-        st.session_state.prediction_history = []
-    if 'comparison_results' not in st.session_state:
-        st.session_state.comparison_results = []
-    if 'form_attempted' not in st.session_state:
-        st.session_state['form_attempted'] = False
-    if "prf_size_label2code" not in st.session_state:
-        st.session_state.prf_size_label2code = {}
-    if "prf_size_code2mid" not in st.session_state:
-        st.session_state.prf_size_code2mid = {}
-    if 'current_shap_values' not in st.session_state:
-        st.session_state.current_shap_values = None
-    if 'current_model_explainer' not in st.session_state:
-        st.session_state.current_model_explainer = None
-    if 'last_prediction_inputs' not in st.session_state:
-        st.session_state.last_prediction_inputs = None
+    """Initialize Streamlit session state variables"""
+    defaults = {
+        'prediction_history': [],
+        'comparison_results': [],
+        'form_attempted': False,
+        'prf_size_label2code': {},
+        'prf_size_code2mid': {},
+        'current_shap_values': None,
+        'current_model_explainer': None,
+        'last_prediction_inputs': None,
+        # add new defaults here as needed
+    }
+    for key, default in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
+
 
 
 # --- Configuration Loading ---
@@ -122,51 +122,125 @@ def get_shap_explainer(model_name):
         if model is None:
             return None
         
-        # Create appropriate explainer based on model type
-        if hasattr(model, 'predict_proba'):
-            # For classification models
+        # Determine model type and create appropriate explainer
+        model_type = type(model).__name__.lower()
+        model_module = type(model).__module__.lower()
+        
+        # Tree-based models (use TreeExplainer)
+        if any(tree_type in model_type for tree_type in ['forest', 'tree', 'xgb', 'lgb', 'catboost', 'gradient']):
             explainer = shap.TreeExplainer(model)
-        elif hasattr(model, 'predict'):
-            # For regression models
-            explainer = shap.TreeExplainer(model)
+        
+        # Linear models (use LinearExplainer)
+        elif any(linear_type in model_type for linear_type in ['linear', 'lasso', 'ridge', 'elastic']):
+            # For linear models, we need training data
+            sample_data = prepare_sample_data()
+            if sample_data is not None:
+                explainer = shap.LinearExplainer(model, sample_data)
+            else:
+                # Fallback to KernelExplainer if no training data
+                explainer = shap.KernelExplainer(model.predict, prepare_sample_data_small())
+        
+        # Neural networks and other models (use KernelExplainer)
+        elif any(nn_type in model_type for nn_type in ['neural', 'mlp', 'perceptron']):
+            sample_data = prepare_sample_data_small()  # Smaller sample for kernel explainer
+            explainer = shap.KernelExplainer(model.predict, sample_data)
+        
+        # Default fallback - KernelExplainer (works with any model)
         else:
-            # Fallback to KernelExplainer
-            sample_data = prepare_sample_data()  # You'll need to implement this
+            sample_data = prepare_sample_data_small()
             explainer = shap.KernelExplainer(model.predict, sample_data)
         
         return explainer
+        
     except Exception as e:
-        st.error(f"Error creating SHAP explainer: {e}")
+        st.error(f"Error creating SHAP explainer for {model_name}: {e}")
         return None
 
 def prepare_sample_data(n_samples=100):
-    """Prepare sample data for SHAP analysis"""
-    # This should return a sample of your training data
-    # You'll need to implement this based on your data structure
-    # For now, return a placeholder
-    return np.random.rand(n_samples, 10)  # Adjust dimensions as needed
+    """Prepare sample data for SHAP analysis - larger sample for LinearExplainer"""
+    try:
+        # This should ideally return actual training data
+        # For now, create realistic sample data based on field configurations
+        sample_data = []
+        
+        for _ in range(n_samples):
+            sample_row = []
+            for field_name, field_config in FIELDS.items():
+                field_type = field_config.get('type', 'numeric')
+                
+                if field_type == 'numeric':
+                    min_val = field_config.get('min', 1)
+                    max_val = field_config.get('max', 100)
+                    default_val = field_config.get('default', (min_val + max_val) / 2)
+                    # Add some variation around default
+                    value = np.random.normal(default_val, (max_val - min_val) * 0.2)
+                    value = np.clip(value, min_val, max_val)
+                    sample_row.append(value)
+                elif field_type == 'categorical':
+                    # For categorical, use encoded values (0, 1, 2, etc.)
+                    options = get_field_options(field_name)
+                    if options:
+                        sample_row.append(np.random.randint(0, len(options)))
+                    else:
+                        sample_row.append(0)
+                elif field_type == 'boolean':
+                    sample_row.append(np.random.choice([0, 1]))
+                else:
+                    sample_row.append(0)  # Default fallback
+            
+            sample_data.append(sample_row)
+        
+        return np.array(sample_data)
+    except Exception as e:
+        st.warning(f"Could not prepare sample data: {e}")
+        # Fallback to simple random data
+        n_features = len(FIELDS) if FIELDS else 10
+        return np.random.rand(n_samples, n_features)
+
+def prepare_sample_data_small(n_samples=20):
+    """Prepare smaller sample data for KernelExplainer (computationally expensive)"""
+    return prepare_sample_data(n_samples)
 
 def get_shap_values_for_input(user_inputs, model_name):
-    """Get SHAP values for specific user input"""
+    """Get SHAP values for a specific input"""
     try:
+        # Get the SHAP explainer for the model
         explainer = get_shap_explainer(model_name)
         if explainer is None:
             return None
         
-        # Prepare input data
+        # Prepare the input data in the format expected by the model
         input_data = prepare_input_data(user_inputs)
         if input_data is None:
             return None
         
-        # Get SHAP values
-        shap_values = explainer.shap_values(input_data.reshape(1, -1))
+        # Ensure input_data is in the right shape (2D array for single prediction)
+        if input_data.ndim == 1:
+            input_data = input_data.reshape(1, -1)
         
-        # Store in session state for reuse
-        st.session_state.current_shap_values = shap_values
-        st.session_state.current_model_explainer = explainer
-        st.session_state.last_prediction_inputs = user_inputs.copy()
-        
-        return shap_values
+        # Calculate SHAP values
+        try:
+            shap_values = explainer.shap_values(input_data)
+            
+            # Handle different return formats from different explainer types
+            if isinstance(shap_values, list):
+                # For multi-class problems or some explainer types
+                if len(shap_values) == 1:
+                    return shap_values[0]  # Single class
+                else:
+                    return shap_values[0]  # Use first class for regression-like problems
+            else:
+                # For single output/regression problems
+                return shap_values
+                
+        except Exception as e:
+            # Fallback for explainers that might have different methods
+            if hasattr(explainer, 'explain'):
+                explanation = explainer.explain(input_data)
+                if hasattr(explanation, 'values'):
+                    return explanation.values
+            raise e
+            
     except Exception as e:
         st.error(f"Error calculating SHAP values: {e}")
         return None
@@ -644,6 +718,8 @@ def get_field_options(field_name):
             # Save mappings in session state for later lookups
             st.session_state.prf_size_label2code = {v['label']: v['code'] for v in raw_opts}
             st.session_state.prf_size_code2mid = {v['code']: v['midpoint'] for v in raw_opts}
+            # Save the entire option by code for future needs (e.g., min/max hour lookups)
+            st.session_state.prf_size_code2full = {v.get('code', ''): v for v in raw_opts}
             print(f"DEBUG: relative size options = {opts}")
             return opts
         else:
@@ -1011,8 +1087,8 @@ def display_inputs(user_inputs, selected_models):
             st.progress(completeness / 100)
             st.caption(f"Configuration completeness: {completeness:.1f}% ({filled_fields}/{total_fields} fields)")
 
-def show_prediction(prediction, team_size, model_name):
-    """Show prediction results with team breakdown"""
+def show_prediction(prediction, team_size, model_name, user_inputs=None):
+    """Show prediction results with team breakdown and dynamic size-band warnings."""
     if prediction is None:
         st.error("Prediction failed. Please check your inputs and try again.")
         return
@@ -1026,42 +1102,49 @@ def show_prediction(prediction, team_size, model_name):
         st.info(f"**Model Used:** {model_name}")
     
     # Main prediction metrics
-    col1, col2 = st.columns(2)
-    
+    col1, col2, col3, col4 = st.columns(4)
+
     with col1:
-        st.metric(
-            label="📊 Total Effort",
-            value=f"{prediction:.0f} hours",
-            help="Total estimated development effort in hours"
-        )
-    
+        st.metric("📊 Total Effort", f"{prediction:.0f} hours")
+
     with col2:
         days = prediction / 8
-        st.metric(
-            label="📅 Working Days", 
-            value=f"{days:.1f} days",
-            help="Estimated working days (8 hours per day)"
-        )
-    
-        
-    # Additional breakdown
-    col1, col2 = st.columns(2)
-    with col1:
+        st.metric("📅 Working Days", f"{days:.1f} days")
+
+    with col3:
         weeks = days / 5
         st.metric("📆 Working Weeks", f"{weeks:.1f} weeks")
-    
-    with col2:
+
+    with col4:
         months = weeks / 4.33
         st.metric("🗓️ Months", f"{months:.1f} months")
+
     
-    # Warnings based on thresholds
-    low_threshold = PREDICTION_THRESHOLDS.get('low_prediction_warning', 10)
-    high_threshold = PREDICTION_THRESHOLDS.get('high_prediction_warning', 5000)
-    
-    if prediction < low_threshold:
-        st.warning(f"⚠️ Very low effort prediction ({prediction:.0f} hours). Please verify your inputs.")
-    elif prediction > high_threshold:
-        st.warning(f"⚠️ Very high effort prediction ({prediction:.0f} hours). Consider breaking down the project.")
+    # --- Use dynamic thresholds based on selected relative size ---
+    if user_inputs is not None and "project_prf_relative_size" in user_inputs:
+        rel_code = user_inputs["project_prf_relative_size"]
+        size_info = st.session_state.prf_size_code2full.get(rel_code, {})
+        min_hour = size_info.get("minimumhour", 0)
+        max_hour = size_info.get("maximumhour", None)
+
+        if prediction < min_hour:
+            st.warning(
+                f"⚠️ The prediction ({prediction:.0f} hours) is **below** the expected minimum for this size ({min_hour} hours). "
+                "Please check your inputs."
+            )
+        elif max_hour and prediction > max_hour:
+            st.warning(
+                f"⚠️ The prediction ({prediction:.0f} hours) is **above** the expected maximum for this size ({max_hour} hours). "
+                "Consider breaking down the project or reviewing your parameters."
+            )
+    else:
+        # Fallback to fixed thresholds
+        low_threshold = PREDICTION_THRESHOLDS.get('low_prediction_warning', 10)
+        high_threshold = PREDICTION_THRESHOLDS.get('high_prediction_warning', 192000)
+        if prediction < low_threshold:
+            st.warning(f"⚠️ Very low effort prediction ({prediction:.0f} hours). Please verify your inputs.")
+        elif prediction > high_threshold:
+            st.warning(f"⚠️ Very high effort prediction ({prediction:.0f} hours). Consider breaking down the project.")
 
 def show_feature_importance(model_name, features_dict):
     """Display feature importance analysis"""
@@ -1177,27 +1260,6 @@ def perform_what_if_analysis(user_inputs, model_name, field_name, display_name):
     except Exception as e:
         st.error(f"Error in what-if analysis: {e}")
 
-def add_prediction_to_history(user_inputs, model_name, prediction, team_size):
-    """Add prediction to session history"""
-    if prediction is None:
-        return
-    
-    try:
-        model_display_name = get_model_display_name(model_name)
-    except:
-        model_display_name = model_name
-    
-    history_entry = {
-        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        'model': model_display_name,
-        'model_technical': model_name,
-        'prediction_hours': prediction,
-        'team_size': team_size,
-        'inputs': user_inputs.copy()
-    }
-    
-    st.session_state.prediction_history.append(history_entry)
-
 def show_prediction_history():
     """Display prediction history"""
     if not st.session_state.prediction_history:
@@ -1206,18 +1268,47 @@ def show_prediction_history():
     st.subheader("📈 Prediction History")
     
     history_data = []
-    for entry in st.session_state.prediction_history:
-        history_data.append({
-            'Timestamp': entry['timestamp'],
-            'Model': get_model_display_name(entry.get('model_technical', entry['model'])),
-            'Hours': f"{entry['prediction_hours']:.0f}",
-            'Days': f"{entry['prediction_hours']/8:.1f}"
-            #'Team Size': entry['team_size']
-        })
     
-    if history_data:
-        history_df = pd.DataFrame(history_data)
-        st.dataframe(history_df, use_container_width=True)
+    try:
+        for entry in st.session_state.prediction_history:
+            # Safely extract model information
+            model_technical = entry.get('model_technical', '')
+            if not model_technical:
+                model_technical = entry.get('model', 'Unknown Model')
+            
+            # Get display name with fallback
+            try:
+                # Import the function if not already imported
+                from models import get_model_display_name_from_config
+                model_display = get_model_display_name_from_config(model_technical)
+            except Exception as e:
+                # Fallback to the technical name or stored display name
+                model_display = entry.get('model', model_technical)
+                if not model_display:
+                    model_display = model_technical
+            
+            # Build history entry
+            history_entry = {
+                'Timestamp': entry.get('timestamp', 'Unknown'),
+                'Model': model_display,
+                'Hours': f"{entry.get('prediction_hours', 0):.0f}",
+                'Days': f"{entry.get('prediction_hours', 0)/8:.1f}"
+            }
+            history_data.append(history_entry)
+        
+        # Display the data
+        if history_data:
+            history_df = pd.DataFrame(history_data)
+            st.dataframe(history_df, use_container_width=True)
+        else:
+            st.info("No prediction history to display")
+            
+    except Exception as e:
+        st.error(f"Error displaying prediction history: {str(e)}")
+        # Show debug information
+        with st.expander("Debug Information"):
+            st.write("Prediction history contents:")
+            st.write(st.session_state.prediction_history)
 
 def show_prediction_comparison_table():
     """Show comparison table if multiple predictions exist"""
@@ -1226,29 +1317,55 @@ def show_prediction_comparison_table():
     
     st.subheader("🔍 Prediction Comparison")
     
-    predictions = [entry['prediction_hours'] for entry in st.session_state.prediction_history]
-    models = [get_model_display_name(entry.get('model_technical', entry['model'])) for entry in st.session_state.prediction_history]
-    
-    comparison_data = {
-        'Model': models,
-        'Hours': predictions,
-        'Days': [p/8 for p in predictions]
-    }
-    
-    comparison_df = pd.DataFrame(comparison_data)
-    st.dataframe(comparison_df, use_container_width=True)
-    
-    # Statistics
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Average", f"{np.mean(predictions):.0f} hours")
-    with col2:
-        st.metric("Min", f"{np.min(predictions):.0f} hours")
-    with col3:
-        st.metric("Max", f"{np.max(predictions):.0f} hours")
-    with col4:
+    try:
+        predictions = []
+        models = []
+        
+        for entry in st.session_state.prediction_history:
+            # Extract prediction safely
+            prediction_hours = entry.get('prediction_hours', 0)
+            predictions.append(prediction_hours)
+            
+            # Extract model name safely
+            model_technical = entry.get('model_technical', '')
+            if not model_technical:
+                model_technical = entry.get('model', 'Unknown Model')
+            
+            # Get display name with fallback
+            try:
+                from models import get_model_display_name_from_config
+                model_display = get_model_display_name_from_config(model_technical)
+            except Exception:
+                model_display = entry.get('model', model_technical)
+                if not model_display:
+                    model_display = model_technical
+            
+            models.append(model_display)
+        
+        # Create comparison data
+        comparison_data = {
+            'Model': models,
+            'Hours': predictions,
+            'Days': [p/8 for p in predictions]
+        }
+        
+        comparison_df = pd.DataFrame(comparison_data)
+        st.dataframe(comparison_df, use_container_width=True)
+        
+        # Statistics
         if len(predictions) > 1:
-            st.metric("Std Dev", f"{np.std(predictions):.0f} hours")
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Average", f"{np.mean(predictions):.0f} hours")
+            with col2:
+                st.metric("Min", f"{np.min(predictions):.0f} hours")
+            with col3:
+                st.metric("Max", f"{np.max(predictions):.0f} hours")
+            with col4:
+                st.metric("Std Dev", f"{np.std(predictions):.0f} hours")
+                
+    except Exception as e:
+        st.error(f"Error creating comparison table: {str(e)}")
 
 def show_multiple_predictions(new_predictions, team_size):
     """Display results when multiple models are used"""
@@ -1258,53 +1375,181 @@ def show_multiple_predictions(new_predictions, team_size):
     
     st.subheader("🔍 Multi-Model Prediction Comparison")
     
-    # Create comparison table
-    comparison_data = []
-    predictions_list = []
-    
-    for model_name, prediction in new_predictions.items():
-        if prediction is not None:
-            try:
-                model_display_name = get_model_display_name(model_name)
-            except:
-                model_display_name = model_name
-            
-            days = prediction / 8
-            #per_person = prediction / team_size if team_size > 0 else prediction
-            
-            comparison_data.append({
-                'Model': model_display_name,
-                'Hours': f"{prediction:.0f}",
-                'Days': f"{days:.1f}",
-                #'Per Person': f"{per_person:.0f}",
-                'Weeks': f"{days/5:.1f}"
-            })
-            predictions_list.append(prediction)
-    
-    if comparison_data:
-        comparison_df = pd.DataFrame(comparison_data)
-        st.dataframe(comparison_df, use_container_width=True)
+    try:
+        # Create comparison table
+        comparison_data = []
+        predictions_list = []
         
-        # Statistics summary
-        if len(predictions_list) > 1:
-            st.subheader("📊 Statistical Summary")
-            col1, col2, col3, col4 = st.columns(4)
-            
-            with col1:
-                st.metric("Average", f"{np.mean(predictions_list):.0f} hours")
-            with col2:
-                st.metric("Minimum", f"{np.min(predictions_list):.0f} hours")
-            with col3:
-                st.metric("Maximum", f"{np.max(predictions_list):.0f} hours")
-            with col4:
-                std_dev = np.std(predictions_list)
-                st.metric("Std Deviation", f"{std_dev:.0f} hours")
+        for model_name, prediction in new_predictions.items():
+            if prediction is not None:
+                # Get display name with fallback
+                try:
+                    from models import get_model_display_name_from_config
+                    model_display_name = get_model_display_name_from_config(model_name)
+                except Exception:
+                    model_display_name = model_name
                 
-            # Variance warning
-            if std_dev > np.mean(predictions_list) * 0.3:  # 30% threshold
-                st.warning("⚠️ High variance detected between models. Consider reviewing input parameters.")
-    else:
-        st.error("All predictions failed. Please check your inputs.")
+                days = prediction / 8
+                
+                comparison_data.append({
+                    'Model': model_display_name,
+                    'Hours': f"{prediction:.0f}",
+                    'Days': f"{days:.1f}",
+                    'Weeks': f"{days/5:.1f}"
+                })
+                predictions_list.append(prediction)
+        
+        if comparison_data:
+            comparison_df = pd.DataFrame(comparison_data)
+            st.dataframe(comparison_df, use_container_width=True)
+            
+            # Statistics summary
+            if len(predictions_list) > 1:
+                st.subheader("📊 Statistical Summary")
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Average", f"{np.mean(predictions_list):.0f} hours")
+                with col2:
+                    st.metric("Minimum", f"{np.min(predictions_list):.0f} hours")
+                with col3:
+                    st.metric("Maximum", f"{np.max(predictions_list):.0f} hours")
+                with col4:
+                    std_dev = np.std(predictions_list)
+                    st.metric("Std Deviation", f"{std_dev:.0f} hours")
+                    
+                # Variance warning
+                if std_dev > np.mean(predictions_list) * 0.3:  # 30% threshold
+                    st.warning("⚠️ High variance detected between models. Consider reviewing input parameters.")
+        else:
+            st.error("All predictions failed. Please check your inputs.")
+            
+    except Exception as e:
+        st.error(f"Error displaying multiple predictions: {str(e)}")
+
+def add_prediction_to_history(user_inputs, model_name, prediction, team_size):
+    """Add prediction to session history - Fixed version"""
+    if prediction is None:
+        return
+    
+    try:
+        # Get display name safely
+        try:
+            from models import get_model_display_name_from_config
+            model_display_name = get_model_display_name_from_config(model_name)
+        except Exception:
+            model_display_name = model_name
+        
+        history_entry = {
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'model': model_display_name,  # Store display name
+            'model_technical': model_name,  # Store technical name separately
+            'prediction_hours': prediction,
+            'team_size': team_size,
+            'inputs': user_inputs.copy() if user_inputs else {}
+        }
+        
+        st.session_state.prediction_history.append(history_entry)
+        
+    except Exception as e:
+        st.error(f"Error adding prediction to history: {str(e)}")
+
+def display_model_comparison():
+    """Display model comparison analysis - Fixed version"""
+    st.header("🤖 Model Comparison")
+    
+    if len(st.session_state.prediction_history) < 2:
+        st.warning("⚠️ Please make predictions with at least 2 different models to enable comparison.")
+        return
+    
+    try:
+        # Group predictions by model
+        model_predictions = {}
+        
+        for entry in st.session_state.prediction_history:
+            # Use technical name for grouping to avoid display name inconsistencies
+            model_name = entry.get('model_technical', entry.get('model', 'Unknown'))
+            prediction_hours = entry.get('prediction_hours', 0)
+            
+            if model_name not in model_predictions:
+                model_predictions[model_name] = []
+            model_predictions[model_name].append(prediction_hours)
+        
+        # Create comparison visualizations
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("📊 Model Performance Comparison")
+            
+            # Box plot for model predictions
+            comparison_data = []
+            for model, predictions in model_predictions.items():
+                # Get display name for visualization
+                try:
+                    from models import get_model_display_name_from_config
+                    display_name = get_model_display_name_from_config(model)
+                except Exception:
+                    display_name = model
+                
+                for pred in predictions:
+                    comparison_data.append({
+                        'Model': display_name,
+                        'Prediction (Hours)': pred
+                    })
+            
+            if comparison_data:
+                comparison_df = pd.DataFrame(comparison_data)
+                
+                # Create box plot using plotly
+                fig = px.box(comparison_df, x='Model', y='Prediction (Hours)',
+                            title="Distribution of Predictions by Model")
+                st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            st.subheader("📈 Model Statistics")
+            
+            # Statistics table
+            stats_data = []
+            for model, predictions in model_predictions.items():
+                if predictions:
+                    try:
+                        from models import get_model_display_name_from_config
+                        display_name = get_model_display_name_from_config(model)
+                    except Exception:
+                        display_name = model
+                    
+                    stats_data.append({
+                        'Model': display_name,
+                        'Count': len(predictions),
+                        'Mean': f"{np.mean(predictions):.0f}",
+                        'Std Dev': f"{np.std(predictions):.0f}",
+                        'Min': f"{np.min(predictions):.0f}",
+                        'Max': f"{np.max(predictions):.0f}"
+                    })
+            
+            if stats_data:
+                stats_df = pd.DataFrame(stats_data)
+                st.dataframe(stats_df, use_container_width=True)
+        
+        # Additional analysis sections would go here...
+        
+    except Exception as e:
+        st.error(f"Error in model comparison: {str(e)}")
+        with st.expander("Debug Information"):
+            st.write("Prediction history structure:")
+            for i, entry in enumerate(st.session_state.prediction_history):
+                st.write(f"Entry {i}: {entry}")
+
+# Also fix the import at the top of ui.py - make sure you have this:
+def get_model_display_name_safe(model_name):
+    """Safe wrapper for getting model display name"""
+    try:
+        from models import get_model_display_name_from_config
+        return get_model_display_name_from_config(model_name)
+    except Exception as e:
+        # Fallback to basic transformation
+        return " ".join(word.capitalize() for word in model_name.split("_"))
+        
 
 def run_predictions(user_inputs, selected_models):
     """Run predictions for multiple models"""
@@ -1328,7 +1573,7 @@ def run_predictions(user_inputs, selected_models):
     
     return new_predictions
 
-def display_prediction_results(selected_models, new_predictions, team_size, comparison_mode=False):
+def display_prediction_results(selected_models, new_predictions, team_size, user_inputs, comparison_mode=False):
     """Display prediction results based on number of models and mode"""
     
     # Display current results
@@ -1336,7 +1581,7 @@ def display_prediction_results(selected_models, new_predictions, team_size, comp
         # Single model - show detailed view
         model = selected_models[0]
         prediction = new_predictions.get(model)
-        show_prediction(prediction, team_size, model)
+        show_prediction(prediction, team_size, model, user_inputs)
     else:
         # Multiple models - show comparison
         show_multiple_predictions(new_predictions, team_size)
@@ -1355,12 +1600,12 @@ def display_historical_comparison():
     
     # Create timeline chart
     history_data = []
-    for i, entry in enumerate(st.session_state.prediction_history):
+    for i, item in enumerate(st.session_state.prediction_history):
         history_data.append({
             'Prediction #': i + 1,
-            'Model': entry['model'],
-            'Hours': entry['prediction_hours'],
-            'Timestamp': entry['timestamp']
+            'Model': item['model'],
+            'Hours': item['prediction_hours'],
+            'Timestamp': item['timestamp']
         })
     
     history_df = pd.DataFrame(history_data)
@@ -1390,19 +1635,19 @@ def display_previous_results_summary():
     # Show last few predictions
     recent_predictions = st.session_state.prediction_history[-3:]  # Show last 3
     
-    for entry in recent_predictions:
-        with st.expander(f"🔮 {entry['model']} - {entry['timestamp']}"):
+    for item in recent_predictions:
+        with st.expander(f"🔮 {item['model']} - {item['timestamp']}"):
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("Hours", f"{entry['prediction_hours']:.0f}")
+                st.metric("Hours", f"{item['prediction_hours']:.0f}")
             with col2:
-                st.metric("Days", f"{entry['prediction_hours']/8:.1f}")
+                st.metric("Days", f"{item['prediction_hours']/8:.1f}")
             with col3:
-                st.metric("Team Size", entry['team_size'])
+                st.metric("Team Size", item['team_size'])
     
     # Summary statistics if multiple predictions
     if len(st.session_state.prediction_history) > 1:
-        all_predictions = [entry['prediction_hours'] for entry in st.session_state.prediction_history]
+        all_predictions = [item['prediction_hours'] for item in st.session_state.prediction_history]
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -1471,11 +1716,11 @@ def display_model_comparison():
     
     # Group predictions by model
     model_predictions = {}
-    for entry in st.session_state.prediction_history:
-        model_name = entry.get('model_technical', entry['model'])
+    for bulk_item in st.session_state.prediction_history:
+        model_name = bulk_item.get('model_technical', bulk_item['model'])
         if model_name not in model_predictions:
             model_predictions[model_name] = []
-        model_predictions[model_name].append(entry['prediction_hours'])
+        model_predictions[model_name].append(bulk_item['prediction_hours'])
     
     # Create comparison visualizations
     col1, col2 = st.columns(2)
@@ -1526,17 +1771,17 @@ def display_model_comparison():
     if len(model_predictions) >= 2:
         # Find predictions made with same inputs across different models
         input_signatures = {}
-        for entry in st.session_state.prediction_history:
+        for history_item in st.session_state.prediction_history:
             # Create a signature from input parameters
-            inputs = entry.get('inputs', {})
+            inputs = history_item.get('inputs', {})
             exclude_keys = {'selected_model', 'selected_models', 'submit', 'clear_results', 'show_history'}
             signature = tuple(sorted([(k, v) for k, v in inputs.items() if k not in exclude_keys]))
             
             if signature not in input_signatures:
                 input_signatures[signature] = {}
             
-            model_name = entry.get('model_technical', entry['model'])
-            input_signatures[signature][model_name] = entry['prediction_hours']
+            model_name = history_item.get('model_technical', history_item['model'])
+            input_signatures[signature][model_name] = history_item['prediction_hours']
         
         # Find cases where multiple models predicted same inputs
         multi_model_cases = {sig: models for sig, models in input_signatures.items() if len(models) >= 2}
@@ -1622,6 +1867,8 @@ def about_section():
 def main():
     """Main application function with full multi-model support and enhanced SHAP analysis"""
 
+    # Set sidebar width
+    set_sidebar_width()
     
     # Initialize session state
     initialize_session_state()
@@ -1642,10 +1889,9 @@ def main():
             st.rerun()
 
         # --- Add tab navigation for main content ---
-        tab_names = ["Estimator", "Visualisations & Analysis", "Model Comparison", "Static SHAP Analysis", "Help"]
-        selected_tab = st.radio("Navigation", tab_names, horizontal=True)
+        main_tabs = st.tabs(["🔮 Estimator", "📊 Visualisations & Analysis", "🤖 Model Comparison", "📈 Static SHAP Analysis", "❓ Help"])
 
-        if selected_tab == "Estimator":
+        with main_tabs[0]:  # Estimator tab
             if user_inputs.get('submit', False):
                 selected_model = user_inputs.get('selected_model')
                 selected_models = user_inputs.get('selected_models', [])
@@ -1664,7 +1910,7 @@ def main():
                                 team_size = user_inputs.get('project_prf_max_team_size', 5)
                                 
                                 # Show current prediction
-                                show_prediction(prediction, team_size, selected_model)
+                                show_prediction(prediction, team_size, selected_model, user_inputs)
                                 
                                 # Add to history
                                 add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
@@ -1676,7 +1922,7 @@ def main():
                                 comparison_mode = user_inputs.get('comparison_mode', False)
                                 
                                 # Display results
-                                display_prediction_results(selected_models, new_predictions, team_size, comparison_mode)
+                                display_prediction_results(selected_models, new_predictions, team_size, user_inputs, comparison_mode)
                             
                             # Show history and comparisons
                             show_prediction_history()
@@ -1698,16 +1944,16 @@ def main():
                 # Show previous results summary if any
                 display_previous_results_summary()
 
-        elif selected_tab == "Visualisations & Analysis":
+        with main_tabs[1]:  # Visualisations & Analysis tab
             display_visualizations_and_analysis()
 
-        elif selected_tab == "Model Comparison":
+        with main_tabs[2]:  # Model Comparison tab
             display_model_comparison()
 
-        elif selected_tab == "Static SHAP Analysis":
+        with main_tabs[3]:  # Static SHAP Analysis tab
             display_static_shap_analysis()
 
-        elif selected_tab == "Help":            
+        with main_tabs[4]:  # Help tab            
             with st.expander("ℹ️ How to Use This Tool"):
                 st.markdown("""
                 ### Quick Start Guide
@@ -1762,6 +2008,7 @@ def main():
     except Exception as e:
         st.error(f"Application error: {e}")
         st.info("Please check your configuration files and model setup.")
+
 
 if __name__ == "__main__":
     main()

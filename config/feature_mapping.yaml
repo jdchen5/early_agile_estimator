@@ -153,30 +153,48 @@ categorical_features:
       - code: XXS
         label: "Extra Extra Small (0–<10)"
         midpoint: 5
+        minimumhour: 0
+        maximumhour: 200
       - code: XS
         label: "Extra Small (10–<30)"
         midpoint: 20
+        minimumhour: 200
+        maximumhour: 600
       - code: S
         label: "Small (30–<100)"
         midpoint: 65
+        minimumhour: 600
+        maximumhour: 2000
       - code: M1
         label: "Medium 1 (100–<300)"
         midpoint: 200
+        minimumhour: 2000
+        maximumhour: 6000
       - code: M2
         label: "Medium 2 (300–<1000)"
         midpoint: 650
+        minimumhour: 6000
+        maximumhour: 20000
       - code: L
         label: "Large (1,000–<3,000)"
         midpoint: 2000
+        minimumhour: 20000
+        maximumhour: 60000
       - code: XL
         label: "Extra Large (3,000–<9,000)"
         midpoint: 6000
+        minimumhour: 60000
+        maximumhour: 180000
       - code: XXL
         label: "Extra Extra Large (9,000–<18,000)"
         midpoint: 13500
+        minimumhour: 180000
+        maximumhour: 360000
       - code: XXXL
         label: "Extra Extra Extra Large (≥18,000)"
         midpoint: 18000
+        minimumhour: 360000
+        maximumhour: 960000 # 500 man-years is too big for any projects, need to be split into smaller projects
   tech_tf_architecture:
     options: ["", "Client-Server", "Multi-tier with Web Interface", "Stand-alone"]
   tech_tf_client_server:

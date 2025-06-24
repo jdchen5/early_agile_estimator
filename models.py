@@ -18,6 +18,7 @@ import json
 import numpy as np
 import pandas as pd
 import logging
+import re
 import yaml
 from typing import Dict, List, Optional, Union, Any
 
@@ -45,6 +46,7 @@ except ImportError:
 CONFIG_FOLDER = 'config'
 MODELS_FOLDER = 'models'
 UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match merged config
+MODEL_DISPLAY_NAME = 'model_display_names.json'
 
 def load_yaml_config(path: str) -> Dict:
     try:
@@ -62,6 +64,9 @@ APP_CONFIG = load_yaml_config(UI_INFO_FILE)
 FIELDS = APP_CONFIG.get('fields', {})
 TAB_ORG = APP_CONFIG.get('tab_organization', {})
 
+# --- Display Name and Feature Name Helpers (GROUPED TOGETHER) ---
+
+# ---- Feature Name Helpers ----
 def get_numeric_features():
     """Get list of numeric feature names from configuration"""
     return [f for f, meta in FIELDS.items() if meta.get('type') == 'numeric']
@@ -74,11 +79,38 @@ def get_boolean_features():
     """Get list of boolean feature names from configuration"""
     return [f for f, meta in FIELDS.items() if meta.get('type') == 'boolean']
 
+def get_model_expected_features(model) -> List[str]:
+    """Get expected feature names from model, robustly."""
+    try:
+        if hasattr(model, 'feature_names_in_'):
+            return list(model.feature_names_in_)
+        if hasattr(model, 'named_steps'):
+            for step in model.named_steps.values():
+                if hasattr(step, 'feature_names_in_'):
+                    return list(step.feature_names_in_)
+        if hasattr(model, '_final_estimator') and hasattr(model._final_estimator, 'feature_names_in_'):
+            return list(model._final_estimator.feature_names_in_)
+        if hasattr(model, 'X') and hasattr(model.X, 'columns'):
+            return list(model.X.columns)
+        if hasattr(model, 'feature_names_'):
+            return list(model.feature_names_)
+    except Exception as e:
+        logging.warning(f"Could not extract feature names from model: {e}")
+    return []
+
+def get_expected_feature_names_from_model(model) -> List[str]:
+    """
+    Get expected feature names from a trained model.
+    This is an alias for consistency with UI imports.
+    """
+    return get_model_expected_features(model)
+
 def get_expected_feature_names_from_config() -> List[str]:
     """
     Get expected feature names in a consistent order from configuration.
     Preserves order: numeric > categorical > boolean > rest
     """
+    # These would be defined by your config loading
     feature_names = []
     feature_names += get_numeric_features()
     feature_names += get_categorical_features()
@@ -94,12 +126,169 @@ def get_expected_feature_names_from_config() -> List[str]:
             seen.add(f)
     return unique
 
-def get_expected_feature_names_from_model(model) -> List[str]:
+# ---- Display Name Helpers ----
+
+def get_model_display_name(model_filename: str) -> str:
     """
-    Get expected feature names from a trained model.
-    This is an alias for consistency with UI imports.
+    Convert model filename to human-readable display name.
+    This is the basic dynamic generation function.
     """
-    return get_model_expected_features(model)
+    return " ".join(word.capitalize() for word in model_filename.split("_"))
+
+def normalize_model_key(key: str) -> str:
+    """
+    Normalize model key for consistent display name mapping.
+    Removes numbering/prefixes, lowercases, removes non-alphanumeric.
+    """
+    key = key.lower()
+    key = re.sub(r'^top_model_\d+_', '', key)  # Remove "top_model_X_" prefix
+    key = re.sub(r'[^a-z0-9]', '', key)        # Keep only alphanumeric
+    return key
+
+def extract_model_number(technical_name: str) -> int:
+    """
+    Extracts the number after 'top_model_' in the technical model name for sorting.
+    If no number is found, returns a high number to put it last.
+    """
+    # Remove extension if present
+    model_filename = os.path.splitext(technical_name)[0]
+    parts = model_filename.split('_')
+    if parts and parts[0].startswith('top'):
+        m = re.match(r'top(\d+)', parts[0])
+        if m:
+            return int(m.group(1))
+    return 999  # fallback if not found
+
+def get_all_model_display_names() -> Dict[str, str]:
+    """
+    Get display names for all available models.
+    Returns a mapping of technical_name -> display_name.
+    """
+    display_names_map = load_model_display_names()
+    all_display_names = {}
+    
+    try:
+        # Get all available models
+        available_models = list_available_models()
+        
+        for model_info in available_models:
+            technical_name = model_info['technical_name']
+            # Use configured name if available, otherwise generate dynamically
+            display_name = get_model_display_name_from_config(technical_name, display_names_map)
+            all_display_names[technical_name] = display_name
+        
+        logging.info(f"Generated display names for {len(all_display_names)} models")
+        
+    except Exception as e:
+        logging.error(f"Failed to get all model display names: {e}")
+    
+    return all_display_names
+
+def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
+    """
+    Enhanced version with normalization fallback and fuzzy matching.
+    Try to match by 2nd split part (model type), then by filename, then fallbacks.
+    """
+    if display_names_map is None:
+        display_names_map = load_model_display_names()
+
+    # Split by underscore
+    parts = model_filename.split('_')
+    if len(parts) > 1:
+        model_type = parts[1]  # 2nd part is the model type
+
+        # Try direct match with 2nd part (case-insensitive)
+        for key, value in display_names_map.items():
+            if key.lower() == model_type.lower():
+                return value
+
+        # Try partial/inclusion match with 2nd part
+        for key, value in display_names_map.items():
+            if model_type.lower() in key.lower():
+                return value
+
+    # Fallback to dynamic generation
+    return get_model_display_name(model_filename)
+
+def get_all_model_display_names() -> Dict[str, str]:
+    """
+    Get display names for all available models.
+    Returns a mapping of technical_name -> display_name.
+    """
+    display_names_map = load_model_display_names()
+    all_display_names = {}
+    try:
+        # You'd call your list_available_models() here
+        available_models = list_available_models()
+        for model_info in available_models:
+            technical_name = model_info['technical_name']
+            display_name = get_model_display_name_from_config(technical_name, display_names_map)
+            all_display_names[technical_name] = display_name
+        logging.info(f"Generated display names for {len(all_display_names)} models")
+    except Exception as e:
+        logging.error(f"Failed to get all model display names: {e}")
+    return all_display_names
+
+def load_model_display_names() -> Dict[str, str]:
+    """Load model display names from JSON configuration file."""
+    try:
+        model_config_path = os.path.join(CONFIG_FOLDER, MODEL_DISPLAY_NAME)
+        if os.path.exists(model_config_path):
+            with open(model_config_path, 'r') as f:
+                display_names = json.load(f)
+            logging.info(f"Loaded {len(display_names)} model display names from JSON")
+            return display_names
+        else:
+            logging.warning(f"model_display_names.json not found at {model_config_path}")
+    except Exception as e:
+        logging.error(f"Failed to load model display names: {e}")
+    return {}
+
+
+
+def load_model_display_names() -> Dict[str, str]:
+    """Load model display names from JSON configuration file."""
+    try:
+        model_config_path = os.path.join(CONFIG_FOLDER, MODEL_DISPLAY_NAME)
+        if os.path.exists(model_config_path):
+            with open(model_config_path, 'r') as f:
+                display_names = json.load(f)
+            logging.info(f"Loaded {len(display_names)} model display names from JSON")
+            return display_names
+        else:
+            logging.warning(f"model_display_names.json not found at {model_config_path}")
+    except Exception as e:
+        logging.error(f"Failed to load model display names: {e}")
+    
+    return {}
+
+
+def save_model_display_names(display_names: Dict[str, str]) -> bool:
+    """
+    Save model display names to configuration file.
+    """
+    try:
+        ensure_models_folder()  # Ensure config folder exists too
+        if not os.path.exists(CONFIG_FOLDER):
+            os.makedirs(CONFIG_FOLDER)
+        
+        config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.yaml')
+        
+        config_data = {
+            'model_display_names': display_names,
+            'last_updated': pd.Timestamp.now().isoformat(),
+            'description': 'Custom display names for ML models'
+        }
+        
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f, default_flow_style=False, sort_keys=True)
+        
+        logging.info(f"Saved {len(display_names)} model display names to {config_path}")
+        return True
+        
+    except Exception as e:
+        logging.error(f"Failed to save model display names: {e}")
+        return False
 
 def validate_feature_dict_against_config(feature_dict: Dict) -> Dict[str, Any]:
     """
@@ -138,30 +327,6 @@ def create_feature_vector_from_dict(feature_dict: Dict, expected_features: Optio
     
     return np.array(feature_vector)
 
-# === Dynamic Feature Alignment Utilities ===
-
-def get_model_expected_features(model) -> List[str]:
-    """Get expected feature names from model, robustly."""
-    try:
-        if hasattr(model, 'feature_names_in_'):
-            return list(model.feature_names_in_)
-        if hasattr(model, 'named_steps'):
-            for step in model.named_steps.values():
-                if hasattr(step, 'feature_names_in_'):
-                    return list(step.feature_names_in_)
-        if hasattr(model, '_final_estimator') and hasattr(model._final_estimator, 'feature_names_in_'):
-            return list(model._final_estimator.feature_names_in_)
-        if hasattr(model, 'X') and hasattr(model.X, 'columns'):
-            return list(model.X.columns)
-        
-        # Fallback: try to get from model training data if available
-        if hasattr(model, 'feature_names_'):
-            return list(model.feature_names_)
-            
-    except Exception as e:
-        logging.warning(f"Could not extract feature names from model: {e}")
-    
-    return []
 
 def align_features_to_model(feature_dict: Dict[str, Any], model_features: List[str]) -> Dict[str, Any]:
     """Align feature dictionary to model columns. Missing columns = 0, extras dropped."""
@@ -203,199 +368,9 @@ def list_available_models() -> list:
                 'display_name': display_name
             })
     
-    model_files.sort(key=lambda x: x['display_name'])
+    model_files.sort(key=lambda x: extract_model_number(x['technical_name']))
     return model_files
 
-def get_model_display_name(model_filename: str) -> str:
-    """
-    Convert model filename to human-readable display name.
-    This is the basic dynamic generation function.
-    """
-    return " ".join(word.capitalize() for word in model_filename.split("_"))
-
-def load_model_display_names() -> Dict[str, str]:
-    """Load model display names from JSON configuration file."""
-    try:
-        model_config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.json')
-        if os.path.exists(model_config_path):
-            with open(model_config_path, 'r') as f:
-                display_names = json.load(f)
-            logging.info(f"Loaded {len(display_names)} model display names from JSON")
-            return display_names
-        else:
-            logging.warning(f"model_display_names.json not found at {model_config_path}")
-    except Exception as e:
-        logging.error(f"Failed to load model display names: {e}")
-    
-    return {}
-
-def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
-    """
-    Get model display name, first checking configuration, then falling back to dynamic generation.
-    """
-    if display_names_map is None:
-        display_names_map = load_model_display_names()
-    
-    # Check if we have a configured display name (exact match first)
-    if model_filename in display_names_map:
-        return display_names_map[model_filename]
-    
-    # Try case-insensitive lookup
-    model_filename_lower = model_filename.lower()
-    for key, value in display_names_map.items():
-        if key.lower() == model_filename_lower:
-            return value
-    
-    # Fallback to dynamic generation
-    return get_model_display_name(model_filename)
-
-def get_all_model_display_names() -> Dict[str, str]:
-    """
-    Get display names for all available models.
-    Returns a mapping of technical_name -> display_name.
-    """
-    display_names_map = load_model_display_names()
-    all_display_names = {}
-    
-    try:
-        # Get all available models
-        available_models = list_available_models()
-        
-        for model_info in available_models:
-            technical_name = model_info['technical_name']
-            # Use configured name if available, otherwise generate dynamically
-            display_name = get_model_display_name_from_config(technical_name, display_names_map)
-            all_display_names[technical_name] = display_name
-        
-        logging.info(f"Generated display names for {len(all_display_names)} models")
-        
-    except Exception as e:
-        logging.error(f"Failed to get all model display names: {e}")
-    
-    return all_display_names
-
-def save_model_display_names(display_names: Dict[str, str]) -> bool:
-    """
-    Save model display names to configuration file.
-    """
-    try:
-        ensure_models_folder()  # Ensure config folder exists too
-        if not os.path.exists(CONFIG_FOLDER):
-            os.makedirs(CONFIG_FOLDER)
-        
-        config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.yaml')
-        
-        config_data = {
-            'model_display_names': display_names,
-            'last_updated': pd.Timestamp.now().isoformat(),
-            'description': 'Custom display names for ML models'
-        }
-        
-        with open(config_path, 'w') as f:
-            yaml.dump(config_data, f, default_flow_style=False, sort_keys=True)
-        
-        logging.info(f"Saved {len(display_names)} model display names to {config_path}")
-        return True
-        
-    except Exception as e:
-        logging.error(f"Failed to save model display names: {e}")
-        return False
-    """
-    Load model display names from configuration or file.
-    Returns a mapping of technical_name -> display_name.
-    Falls back to dynamic generation if no configuration is found.
-    """
-    display_names = {}
-    
-    try:
-        # Try to load from configuration file first
-        model_config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.yaml')
-        if os.path.exists(model_config_path):
-            model_config = load_yaml_config(model_config_path)
-            display_names = model_config.get('model_display_names', {})
-            logging.info(f"Loaded {len(display_names)} model display names from configuration")
-        
-        # If no config file, try to load from main UI config
-        elif 'model_display_names' in APP_CONFIG:
-            display_names = APP_CONFIG.get('model_display_names', {})
-            logging.info(f"Loaded {len(display_names)} model display names from main config")
-        
-        else:
-            logging.info("No model display names configuration found, will use dynamic generation")
-    
-    except Exception as e:
-        logging.warning(f"Failed to load model display names configuration: {e}")
-    
-    return display_names
-
-def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
-    """
-    Get model display name, first checking configuration, then falling back to dynamic generation.
-    """
-    if display_names_map is None:
-        display_names_map = load_model_display_names()
-    
-    # Try exact match first
-    if model_filename in display_names_map:
-        return display_names_map[model_filename]
-
-    # Try case-insensitive match
-    model_filename_lower = model_filename.lower()
-    for k, v in display_names_map.items():
-        if k.lower() == model_filename_lower:
-            return v
-    # Fallback
-    return get_model_display_name(model_filename)
-
-def get_all_model_display_names() -> Dict[str, str]:
-    """
-    Get display names for all available models.
-    Returns a mapping of technical_name -> display_name.
-    """
-    display_names_map = load_model_display_names()
-    all_display_names = {}
-    
-    try:
-        # Get all available models
-        available_models = list_available_models()
-        
-        for model_info in available_models:
-            technical_name = model_info['technical_name']
-            # Use configured name if available, otherwise generate dynamically
-            display_name = get_model_display_name_from_config(technical_name, display_names_map)
-            all_display_names[technical_name] = display_name
-        
-        logging.info(f"Generated display names for {len(all_display_names)} models")
-        
-    except Exception as e:
-        logging.error(f"Failed to get all model display names: {e}")
-    
-    return all_display_names
-
-def debug_model_files():
-    """Debug function to check actual model filenames"""
-    print("=== ACTUAL MODEL FILES ===")
-    
-    ensure_models_folder()
-    files = os.listdir(MODELS_FOLDER)
-    pkl_files = [f for f in files if f.endswith('.pkl')]
-    
-    for f in pkl_files:
-        technical_name = os.path.splitext(f)[0]
-        print(f"File: {f}")
-        print(f"Technical name: {technical_name}")
-        
-        # Check if it's in JSON
-        display_names = load_model_display_names()
-        if technical_name in display_names:
-            print(f"✅ Found in JSON: {display_names[technical_name]}")
-        else:
-            print(f"❌ NOT found in JSON")
-            # Show close matches
-            close_matches = [k for k in display_names.keys() if technical_name.lower() in k.lower() or k.lower() in technical_name.lower()]
-            if close_matches:
-                print(f"   Similar keys: {close_matches}")
-        print("-" * 50)
 
 def save_model_display_names(display_names: Dict[str, str]) -> bool:
     """
