@@ -18,6 +18,16 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 
+from shap_analysis import (
+    get_shap_explainer,
+    prepare_sample_data,
+    get_shap_values_for_input,
+    get_feature_interaction_values,
+    get_feature_names_from_fields,
+    get_feature_names_from_inputs,
+    get_parameter_index
+)
+
 try:
     from models import (
         predict_man_hours,
@@ -114,136 +124,6 @@ DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
 FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
 CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
 
-# --- SHAP Analysis Functions ---
-def get_shap_explainer(model_name):
-    """Get or create SHAP explainer for a model"""
-    try:
-        model = get_trained_model(model_name)
-        if model is None:
-            return None
-        
-        # Determine model type and create appropriate explainer
-        model_type = type(model).__name__.lower()
-        model_module = type(model).__module__.lower()
-        
-        # Tree-based models (use TreeExplainer)
-        if any(tree_type in model_type for tree_type in ['forest', 'tree', 'xgb', 'lgb', 'catboost', 'gradient']):
-            explainer = shap.TreeExplainer(model)
-        
-        # Linear models (use LinearExplainer)
-        elif any(linear_type in model_type for linear_type in ['linear', 'lasso', 'ridge', 'elastic']):
-            # For linear models, we need training data
-            sample_data = prepare_sample_data()
-            if sample_data is not None:
-                explainer = shap.LinearExplainer(model, sample_data)
-            else:
-                # Fallback to KernelExplainer if no training data
-                explainer = shap.KernelExplainer(model.predict, prepare_sample_data_small())
-        
-        # Neural networks and other models (use KernelExplainer)
-        elif any(nn_type in model_type for nn_type in ['neural', 'mlp', 'perceptron']):
-            sample_data = prepare_sample_data_small()  # Smaller sample for kernel explainer
-            explainer = shap.KernelExplainer(model.predict, sample_data)
-        
-        # Default fallback - KernelExplainer (works with any model)
-        else:
-            sample_data = prepare_sample_data_small()
-            explainer = shap.KernelExplainer(model.predict, sample_data)
-        
-        return explainer
-        
-    except Exception as e:
-        st.error(f"Error creating SHAP explainer for {model_name}: {e}")
-        return None
-
-def prepare_sample_data(n_samples=100):
-    """Prepare sample data for SHAP analysis - larger sample for LinearExplainer"""
-    try:
-        # This should ideally return actual training data
-        # For now, create realistic sample data based on field configurations
-        sample_data = []
-        
-        for _ in range(n_samples):
-            sample_row = []
-            for field_name, field_config in FIELDS.items():
-                field_type = field_config.get('type', 'numeric')
-                
-                if field_type == 'numeric':
-                    min_val = field_config.get('min', 1)
-                    max_val = field_config.get('max', 100)
-                    default_val = field_config.get('default', (min_val + max_val) / 2)
-                    # Add some variation around default
-                    value = np.random.normal(default_val, (max_val - min_val) * 0.2)
-                    value = np.clip(value, min_val, max_val)
-                    sample_row.append(value)
-                elif field_type == 'categorical':
-                    # For categorical, use encoded values (0, 1, 2, etc.)
-                    options = get_field_options(field_name)
-                    if options:
-                        sample_row.append(np.random.randint(0, len(options)))
-                    else:
-                        sample_row.append(0)
-                elif field_type == 'boolean':
-                    sample_row.append(np.random.choice([0, 1]))
-                else:
-                    sample_row.append(0)  # Default fallback
-            
-            sample_data.append(sample_row)
-        
-        return np.array(sample_data)
-    except Exception as e:
-        st.warning(f"Could not prepare sample data: {e}")
-        # Fallback to simple random data
-        n_features = len(FIELDS) if FIELDS else 10
-        return np.random.rand(n_samples, n_features)
-
-def prepare_sample_data_small(n_samples=20):
-    """Prepare smaller sample data for KernelExplainer (computationally expensive)"""
-    return prepare_sample_data(n_samples)
-
-def get_shap_values_for_input(user_inputs, model_name):
-    """Get SHAP values for a specific input"""
-    try:
-        # Get the SHAP explainer for the model
-        explainer = get_shap_explainer(model_name)
-        if explainer is None:
-            return None
-        
-        # Prepare the input data in the format expected by the model
-        input_data = prepare_input_data(user_inputs)
-        if input_data is None:
-            return None
-        
-        # Ensure input_data is in the right shape (2D array for single prediction)
-        if input_data.ndim == 1:
-            input_data = input_data.reshape(1, -1)
-        
-        # Calculate SHAP values
-        try:
-            shap_values = explainer.shap_values(input_data)
-            
-            # Handle different return formats from different explainer types
-            if isinstance(shap_values, list):
-                # For multi-class problems or some explainer types
-                if len(shap_values) == 1:
-                    return shap_values[0]  # Single class
-                else:
-                    return shap_values[0]  # Use first class for regression-like problems
-            else:
-                # For single output/regression problems
-                return shap_values
-                
-        except Exception as e:
-            # Fallback for explainers that might have different methods
-            if hasattr(explainer, 'explain'):
-                explanation = explainer.explain(input_data)
-                if hasattr(explanation, 'values'):
-                    return explanation.values
-            raise e
-            
-    except Exception as e:
-        st.error(f"Error calculating SHAP values: {e}")
-        return None
 
 def display_instance_specific_shap(user_inputs, model_name):
     """Display SHAP analysis for the current prediction"""
@@ -253,7 +133,14 @@ def display_instance_specific_shap(user_inputs, model_name):
         st.warning("Please make a prediction first to see instance-specific SHAP analysis.")
         return
     
-    shap_values = get_shap_values_for_input(user_inputs, model_name)
+    explainer = get_shap_explainer(
+        model_name,
+        get_trained_model_func=get_trained_model,   # Pass your function here
+        prepare_sample_data_func=lambda n: prepare_sample_data(n, FIELDS, get_field_options)
+    )
+
+
+    shap_values = get_shap_values_for_input(explainer, user_inputs)
     if shap_values is None:
         st.error("Could not generate SHAP values for your input.")
         return
@@ -373,7 +260,7 @@ def display_what_if_shap_analysis(user_inputs, model_name):
                 # Get SHAP value for this parameter
                 shap_vals = get_shap_values_for_input(temp_inputs, model_name)
                 if shap_vals is not None:
-                    param_index = get_parameter_index(selected_param)
+                    param_index = get_parameter_index(selected_param, list(FIELDS.keys()))
                     if param_index is not None:
                         shap_impact = shap_vals[0][param_index] if isinstance(shap_vals, list) else shap_vals[0][param_index]
                         shap_impacts.append(shap_impact)
@@ -459,18 +346,15 @@ def display_scenario_comparison(user_inputs, model_name):
     # Define scenarios
     scenarios = {
         "Small Agile Project": {
-            "project_prf_max_team_size": 3,
-            "project_prf_functional_size": 5,
+            "project_prf_functional_size": 65,  # from ISBSG
             "project_tech_primary_programming_language": "Python"
         },
         "Medium Enterprise Project": {
-            "project_prf_max_team_size": 8,
-            "project_prf_functional_size": 15,
+            "project_prf_functional_size": 550,
             "project_tech_primary_programming_language": "Java"
         },
         "Large Enterprise Project": {
-            "project_prf_max_team_size": 15,
-            "project_prf_functional_size": 30,
+            "project_prf_functional_size": 2000,
             "project_tech_primary_programming_language": "C#"
         }
     }
@@ -540,7 +424,7 @@ def display_scenario_comparison(user_inputs, model_name):
                 st.metric("Prediction", f"{results['prediction']:.0f} hours")
                 
                 # Show key parameters
-                key_params = ['project_prf_max_team_size', 'project_prf_functional_size']
+                key_params = ['project_prf_functional_size']
                 for param in key_params:
                     if param in results['inputs']:
                         st.write(f"**{get_field_label(param)}:** {results['inputs'][param]}")
@@ -593,7 +477,11 @@ def display_feature_interactions(user_inputs, model_name):
         return
     
     try:
-        explainer = get_shap_explainer(model_name)
+        explainer = get_shap_explainer(
+            model_name,
+            get_trained_model_func=get_trained_model,
+            prepare_sample_data_func = lambda n: prepare_sample_data(n, FIELDS, CATEGORICAL_MAPPING)
+        )
         if explainer is None:
             st.error("Could not create SHAP explainer for interaction analysis.")
             return
@@ -667,22 +555,6 @@ def display_feature_interactions(user_inputs, model_name):
         
     except Exception as e:
         st.error(f"Error in feature interaction analysis: {e}")
-
-# Helper functions for SHAP analysis
-def get_feature_names_from_inputs(user_inputs):
-    """Extract feature names from user inputs"""
-    exclude_keys = {'selected_model', 'selected_models', 'submit', 'clear_results', 'show_history'}
-    return [k for k in user_inputs.keys() if k not in exclude_keys]
-
-def get_parameter_index(parameter_name):
-    """Get the index of a parameter in the feature array"""
-    # This should return the index of the parameter in your model's feature array
-    # You'll need to implement this based on your feature ordering
-    try:
-        feature_names = list(FIELDS.keys())
-        return feature_names.index(parameter_name)
-    except ValueError:
-        return None
 
 
 # --- Field helper functions using merged config ---
@@ -1087,7 +959,7 @@ def display_inputs(user_inputs, selected_models):
             st.progress(completeness / 100)
             st.caption(f"Configuration completeness: {completeness:.1f}% ({filled_fields}/{total_fields} fields)")
 
-def show_prediction(prediction, team_size, model_name, user_inputs=None):
+def show_prediction(prediction, model_name, user_inputs=None):
     """Show prediction results with team breakdown and dynamic size-band warnings."""
     if prediction is None:
         st.error("Prediction failed. Please check your inputs and try again.")
@@ -1154,7 +1026,14 @@ def show_feature_importance(model_name, features_dict):
             st.info("Feature importance analysis not available for this model.")
             return
         
-        st.subheader("📊 Feature Importance Analysis")
+        # Get display name for the model
+        try:
+            model_display_name = get_model_display_name_safe(model_name)
+        except Exception:
+            model_display_name = model_name
+
+        st.subheader(f"📊 Feature Importance Analysis (Model: {model_display_name})")
+
         
         exclude_keys = {'selected_models', 'submit', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
         feature_names = [k for k in features_dict.keys() if k not in exclude_keys]
@@ -1367,7 +1246,7 @@ def show_prediction_comparison_table():
     except Exception as e:
         st.error(f"Error creating comparison table: {str(e)}")
 
-def show_multiple_predictions(new_predictions, team_size):
+def show_multiple_predictions(new_predictions):
     """Display results when multiple models are used"""
     if not new_predictions:
         st.warning("No predictions available")
@@ -1427,7 +1306,7 @@ def show_multiple_predictions(new_predictions, team_size):
     except Exception as e:
         st.error(f"Error displaying multiple predictions: {str(e)}")
 
-def add_prediction_to_history(user_inputs, model_name, prediction, team_size):
+def add_prediction_to_history(user_inputs, model_name, prediction):
     """Add prediction to session history - Fixed version"""
     if prediction is None:
         return
@@ -1445,7 +1324,7 @@ def add_prediction_to_history(user_inputs, model_name, prediction, team_size):
             'model': model_display_name,  # Store display name
             'model_technical': model_name,  # Store technical name separately
             'prediction_hours': prediction,
-            'team_size': team_size,
+            #'team_size': team_size,
             'inputs': user_inputs.copy() if user_inputs else {}
         }
         
@@ -1564,8 +1443,8 @@ def run_predictions(user_inputs, selected_models):
             new_predictions[model] = prediction
             
             # Add to session state for this run
-            team_size = user_inputs.get('project_prf_max_team_size', 5)
-            add_prediction_to_history(user_inputs, model, prediction, team_size)
+            #team_size = user_inputs.get('project_prf_max_team_size', 5)
+            add_prediction_to_history(user_inputs, model, prediction)
             
         except Exception as e:
             st.error(f"Error predicting with {model}: {str(e)}")
@@ -1573,7 +1452,7 @@ def run_predictions(user_inputs, selected_models):
     
     return new_predictions
 
-def display_prediction_results(selected_models, new_predictions, team_size, user_inputs, comparison_mode=False):
+def display_prediction_results(selected_models, new_predictions, user_inputs, comparison_mode=False):
     """Display prediction results based on number of models and mode"""
     
     # Display current results
@@ -1581,10 +1460,10 @@ def display_prediction_results(selected_models, new_predictions, team_size, user
         # Single model - show detailed view
         model = selected_models[0]
         prediction = new_predictions.get(model)
-        show_prediction(prediction, team_size, model, user_inputs)
+        show_prediction(prediction, model, user_inputs)
     else:
         # Multiple models - show comparison
-        show_multiple_predictions(new_predictions, team_size)
+        show_multiple_predictions(new_predictions)
     
     # Show historical comparison if in comparison mode
     if comparison_mode and len(st.session_state.prediction_history) > len(selected_models):
@@ -1637,13 +1516,11 @@ def display_previous_results_summary():
     
     for item in recent_predictions:
         with st.expander(f"🔮 {item['model']} - {item['timestamp']}"):
-            col1, col2, col3 = st.columns(3)
+            col1, col2= st.columns(2)
             with col1:
                 st.metric("Hours", f"{item['prediction_hours']:.0f}")
             with col2:
                 st.metric("Days", f"{item['prediction_hours']/8:.1f}")
-            with col3:
-                st.metric("Team Size", item['team_size'])
     
     # Summary statistics if multiple predictions
     if len(st.session_state.prediction_history) > 1:
@@ -1907,22 +1784,22 @@ def main():
                             if len(selected_models) <= 1:
                                 # Single model workflow
                                 prediction = predict_man_hours(user_inputs, selected_model)
-                                team_size = user_inputs.get('project_prf_max_team_size', 5)
+                                #team_size = user_inputs.get('project_prf_max_team_size', 5)
                                 
                                 # Show current prediction
-                                show_prediction(prediction, team_size, selected_model, user_inputs)
+                                show_prediction(prediction, selected_model, user_inputs)
                                 
                                 # Add to history
-                                add_prediction_to_history(user_inputs, selected_model, prediction, team_size)
+                                add_prediction_to_history(user_inputs, selected_model, prediction)
                                 
                             else:
                                 # Multi-model workflow
                                 new_predictions = run_predictions(user_inputs, selected_models)
-                                team_size = user_inputs.get('project_prf_max_team_size', 5)
+                                #team_size = user_inputs.get('project_prf_max_team_size', 5)
                                 comparison_mode = user_inputs.get('comparison_mode', False)
                                 
                                 # Display results
-                                display_prediction_results(selected_models, new_predictions, team_size, user_inputs, comparison_mode)
+                                display_prediction_results(selected_models, new_predictions, user_inputs, comparison_mode)
                             
                             # Show history and comparisons
                             show_prediction_history()

@@ -12,90 +12,120 @@ categorical_features:
     options: 
       - 
       - Banking
-      - Construction
-      - Defence
-      - Education
-      - Electronics Computers
+      #- Construction
+      #- Defence
+      #- Education
+      #- Electronics Computers
       - Financial
-      - Government
-      - Insurance
-      - Logistics
-      - Manufacturing
-      - Mining
-      - Medical Healthcare
-      - Professional Services
-      - Service Industry
-      - Telecommunications
-      - Utilities
-      - Wholesale Retail
-      - Other
+      #- Government
+      #- Insurance
+      #- Logistics
+      #- Manufacturing
+      #- Mining
+      #- Medical Healthcare
+      #- Professional Services
+      #- Service Industry
+      #- Telecommunications
+      #- Utilities
+      #- Wholesale Retail
+      #- Other
   external_eef_organisation_type:
     options:
       - 
-      - All industry organization types
-      - Aerospace / Automotive
+      #- All industry organization types
+      #- Aerospace / Automotive
       - Banking
-      - Biotech
-      - Communications
-      - Community Services
-      - Consumer Foods
-      - Education Institution
-      - Electricity, Gas, Water
-      - Energy
+      #- Biotech
+      #- Communications
+      #- Community Services
+      #- Consumer Foods
+      #- Education Institution
+      #- Electricity, Gas, Water
+      #- Energy
       - Financial, Property & Business Services
-      - Food Processing
-      - Government
-      - High Tech
-      - IEEE
-      - Information Technology
-      - Institutions eg. Kindergartens
-      - Medical & Healthcare
-      - Public Administration
-      - Public Sector
-      - Surveillance Security
-      - Transport Storage
-      - Wholesale & Retail Trade
+      #- Food Processing
+      #- Government
+      #- High Tech
+      #- IEEE
+      #- Information Technology
+      #- Institutions eg. Kindergartens
+      #- Medical & Healthcare
+      #- Public Administration
+      #- Public Sector
+      #- Surveillance Security
+      #- Transport Storage
+      #- Wholesale & Retail Trade
   project_prf_application_type:
     options:
       - 
-      - Airport Management
-      - Analysis Management
+      #- Airport Management
+      #- Analysis Management
+      - Accounting System
+      - Advertising/Mailing Campaign
+      - Application Security Control
       - Auditing Management
-      - Automated Data Acquisition
+      - Automated Customer Statements
+      #- Automated Data Acquisition
       - Business Application
+      - Cards and Payments
       - Catalogue/Register Of Things Or Events
-      - Clinical Archive
-      - Complex Process Control
+      - Client Server
+      #- Clinical Archive
+      #- Complex Process Control
       - Content Management System
-      - Course Management
-      - Customer Billing
-      - Customer Billing_Relationship Management
+      #- Course Management
+      #- Customer Billing
+      - Customer Billing/Relationship Management
       - Customer Relationship Management
       - Data Or Database Management
       - Data Warehouse System
-      - Dynamic Website
+      - Decision Support System
+      - Document Management System
+      #- Dynamic Website
       - Electronic Data Interchange
-      - Embedded System/Real-time Application
+      - Executive Information System
+      - Fault Tolerance
+      #- Embedded System/Real-time Application
       - Financial Transaction Process/Accounting
-      - Hospital Information System
+      #- Hospital Information System
+      - Human Resource Management
       - Identify Management
-      - Logistic/Supply Planning_Control
+      - Internet Banking for Customers
+      - Job, Case, Incident, Project Management
+      #- Logistic/Supply Planning_Control
       - Management/Performance Reporting
-      - Management of Licenses & Permits
+      #- Management of Licenses & Permits
       - Management Information System
+      - Management System
       - Mathematical Modelling Finance/Eng
-      - Online eSales
+      - Mission Critical System
+      - Mobile Application
+      - Office Automation
+      - Office Information System
+      #- Online eSales
       - Online Analysis & Reporting
+      - Operating System or Software Utility
+      - Personal System
+      - Personnel System
       - Project Management
       - Promotions
       - Proposal Builder
-      - Software Development Tool
-      - Security_Authentication
-      - Security Controls
-      - Student/Tests Management
+      - Sales Contact Management
+      #- Software Development Tool
+      #- Security_Authentication
+      #- Security Controls
+      - Security Management
+      - Software for Machine Control
+      #- Student/Tests Management
       - Surveillance & Security
+      - System Conversion
+      - System Software
+      - Telecom & Network Management
+      - Transaction/Production System
+      - Web Content Management
+      - Web Content & Middleware
       - Web-Based Application
-      - Workflow Support_Management
+      - Workflow Support & Management
   tech_tf_client_roles:
     options:
       - 

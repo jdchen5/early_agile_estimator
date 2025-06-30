@@ -128,13 +128,6 @@ def get_expected_feature_names_from_config() -> List[str]:
 
 # ---- Display Name Helpers ----
 
-def get_model_display_name(model_filename: str) -> str:
-    """
-    Convert model filename to human-readable display name.
-    This is the basic dynamic generation function.
-    """
-    return " ".join(word.capitalize() for word in model_filename.split("_"))
-
 def normalize_model_key(key: str) -> str:
     """
     Normalize model key for consistent display name mapping.
@@ -184,6 +177,7 @@ def get_all_model_display_names() -> Dict[str, str]:
     
     return all_display_names
 
+
 def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
     """
     Enhanced version with normalization fallback and fuzzy matching.
@@ -210,41 +204,6 @@ def get_model_display_name_from_config(model_filename: str, display_names_map: O
     # Fallback to dynamic generation
     return get_model_display_name(model_filename)
 
-def get_all_model_display_names() -> Dict[str, str]:
-    """
-    Get display names for all available models.
-    Returns a mapping of technical_name -> display_name.
-    """
-    display_names_map = load_model_display_names()
-    all_display_names = {}
-    try:
-        # You'd call your list_available_models() here
-        available_models = list_available_models()
-        for model_info in available_models:
-            technical_name = model_info['technical_name']
-            display_name = get_model_display_name_from_config(technical_name, display_names_map)
-            all_display_names[technical_name] = display_name
-        logging.info(f"Generated display names for {len(all_display_names)} models")
-    except Exception as e:
-        logging.error(f"Failed to get all model display names: {e}")
-    return all_display_names
-
-def load_model_display_names() -> Dict[str, str]:
-    """Load model display names from JSON configuration file."""
-    try:
-        model_config_path = os.path.join(CONFIG_FOLDER, MODEL_DISPLAY_NAME)
-        if os.path.exists(model_config_path):
-            with open(model_config_path, 'r') as f:
-                display_names = json.load(f)
-            logging.info(f"Loaded {len(display_names)} model display names from JSON")
-            return display_names
-        else:
-            logging.warning(f"model_display_names.json not found at {model_config_path}")
-    except Exception as e:
-        logging.error(f"Failed to load model display names: {e}")
-    return {}
-
-
 
 def load_model_display_names() -> Dict[str, str]:
     """Load model display names from JSON configuration file."""
@@ -261,6 +220,15 @@ def load_model_display_names() -> Dict[str, str]:
         logging.error(f"Failed to load model display names: {e}")
     
     return {}
+
+def get_model_display_name(model_filename: str) -> str:
+    """
+    Convert model filename to human-readable display name.
+    
+    """
+    display_names_map = load_model_display_names()
+        
+    return get_model_display_name_from_config(model_filename, display_names_map)
 
 
 def save_model_display_names(display_names: Dict[str, str]) -> bool:

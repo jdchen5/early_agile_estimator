@@ -4,7 +4,7 @@
 
 ## Model 1: Bayesian Ridge Regression
 
-![Bayesian Ridge SHAP Summary](./plots/bayesianridge_shap_summary.png)
+![Bayesian Ridge SHAP Summary](../plots/shap_summary_BayesianRidge.png)
 
 ### What this shows  
 This summary plot ranks features by their overall impact on the model’s predictions. Each dot represents a data point colored by feature value (red = high, blue = low). The position along the x-axis shows the effect magnitude and direction of the feature on the prediction.
@@ -20,7 +20,7 @@ Higher values of important features tend to increase the predicted effort (indic
 
 ## Model 2: Lasso Regression
 
-![Lasso SHAP Summary](./plots/lasso_shap_summary.png)
+![Lasso SHAP Summary](../plots/shap_summary_Lasso.png)
 
 ### What this shows  
 Lasso regression performs feature selection by driving some coefficients to zero, so the summary plot highlights a smaller subset of important features.
@@ -36,7 +36,7 @@ The selected features are the primary drivers of predicted effort. Their SHAP va
 
 ## Model 3: LassoLars Regression
 
-![LassoLars SHAP Summary](./plots/lassolars_shap_summary.png)
+![LassoLars SHAP Summary](../plots/shap_summary_LassoLars.png)
 
 ### What this shows  
 LassoLars also uses sparsity to identify relevant features, but with a different algorithmic approach. The summary plot reveals the main influential features.
