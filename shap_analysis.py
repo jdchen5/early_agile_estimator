@@ -1,14 +1,12 @@
-# shap_analysis.py - Fixed SHAP Analysis Module
+# shap_analysis.py - Fixed SHAP Analysis Module for PyCaret Models
 """
-SHAP Analysis Module that properly integrates with your existing models.py
+SHAP Analysis Module that properly handles PyCaret-wrapped models.
 
 Key Features:
-1. Uses your existing prepare_features_for_model() function (22 UI -> 67 model features)
-2. Uses your existing get_trained_model() function  
-3. Uses your existing prepare_isbsg_sample_data() function
-4. Properly handles feature dimension alignment
-5. Integrates seamlessly with your current codebase
-
+1. Properly extracts the underlying estimator from PyCaret models
+2. Handles the feature transformation pipeline correctly
+3. Returns actual SHAP explainer objects, not dictionaries
+4. Properly aligns features between UI (22) and model (54-67)
 Architecture:
 - UI Input (22 features) → prepare_features_for_model() → Model Features (66-67)
 - ISBSG Background Data → Same pipeline → Model-ready features
@@ -28,15 +26,18 @@ import os
 warnings.filterwarnings('ignore', category=UserWarning, module='shap')
 logging.getLogger('shap').setLevel(logging.WARNING)
 
-# Import from your models.py - all the functions we need are already there!
+# Import from your models.py
 try:
     from models import (
         prepare_isbsg_sample_data,
         prepare_features_for_model,
         get_trained_model,
         list_available_models,
-        get_field_options,
-        FIELDS
+        get_model_expected_features,
+        align_df_to_model,
+        get_isbsg_dataset_info,
+        load_model,  # Add this import
+        FIELDS  
     )
     MODELS_AVAILABLE = True
     print("✅ Models module loaded - ISBSG data available for SHAP")
@@ -53,7 +54,7 @@ except ImportError as e:
         """Fallback feature preparation"""
         return None
 
-# Global cache for explainers to avoid recreating them
+# Global cache for explainers
 _explainer_cache = {}
 
 def clear_explainer_cache():
@@ -69,30 +70,66 @@ def get_cache_info() -> Dict[str, Any]:
         'cache_size': len(_explainer_cache)
     }
 
+def extract_pycaret_estimator(model):
+    """
+    Extract the underlying estimator from a PyCaret model.
+    PyCaret wraps models in containers, we need the actual estimator.
+    """
+    try:
+        # Check if it's a PyCaret model
+        if hasattr(model, '_final_estimator'):
+            actual_model = model._final_estimator
+            print(f"✅ Extracted final estimator from PyCaret: {type(actual_model).__name__}")
+            return actual_model
+            
+        # Check if it's a pipeline
+        elif hasattr(model, 'named_steps'):
+            # Look for the estimator in the pipeline
+            for step_name, step in model.named_steps.items():
+                if hasattr(step, 'predict') and not step_name.startswith(('scaler', 'encoder', 'imputer')):
+                    print(f"✅ Extracted estimator from pipeline step '{step_name}': {type(step).__name__}")
+                    return step
+            
+            # If no suitable step found, try the last step
+            step_names = list(model.named_steps.keys())
+            if step_names:
+                final_step = model.named_steps[step_names[-1]]
+                print(f"✅ Extracted final pipeline step: {type(final_step).__name__}")
+                return final_step
+                
+        # Check for sklearn pipeline format
+        elif hasattr(model, 'steps'):
+            if len(model.steps) > 0:
+                final_step = model.steps[-1][1]
+                print(f"✅ Extracted from sklearn pipeline: {type(final_step).__name__}")
+                return final_step
+        
+        # If it's already a raw estimator, return it
+        print(f"ℹ️ Model appears to be raw estimator: {type(model).__name__}")
+        return model
+        
+    except Exception as e:
+        print(f"⚠️ Error extracting estimator: {e}")
+        return model
+
 def get_best_sample_data(n_samples: int = 100, model_name: str = None) -> Optional[np.ndarray]:
     """
     Get the best available sample data using your existing ISBSG function.
-    
-    Args:
-        n_samples: Number of sample instances to return
-        model_name: Model name for context (optional)
-        
-    Returns:
-        numpy array with sample data ready for SHAP, or None if all methods fail
     """
     try:
         if MODELS_AVAILABLE:
-            # Use your existing ISBSG function - it already returns properly formatted data
-            print("🔍 Attempting to load ISBSG sample data...")
+            # Use your existing ISBSG function
+            print("🔍 Loading ISBSG sample data for SHAP background...")
             isbsg_data = prepare_isbsg_sample_data(n_samples)
             if isbsg_data is not None:
-                print(f"✅ Using ISBSG sample data for SHAP baseline: {isbsg_data.shape}")
-                return isbsg_data
+                print(f"✅ ISBSG sample data loaded: {isbsg_data.shape}")
+                # Ensure it's float32 for SHAP
+                return isbsg_data.astype(np.float32)
             else:
-                print("❌ ISBSG data preparation failed")
+                print("⚠️ ISBSG data preparation failed")
         
-        # Fallback: Generate synthetic data via your feature pipeline
-        print("⚠️ No real data available, generating synthetic data via your pipeline...")
+        # Fallback: Generate synthetic data
+        print("⚠️ Using synthetic data fallback...")
         return generate_synthetic_data_via_pipeline(n_samples)
         
     except Exception as e:
@@ -103,22 +140,20 @@ def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]
     """
     Generate synthetic data by creating realistic UI inputs and processing them 
     through your existing feature preparation pipeline.
-    
-    This ensures the synthetic data has the same structure as real predictions.
     """
     try:
         if not MODELS_AVAILABLE:
-            # Final fallback to basic synthetic data
-            print("⚠️ No field configuration available - generating basic synthetic data")
-            return np.random.normal(0, 1, (n_samples, 67)).astype(np.float32)
+            print("⚠️ No models available - generating random synthetic data")
+            # Match your model's expected feature count
+            return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
         
-        print(f"🔄 Generating {n_samples} synthetic samples via your feature pipeline...")
+        print(f"🔄 Generating {n_samples} synthetic samples via feature pipeline...")
         
         synthetic_samples = []
         np.random.seed(42)  # For reproducibility
         
         for i in range(n_samples):
-            # Create realistic UI inputs (22 features) based on your FIELDS config
+            # Create realistic UI inputs
             sample_inputs = create_realistic_ui_inputs()
             
             # Process through your existing feature pipeline
@@ -126,13 +161,8 @@ def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]
                 processed_features = prepare_features_for_model(sample_inputs)
                 
                 if processed_features is not None and not processed_features.empty:
-                    # Convert to numpy array
                     feature_vector = processed_features.values.flatten()
                     synthetic_samples.append(feature_vector)
-                else:
-                    print(f"⚠️ Feature pipeline failed for sample {i}")
-                    # Skip this sample
-                    continue
                     
             except Exception as e:
                 print(f"⚠️ Error processing sample {i}: {e}")
@@ -140,82 +170,45 @@ def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]
         
         if synthetic_samples:
             result = np.array(synthetic_samples, dtype=np.float32)
-            print(f"✅ Generated synthetic sample data via your pipeline: {result.shape}")
+            print(f"✅ Generated synthetic data: {result.shape}")
             return result
         else:
             print("❌ No synthetic samples could be generated")
-            return None
+            # Return random data as last resort
+            return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
             
     except Exception as e:
-        print(f"❌ Error generating synthetic data via pipeline: {e}")
-        # Final fallback
-        return np.random.normal(0, 1, (n_samples, 67)).astype(np.float32)
+        print(f"❌ Error in synthetic data generation: {e}")
+        return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
 
 def create_realistic_ui_inputs() -> Dict:
     """
-    Create realistic UI inputs that match your 22 UI features from FIELDS config.
+    Create realistic UI inputs that match your 22 UI features.
     """
-    if not MODELS_AVAILABLE or not FIELDS:
-        # Basic fallback if no config available
-        return {
-            'project_prf_year_of_project': np.random.randint(2020, 2025),
-            'project_prf_functional_size': int(np.random.lognormal(6, 1)),
-            'project_prf_max_team_size': np.random.randint(3, 15),
-            'external_eef_industry_sector': np.random.choice(['finance', 'healthcare', 'retail']),
-            'tech_tf_primary_programming_language': np.random.choice(['java', 'python', 'csharp']),
-        }
-    
-    # Generate realistic values based on your actual FIELDS configuration
-    ui_inputs = {}
-    
-    for field_name, field_config in FIELDS.items():
-        field_type = field_config.get('type', 'numeric')
-        
-        if field_type == 'numeric':
-            min_val = field_config.get('min', 1)
-            max_val = field_config.get('max', 100)
-            default_val = field_config.get('default', (min_val + max_val) / 2)
-            
-            # Generate realistic values based on field name
-            if 'functional_size' in field_name.lower():
-                # Log-normal for project sizes
-                ui_inputs[field_name] = int(np.random.lognormal(np.log(max(default_val, 100)), 1))
-            elif 'team_size' in field_name.lower():
-                # Realistic team sizes
-                ui_inputs[field_name] = np.random.randint(max(min_val, 2), min(max_val, 20))
-            elif 'year' in field_name.lower():
-                # Recent years
-                ui_inputs[field_name] = np.random.randint(2020, 2025)
-            else:
-                # Normal distribution around default
-                value = np.random.normal(default_val, (max_val - min_val) * 0.2)
-                ui_inputs[field_name] = np.clip(value, min_val, max_val)
-                
-        elif field_type == 'categorical':
-            # Get options from field config or use get_field_options
-            options = field_config.get('options', [])
-            if not options:
-                options = get_field_options(field_name)
-            if options:
-                ui_inputs[field_name] = np.random.choice(options)
-            else:
-                ui_inputs[field_name] = 'option1'
-                
-        elif field_type == 'boolean':
-            # Realistic boolean probabilities
-            if 'agile' in field_name.lower():
-                probability = 0.65
-            elif 'cloud' in field_name.lower():
-                probability = 0.55
-            else:
-                probability = 0.50
-            ui_inputs[field_name] = np.random.choice([True, False], p=[probability, 1-probability])
-            
-        else:
-            # Default fallback
-            ui_inputs[field_name] = 0
-    
-    return ui_inputs
+    return {
+        'project_prf_year_of_project': np.random.randint(2020, 2025),
+        'external_eef_industry_sector': np.random.choice(['Financial', 'Healthcare', 'Retail']),
+        'tech_tf_primary_programming_language': np.random.choice(['Java', 'Python', 'C#', 'Agile platform']),
+        'tech_tf_tools_used': np.random.randint(0, 5),
+        'project_prf_relative_size': np.random.choice(['XXS', 'XS', 'S', 'M', 'L']),
+        'project_prf_functional_size': int(np.random.lognormal(5, 1.5)),
+        'project_prf_development_type': '',
+        'tech_tf_language_type': '',
+        'project_prf_application_type': None,
+        'external_eef_organisation_type': None,
+        'tech_tf_architecture': '',
+        'tech_tf_development_platform': '',
+        'project_prf_team_size_group': '',
+        'project_prf_max_team_size': np.random.randint(3, 15),
+        'tech_tf_server_roles': None,
+        'tech_tf_client_roles': None,
+        'tech_tf_web_development': np.random.choice([True, False]),
+        'tech_tf_dbms_used': np.random.choice([True, False]),
+        'process_pmf_prototyping_used': np.random.choice([True, False]),
+        'project_prf_case_tool_used': np.random.choice([True, False]),
+        'process_pmf_docs': np.random.randint(0, 10),
+        'people_prf_project_user_involvement': np.random.randint(0, 5)
+    }
 
 def get_shap_explainer(
     model_name: str, 
@@ -225,15 +218,7 @@ def get_shap_explainer(
 ) -> Optional[shap.Explainer]:
     """
     Get or create a SHAP explainer for the specified model.
-    
-    Args:
-        model_name: Technical name of the model
-        get_trained_model_func: Function to retrieve model (uses your get_trained_model if None)
-        prepare_sample_data_func: Deprecated - uses your ISBSG data automatically
-        sample_size: Number of samples for background data
-    
-    Returns:
-        SHAP explainer object or None if creation fails
+    This version properly handles PyCaret models.
     """
     # Check cache first
     cache_key = f"{model_name}_{sample_size}"
@@ -242,156 +227,177 @@ def get_shap_explainer(
         return _explainer_cache[cache_key]
     
     try:
-        # Use your existing function to get the model
-        if get_trained_model_func is None:
-            if not MODELS_AVAILABLE:
-                print("❌ Models module not available")
-                return None
-            get_trained_model_func = get_trained_model
-        
-        # Get the trained model using your function
-        model = get_trained_model_func(model_name)
-        if model is None:
-            print(f"❌ Could not retrieve model '{model_name}'")
+        # Load the full PyCaret model first
+        if not MODELS_AVAILABLE:
+            print("❌ Models module not available")
+            return None
+            
+        # Load the complete model (with PyCaret wrapper)
+        full_model = load_model(model_name)
+        if full_model is None:
+            print(f"❌ Could not load model '{model_name}'")
             return None
         
-        # Get background data using your existing functions
+        # Extract the actual estimator from PyCaret wrapper
+        actual_model = extract_pycaret_estimator(full_model)
+        if actual_model is None:
+            print(f"❌ Could not extract estimator from PyCaret model")
+            return None
+        
+        # Get background data
         background_data = get_best_sample_data(sample_size, model_name)
-        if background_data is None:
-            print(f"⚠️ No background data available for SHAP analysis")
-            
+        
+        # Prepare background data through the same pipeline
+        if background_data is not None and MODELS_AVAILABLE:
+            print("🔄 Processing background data through feature pipeline...")
+            # Create a function that applies the full prediction pipeline
+            def model_predict_func(X):
+                try:
+                    # If X is raw ISBSG data, we need to ensure it goes through the model's pipeline
+                    if isinstance(X, np.ndarray):
+                        # Convert to DataFrame with proper column names if needed
+                        X_df = pd.DataFrame(X)
+                    else:
+                        X_df = X
+                    
+                    # Use the full PyCaret model for prediction (includes preprocessing)
+                    predictions = full_model.predict(X_df)
+                    return predictions
+                except Exception as e:
+                    print(f"⚠️ Prediction error in SHAP: {e}")
+                    # Fallback to direct prediction
+                    return actual_model.predict(X)
+        else:
+            model_predict_func = lambda X: actual_model.predict(X)
+        
         # Create appropriate explainer based on model type
         explainer = None
-        model_type = type(model).__name__.lower()
+        model_type = type(actual_model).__name__.lower()
         
-        print(f"🔍 Creating SHAP explainer for model type: {model_type}")
+        print(f"🔍 Creating SHAP explainer for {model_type}")
         
         # Try TreeExplainer first (for tree-based models)
-        if any(t in model_type for t in ['forest', 'tree', 'xgb', 'lgb', 'catboost', 'gradient', 'randomforest', 'extratrees']):
+        tree_keywords = ['forest', 'tree', 'xgb', 'lgb', 'catboost', 'gradient', 
+                        'randomforest', 'extratrees', 'decisiontree']
+        
+        if any(keyword in model_type for keyword in tree_keywords):
             try:
                 if background_data is not None:
-                    explainer = shap.TreeExplainer(model, background_data)
-                    print(f"✅ Created TreeExplainer with ISBSG background for {model_name}")
+                    # For tree models, we can use the actual model directly
+                    explainer = shap.TreeExplainer(actual_model, background_data)
                 else:
-                    explainer = shap.TreeExplainer(model)
-                    print(f"⚠️ Created TreeExplainer without background for {model_name}")
-            except Exception as tree_error:
-                print(f"TreeExplainer failed for {model_name}: {tree_error}")
+                    explainer = shap.TreeExplainer(actual_model)
+                print(f"✅ Created TreeExplainer for {model_name}")
+            except Exception as e:
+                print(f"⚠️ TreeExplainer failed: {e}")
         
         # Try LinearExplainer for linear models
-        elif any(t in model_type for t in ['linear', 'lasso', 'ridge', 'elastic', 'bayesianridge']):
+        elif any(keyword in model_type for keyword in ['linear', 'lasso', 'ridge', 'elastic', 'bayesianridge']):
             if background_data is not None:
                 try:
-                    explainer = shap.LinearExplainer(model, background_data)
-                    print(f"✅ Created LinearExplainer with ISBSG background for {model_name}")
-                except Exception as linear_error:
-                    print(f"LinearExplainer failed for {model_name}: {linear_error}")
-            else:
-                print(f"❌ LinearExplainer requires background data, but none available")
+                    explainer = shap.LinearExplainer(actual_model, background_data)
+                    print(f"✅ Created LinearExplainer for {model_name}")
+                except Exception as e:
+                    print(f"⚠️ LinearExplainer failed: {e}")
         
-        # Fallback to KernelExplainer (model-agnostic but slower)
+        # Fallback to KernelExplainer
         if explainer is None and background_data is not None:
             try:
-                # Create prediction function wrapper
-                def predict_func(X):
-                    if hasattr(model, 'predict'):
-                        return model.predict(X)
-                    elif hasattr(model, '__call__'):
-                        return model(X)
-                    else:
-                        raise ValueError("Model has no predict method or is not callable")
-                
-                # Use smaller sample for KernelExplainer (it's computationally expensive)
+                # Use smaller sample for KernelExplainer
                 kernel_sample = background_data[:min(50, len(background_data))]
-                explainer = shap.KernelExplainer(predict_func, kernel_sample)
-                print(f"✅ Created KernelExplainer with ISBSG background for {model_name}")
-            except Exception as kernel_error:
-                print(f"KernelExplainer failed for {model_name}: {kernel_error}")
+                
+                # Use the full model's predict function for KernelExplainer
+                explainer = shap.KernelExplainer(model_predict_func, kernel_sample)
+                print(f"✅ Created KernelExplainer for {model_name}")
+            except Exception as e:
+                print(f"⚠️ KernelExplainer failed: {e}")
         
-        # Cache the explainer if successful
+        # Cache successful explainer
         if explainer is not None:
             _explainer_cache[cache_key] = explainer
-            
-            # Test if explainer supports interaction values
-            has_interactions = hasattr(explainer, 'shap_interaction_values')
-            print(f"✅ Explainer {model_name}: PASS")
-            print(f"   Type: {type(explainer).__name__}")
-            print(f"   Shap values method: {hasattr(explainer, 'shap_values')}")
-            print(f"   Interaction values: {has_interactions}")
+            print(f"✅ SHAP explainer created and cached for {model_name}")
         else:
-            print(f"❌ All SHAP explainer methods failed for {model_name}")
+            print(f"❌ Failed to create any SHAP explainer for {model_name}")
         
         return explainer
         
     except Exception as e:
-        print(f"❌ Error creating SHAP explainer for {model_name}: {e}")
+        print(f"❌ Error creating SHAP explainer: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def get_shap_values_for_input(
-    explainer: shap.Explainer, 
+    explainer: Union[shap.Explainer, Dict], 
     user_inputs: Union[Dict, np.ndarray],
+    model=None,
     feature_names: Optional[List[str]] = None
 ) -> Optional[np.ndarray]:
     """
-    Calculate SHAP values for a specific input using your existing feature pipeline.
-    
-    Args:
-        explainer: SHAP explainer object
-        user_inputs: Dictionary of user input values or numpy array
-        feature_names: Optional list of feature names (not used, kept for compatibility)
-    
-    Returns:
-        SHAP values array or None if calculation fails
+    Calculate SHAP values for a specific input.
+    Properly handles the case where explainer might be a dict (error case).
     """
-    try:
-        if explainer is None:
-            print("❌ No explainer provided for SHAP calculation")
-            return None
+    # Check if explainer is valid
+    if explainer is None:
+        print("❌ No explainer provided")
+        return None
         
-        # Handle dict input (from UI) using your existing pipeline
+    if isinstance(explainer, dict):
+        print(f"❌ Explainer is a dictionary, not a SHAP explainer: {explainer}")
+        return None
+        
+    if not hasattr(explainer, 'shap_values'):
+        print(f"❌ Invalid explainer type: {type(explainer)}")
+        return None
+    
+    try:
+        # Process inputs through feature pipeline if needed
         if isinstance(user_inputs, dict):
             if not MODELS_AVAILABLE:
-                print("❌ Models module not available for input conversion")
+                print("❌ Models module not available")
                 return None
                 
-            # Use your existing function to convert UI inputs to model features
-            try:
-                # This is the key fix - use prepare_features_for_model instead
-                input_df = prepare_features_for_model(user_inputs)
-                if input_df is None:
-                    print("❌ Could not convert user inputs using your pipeline")
-                    return None
-                
-                # Convert DataFrame to numpy array
-                input_data = input_df.values
-                
-            except Exception as e:
-                print(f"❌ Error preparing input data: {e}")
+            # Prepare features using your pipeline
+            input_df = prepare_features_for_model(user_inputs)
+            if input_df is None:
+                print("❌ Feature preparation failed")
                 return None
+            
+            # Align features if model provided
+            if model is not None:
+                model_features = get_model_expected_features(model)
+                if model_features:
+                    print(f"🔄 Aligning to {len(model_features)} model features")
+                    input_df = align_df_to_model(input_df, model_features)
+            
+            input_data = input_df.values
         else:
             input_data = user_inputs
         
-        # Ensure 2D input for single prediction
-        if input_data.ndim == 1:
+        # Ensure 2D array
+        if hasattr(input_data, 'ndim') and input_data.ndim == 1:
             input_data = input_data.reshape(1, -1)
         
+        print(f"🔄 Computing SHAP values for shape: {input_data.shape}")
+        
         # Calculate SHAP values
-        print(f"🔄 Calculating SHAP values for input shape: {input_data.shape}")
         shap_values = explainer.shap_values(input_data)
         
         # Handle different return formats
         if isinstance(shap_values, list):
-            # Multi-class or multi-output - return first class/output
+            # Multi-class or multi-output
             result = shap_values[0]
         else:
             result = shap_values
         
-        print(f"✅ SHAP values calculated successfully: {result.shape}")
+        print(f"✅ SHAP values calculated: {getattr(result, 'shape', 'scalar')}")
         return result
         
     except Exception as e:
         print(f"❌ Error calculating SHAP values: {e}")
-        return None    
+        import traceback
+        traceback.print_exc()
+        return None
 
 def get_feature_interaction_values(
     explainer: shap.Explainer,
@@ -399,70 +405,47 @@ def get_feature_interaction_values(
     feature_names: Optional[List[str]] = None
 ) -> Optional[np.ndarray]:
     """
-    Calculate SHAP interaction values for feature pairs (TreeExplainer only).
-    
-    Args:
-        explainer: SHAP explainer object (must support interaction values)
-        user_inputs: Dictionary of user input values or numpy array
-        feature_names: Optional list of feature names
-    
-    Returns:
-        SHAP interaction values matrix or None if calculation fails
+    Calculate SHAP interaction values (TreeExplainer only).
     """
     try:
         if explainer is None or not hasattr(explainer, 'shap_interaction_values'):
-            print("ℹ️ Interaction values not available for this explainer type")
+            print("ℹ️ Interaction values not available for this explainer")
             return None
         
-        # Handle dict input using your existing pipeline
+        # Prepare input data
         if isinstance(user_inputs, dict):
             if not MODELS_AVAILABLE:
-                print("❌ Models module not available for input conversion")
                 return None
                 
-            # Use prepare_features_for_model instead of prepare_input_data
-            try:
-                input_df = prepare_features_for_model(user_inputs)
-                if input_df is None:
-                    print("❌ Could not convert user inputs for interaction analysis")
-                    return None
-                input_data = input_df.values
-            except Exception as e:
-                print(f"❌ Error preparing input data: {e}")
+            input_df = prepare_features_for_model(user_inputs)
+            if input_df is None:
                 return None
+            input_data = input_df.values
         else:
             input_data = user_inputs
         
-        # Ensure input is 2D
+        # Ensure 2D
         if input_data.ndim == 1:
             input_data = input_data.reshape(1, -1)
         
-        print(f"🔄 Calculating SHAP interaction values...")
+        print("🔄 Calculating SHAP interaction values...")
         interaction_values = explainer.shap_interaction_values(input_data)
         
-        # Return interaction matrix for single prediction
+        # Extract first instance
         if isinstance(interaction_values, list):
-            result = interaction_values[0][0]  # First class, first instance
+            result = interaction_values[0][0]
         else:
-            result = interaction_values[0]  # First instance
+            result = interaction_values[0]
         
-        print(f"✅ SHAP interaction values calculated: {result.shape}")
+        print(f"✅ Interaction values calculated: {result.shape}")
         return result
             
     except Exception as e:
-        print(f"❌ Error calculating SHAP interaction values: {e}")
+        print(f"❌ Error calculating interaction values: {e}")
         return None
-    
+
 def get_feature_names_from_fields(fields: Dict) -> List[str]:
-    """
-    Extract feature names from fields configuration.
-    
-    Args:
-        fields: Fields configuration dictionary
-    
-    Returns:
-        List of feature names (excluding UI fields)
-    """
+    """Extract feature names from fields configuration."""
     exclude_fields = {
         'selected_model', 'selected_models', 'submit', 
         'clear_results', 'show_history', 'comparison_mode'
@@ -470,15 +453,7 @@ def get_feature_names_from_fields(fields: Dict) -> List[str]:
     return [name for name in sorted(fields.keys()) if name not in exclude_fields]
 
 def get_feature_names_from_inputs(user_inputs: Dict) -> List[str]:
-    """
-    Extract feature names from user inputs.
-    
-    Args:
-        user_inputs: User input dictionary
-    
-    Returns:
-        List of feature names (excluding UI fields)
-    """
+    """Extract feature names from user inputs."""
     exclude_fields = {
         'selected_model', 'selected_models', 'submit', 
         'clear_results', 'show_history', 'comparison_mode'
@@ -486,26 +461,15 @@ def get_feature_names_from_inputs(user_inputs: Dict) -> List[str]:
     return [name for name in sorted(user_inputs.keys()) if name not in exclude_fields]
 
 def validate_shap_inputs(user_inputs: Dict, required_fields: List[str] = None) -> bool:
-    """
-    Validate that user inputs are suitable for SHAP analysis.
-    
-    Args:
-        user_inputs: User input dictionary
-        required_fields: Optional list of required fields
-    
-    Returns:
-        True if inputs are valid, False otherwise
-    """
+    """Validate that user inputs are suitable for SHAP analysis."""
     if not user_inputs:
         return False
     
-    # Check for required fields if specified
     if required_fields:
         for field in required_fields:
             if field not in user_inputs or user_inputs[field] is None:
                 return False
     
-    # Check that we have some meaningful inputs
     exclude_fields = {
         'selected_model', 'selected_models', 'submit', 
         'clear_results', 'show_history', 'comparison_mode'
@@ -521,18 +485,7 @@ def create_shap_summary_data(
     user_inputs: Dict,
     top_n: int = 10
 ) -> List[Dict]:
-    """
-    Create summary data for SHAP values display.
-    
-    Args:
-        shap_values: SHAP values array
-        feature_names: List of feature names
-        user_inputs: User input values
-        top_n: Number of top features to include
-    
-    Returns:
-        List of dictionaries containing feature impact data
-    """
+    """Create summary data for SHAP values display."""
     try:
         # Handle different SHAP value formats
         if isinstance(shap_values, list):
@@ -543,7 +496,7 @@ def create_shap_summary_data(
         if len(shap_vals) == 0:
             return []
         
-        # Create summary data
+        # Create summary
         summary_data = []
         for i, (name, shap_val) in enumerate(zip(feature_names, shap_vals)):
             if i >= len(shap_vals):
@@ -557,21 +510,16 @@ def create_shap_summary_data(
                 'direction': 'Increases' if shap_val > 0 else 'Decreases'
             })
         
-        # Sort by absolute impact and return top N
+        # Sort by impact
         summary_data.sort(key=lambda x: x['abs_impact'], reverse=True)
         return summary_data[:top_n]
         
     except Exception as e:
-        print(f"❌ Error creating SHAP summary data: {e}")
+        print(f"❌ Error creating summary: {e}")
         return []
 
 def get_sample_data_info() -> Dict[str, Any]:
-    """
-    Get information about available sample data sources using your existing functions.
-    
-    Returns:
-        Dictionary with sample data availability and statistics
-    """
+    """Get information about available sample data sources."""
     info = {
         'isbsg_available': False,
         'training_csv_available': False,
@@ -581,153 +529,52 @@ def get_sample_data_info() -> Dict[str, Any]:
     
     try:
         if MODELS_AVAILABLE:
-            # Check ISBSG availability using your function
-            from models import get_isbsg_dataset_info
+            # Check ISBSG availability
             isbsg_info = get_isbsg_dataset_info()
             if isbsg_info.get('available', False):
                 info['isbsg_available'] = True
                 info['recommended_source'] = 'isbsg'
                 info['isbsg_rows'] = isbsg_info.get('total_rows', 0)
                 info['isbsg_features'] = isbsg_info.get('feature_columns', 0)
-            
-            # Test your prepare_isbsg_sample_data function
-            try:
-                test_data = prepare_isbsg_sample_data(10)  # Small test
-                if test_data is not None:
-                    info['isbsg_available'] = True
-                    if not info.get('isbsg_available'):
-                        info['recommended_source'] = 'isbsg'
-            except Exception:
-                pass
-    
     except Exception as e:
         info['error'] = str(e)
     
     return info
 
-def validate_shap_compatibility(model_name: str) -> Dict[str, Any]:
-    """
-    Validate if a model is compatible with SHAP analysis.
-    """
-    try:
-        result = {
-            'compatible': False,
-            'explainer_type': None,
-            'issues': [],
-            'recommendations': []
-        }
-        
-        # Load the model
-        model = get_trained_model(model_name)
-        if model is None:
-            result['issues'].append("Could not load model")
-            return result
-        
-        model_type = type(model).__name__
-        print(f"Checking SHAP compatibility for model type: {model_type}")
-        
-        # Check for tree-based models (best SHAP support)
-        tree_models = [
-            'RandomForestRegressor', 'GradientBoostingRegressor', 'XGBRegressor',
-            'LGBMRegressor', 'CatBoostRegressor', 'ExtraTreesRegressor',
-            'DecisionTreeRegressor'
-        ]
-        
-        if any(tree_model in model_type for tree_model in tree_models):
-            result['compatible'] = True
-            result['explainer_type'] = 'TreeExplainer'
-            result['recommendations'].append("Excellent SHAP support with TreeExplainer")
-        
-        # Check for linear models
-        elif any(linear_model in model_type for linear_model in ['LinearRegression', 'Ridge', 'Lasso', 'ElasticNet', 'BayesianRidge']):
-            result['compatible'] = True
-            result['explainer_type'] = 'LinearExplainer'
-            result['recommendations'].append("Good SHAP support with LinearExplainer")
-        
-        # Check if model has predict method (required for KernelExplainer)
-        elif hasattr(model, 'predict'):
-            result['compatible'] = True
-            result['explainer_type'] = 'KernelExplainer'
-            result['recommendations'].append("Basic SHAP support with KernelExplainer (slower)")
-            result['issues'].append("KernelExplainer may be slow for complex models")
-        
-        else:
-            result['issues'].append(f"Model type {model_type} may not be fully compatible with SHAP")
-            result['recommendations'].append("Consider using a tree-based model for better SHAP support")
-        
-        return result
-        
-    except Exception as e:
-        return {
-            'compatible': False,
-            'explainer_type': None,
-            'issues': [f"Error checking compatibility: {e}"],
-            'recommendations': ["Ensure model can be loaded properly"]
-        }
-
 def prepare_sample_data(n_samples, fields, get_field_options_func):
-    """
-    Main sample data preparation function - now uses your ISBSG data.
-    Maintains backward compatibility with original function signature.
-    
-    Args:
-        n_samples: Number of samples to generate
-        fields: Field configuration dictionary (unused - uses your FIELDS)
-        get_field_options_func: Function to get field options (unused - uses your function)
-    
-    Returns:
-        numpy array with sample data
-    """
+    """Main sample data preparation function."""
     try:
-        # Use your existing sample data functions
         return get_best_sample_data(n_samples)
-        
     except Exception as e:
         print(f"❌ Sample data preparation failed: {e}")
         return None
 
 def prepare_input_data(user_inputs: Dict[str, Any]) -> Optional[np.ndarray]:
-    """
-    Wrapper function for UI compatibility.
-    Converts user inputs to numpy array for SHAP analysis.
-    """
+    """Wrapper function for UI compatibility."""
     try:
         if not MODELS_AVAILABLE:
             print("❌ Models module not available")
             return None
             
-        # Use your existing feature preparation
         features_df = prepare_features_for_model(user_inputs)
         if features_df is None or features_df.empty:
             print("❌ Feature preparation failed")
             return None
         
-        # Convert to numpy array
         return features_df.values
         
     except Exception as e:
-        print(f"❌ Error in prepare_input_data wrapper: {e}")
+        print(f"❌ Error in prepare_input_data: {e}")
         return None
 
-def get_shap_feature_names(model_name: str, user_inputs: Dict[str, Any]) -> List[str]:
-    """
-    Get feature names for SHAP analysis.
-    """
+def get_parameter_index(param_name, feature_names):
+    """Get the index of a parameter in the feature names list."""
     try:
-        # Try to get from prepared features
-        if MODELS_AVAILABLE:
-            features_df = prepare_features_for_model(user_inputs)
-            if features_df is not None:
-                return list(features_df.columns)
-        
-        # Fallback to input names
-        return get_feature_names_from_inputs(user_inputs)
-        
-    except Exception as e:
-        print(f"❌ Error getting SHAP feature names: {e}")
-        return get_feature_names_from_inputs(user_inputs)
+        return feature_names.index(param_name)
+    except (ValueError, AttributeError):
+        return None
 
-# Export all functions for use in UI - matching original interface
+# Export all functions
 __all__ = [
     'get_shap_explainer',
     'prepare_sample_data', 
@@ -740,5 +587,7 @@ __all__ = [
     'get_cache_info',
     'get_sample_data_info',
     'create_shap_summary_data',
-    'get_best_sample_data'
+    'get_best_sample_data',
+    'get_parameter_index',
+    'prepare_input_data'
 ]
