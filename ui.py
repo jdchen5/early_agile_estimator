@@ -25,8 +25,10 @@ from shap_analysis import (
     get_feature_interaction_values,
     get_feature_names_from_fields,
     get_feature_names_from_inputs,
-    get_parameter_index
+    get_parameter_index,
+    get_field_options
 )
+
 
 try:
     from models import (
@@ -347,15 +349,15 @@ def display_scenario_comparison(user_inputs, model_name):
     scenarios = {
         "Small Agile Project": {
             "project_prf_functional_size": 65,  # from ISBSG
-            "project_tech_primary_programming_language": "Python"
+            "tech_tf_primary_programming_language": "Python"
         },
         "Medium Enterprise Project": {
             "project_prf_functional_size": 550,
-            "project_tech_primary_programming_language": "Java"
+            "tech_tf_primary_programming_language": "Java"
         },
         "Large Enterprise Project": {
             "project_prf_functional_size": 2000,
-            "project_tech_primary_programming_language": "C#"
+            "tech_tf_primary_programming_language": "C#"
         }
     }
     
@@ -855,21 +857,67 @@ def sidebar_inputs():
         config_name = st.text_input("Configuration Name", placeholder="e.g., Banking_Project_Template")
         col1, col2 = st.columns(2)
         with col1:
-            save_button = st.button("💾 Save Config", use_container_width=True, disabled=not config_name.strip())
+            # Create download button when config name is provided
+            if config_name.strip():
+                # Create configuration data for download
+                config_for_download = user_inputs.copy()
+                # Remove UI-specific keys that shouldn't be saved
+                exclude_keys = {'submit', 'selected_models', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
+                for key in exclude_keys:
+                    config_for_download.pop(key, None)
+                
+                # Add metadata
+                config_for_download['_metadata'] = {
+                    'config_name': config_name.strip(),
+                    'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'app_version': '1.0',
+                    'description': f'ML Project Effort Estimator configuration: {config_name.strip()}'
+                }
+                
+                # Convert to JSON string
+                config_json = json.dumps(config_for_download, indent=2, default=str)
+                
+                # Download button
+                st.download_button(
+                    label="💾 Download Config",
+                    data=config_json,
+                    file_name=f"{config_name.strip().replace(' ', '_')}_config.json",
+                    mime="application/json",
+                    help=f"Download '{config_name.strip()}' configuration to your computer",
+                    use_container_width=True
+                )
+            else:
+                st.button("💾 Download Config", disabled=True, use_container_width=True, 
+                         help="Enter a configuration name first")
+                
         with col2:
-            if st.button("📁 Load Config", use_container_width=True):
-                configs_dir = "saved_configs"
-                if os.path.exists(configs_dir):
-                    config_files = [f.replace('.json', '') for f in os.listdir(configs_dir) if f.endswith('.json')]
-                    if config_files:
-                        st.info(f"Available configs: {', '.join(config_files)}")
-                    else:
-                        st.info("No saved configurations found")
-                else:
-                    st.info("No saved configurations found")
+                st.info("👇 Upload a configuration file below")
 
-        if save_button and config_name.strip():
-            save_current_configuration(user_inputs, config_name.strip())
+        # File uploader for loading configurations
+        uploaded_config = st.file_uploader(
+            "📂 Upload Configuration File",
+            type=['json'],
+            help="Upload a previously saved configuration JSON file"
+        )
+
+        if uploaded_config is not None:
+            try:
+                config_data = json.load(uploaded_config)
+                # Remove metadata before loading
+                metadata = config_data.pop('_metadata', {})
+                config_name_loaded = metadata.get('config_name', uploaded_config.name)
+                
+                # Apply the loaded configuration to session state
+                for field_name, field_value in config_data.items():
+                    if field_name in FIELDS:  # Only load valid fields
+                        st.session_state[field_name] = field_value
+                
+                st.success(f"✅ Configuration '{config_name_loaded}' loaded successfully!")
+                st.rerun()  # Refresh to show loaded values
+                
+            except Exception as e:
+                st.error(f"❌ Error loading configuration: {e}")
+
 
         if clear_results:
             st.session_state.prediction_history = []
@@ -902,6 +950,64 @@ def save_current_configuration(user_inputs, config_name):
         json.dump(config, f, indent=2, default=str)
     
     st.success(f"✅ Configuration '{config_name}' saved!")
+
+def create_config_download(user_inputs, config_name):
+    """Create a downloadable configuration file"""
+    try:
+        # Create configuration data
+        config = user_inputs.copy()
+        
+        # Remove UI-specific keys that shouldn't be saved
+        exclude_keys = {'submit', 'selected_models', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
+        for key in exclude_keys:
+            config.pop(key, None)
+        
+        # Add metadata
+        config['_metadata'] = {
+            'config_name': config_name,
+            'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'app_version': '1.0',
+            'description': f'ML Project Effort Estimator configuration: {config_name}'
+        }
+        
+        # Convert to JSON string
+        config_json = json.dumps(config, indent=2, default=str)
+        
+        # Create download button
+        st.download_button(
+            label="⬇️ Download Configuration File",
+            data=config_json,
+            file_name=f"{config_name.replace(' ', '_')}_config.json",
+            mime="application/json",
+            help=f"Download '{config_name}' configuration to your computer"
+        )
+        
+        st.success(f"✅ Configuration '{config_name}' ready for download!")
+        
+    except Exception as e:
+        st.error(f"❌ Error creating configuration file: {e}")
+
+def load_configuration_from_data(config_data):
+    """Load configuration data into session state"""
+    try:
+        # Extract metadata if present
+        metadata = config_data.pop('_metadata', {})
+        config_name = metadata.get('config_name', 'Loaded Configuration')
+        saved_date = metadata.get('saved_date', 'Unknown')
+        
+        st.info(f"Loading configuration: {config_name} (saved: {saved_date})")
+        
+        # Apply configuration to session state
+        # This will update the form fields when the page reruns
+        for field_name, field_value in config_data.items():
+            if field_name in FIELDS:  # Only load valid fields
+                st.session_state[field_name] = field_value
+        
+        return True
+        
+    except Exception as e:
+        st.error(f"Error applying configuration: {e}")
+        return False
 
 # --- Display Functions ---
 def display_inputs(user_inputs, selected_models):

@@ -735,6 +735,13 @@ def convert_feature_dict_to_dataframe(feature_dict: Dict, feature_config: Option
     unprocessed = set(clean_features.keys()) - processed_features
     if unprocessed:
         logging.warning(f"Unprocessed features: {unprocessed}")
+
+        for feature_name, value in clean_features.items():
+            if feature_name not in processed_features:
+                df_data[feature_name] = value
+                processed_features.add(feature_name)
+                logging.info(f"DEBUG: Added unprocessed feature directly: {feature_name} = {value}")
+            
     
     # Create DataFrame with single row
     df = pd.DataFrame([df_data])

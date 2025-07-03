@@ -45,8 +45,10 @@ except ImportError:
 # --- Load unified YAML config ---
 CONFIG_FOLDER = 'config'
 MODELS_FOLDER = 'models'
+DATA_FOLDER = 'data'
 UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match merged config
 MODEL_DISPLAY_NAME = 'model_display_names.json'
+ISBSG_PREPROCESSED_FILE = os.path.join(DATA_FOLDER, 'synthetic_isbsg2016r1_1_finance_sdv_generated_fixed_columns_data.csv')
 
 def load_yaml_config(path: str) -> Dict:
     try:
@@ -1397,65 +1399,218 @@ def get_training_data_info() -> Dict[str, Any]:
 
 def prepare_isbsg_sample_data(n_samples: int = 100) -> Optional[np.ndarray]:
     """
-    Specifically load sample data from your ISBSG dataset.
-    Optimized for the synthetic_isbsg2016r1_1_finance_sdv_generated.csv file.
+    Load ISBSG dataset as-is for SHAP analysis.
+    No preprocessing - just take the data directly from the CSV.
     """
     try:
-        file_path = 'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+        file_path = ISBSG_PREPROCESSED_FILE
         
         if not os.path.exists(file_path):
             logging.error(f"ISBSG dataset not found at: {file_path}")
-            return prepare_sample_data_synthetic(n_samples)
+            return None
         
-        logging.info(f"Loading ISBSG training data from: {file_path}")
+        logging.info(f"Loading ISBSG data as-is from: {file_path}")
         
-        # Load the dataset
+        # Load the dataset directly
         df = pd.read_csv(file_path)
         logging.info(f"Loaded ISBSG dataset: {df.shape[0]} rows, {df.shape[1]} columns")
         
-        # Remove target columns and ID columns
-        columns_to_remove = [
-            'isbsg_project_id',  # ID column
-            'project_prf_normalised_work_effort_level_1',  # Target
-            'project_prf_normalised_work_effort',  # Target
-            'project_prf_normalised_level_1_pdr_ufp',  # Target
-            'project_prf_normalised_pdr_ufp',  # Target
-            'project_prf_speed_of_delivery',  # Target
-            'project_prf_project_elapsed_time'  # Target
-        ]
-        
-        # Remove columns that exist
-        existing_columns_to_remove = [col for col in columns_to_remove if col in df.columns]
-        if existing_columns_to_remove:
-            df = df.drop(columns=existing_columns_to_remove)
-            logging.info(f"Removed target/ID columns: {existing_columns_to_remove}")
-        
-        # Handle missing values
-        df = df.fillna(0)
-        
         # Sample the data
         if len(df) > n_samples:
-            # Stratified sampling to ensure good representation
             sample_df = df.sample(n=n_samples, random_state=42)
-            logging.info(f"Sampled {n_samples} rows from {len(df)} total ISBSG rows")
+            logging.info(f"Sampled {n_samples} rows from {len(df)} total rows")
         else:
             sample_df = df.copy()
-            logging.info(f"Using all {len(df)} ISBSG rows")
+            logging.info(f"Using all {len(df)} rows")
         
-        # Convert to numpy array format expected by models
-        sample_array = sample_df.values
+        # Convert to numpy array directly
+        sample_array = sample_df.values.astype(np.float32)
         
-        # Ensure numeric types
-        sample_array = sample_array.astype(float)
+        # Handle any NaN or infinite values
+        if np.isnan(sample_array).any():
+            logging.warning("Found NaN values - filling with 0")
+            sample_array = np.nan_to_num(sample_array, nan=0.0)
         
-        logging.info(f"ISBSG sample data prepared: shape {sample_array.shape}")
-        logging.info(f"Sample data statistics - Mean: {sample_array.mean():.2f}, Std: {sample_array.std():.2f}")
+        if np.isinf(sample_array).any():
+            logging.warning("Found infinite values - capping them")
+            sample_array = np.nan_to_num(sample_array, posinf=1e10, neginf=-1e10)
+        
+        logging.info(f"✅ ISBSG sample data prepared (as-is):")
+        logging.info(f"   - Shape: {sample_array.shape}")
+        logging.info(f"   - Data type: {sample_array.dtype}")
+        logging.info(f"   - Value range: [{sample_array.min():.2f}, {sample_array.max():.2f}]")
+        logging.info(f"   - Clean data: {not np.isnan(sample_array).any() and not np.isinf(sample_array).any()}")
         
         return sample_array
         
     except Exception as e:
         logging.error(f"Error loading ISBSG sample data: {e}")
-        return prepare_sample_data_synthetic(n_samples)
+        return None
+
+def apply_pycaret_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Apply the same preprocessing that was used in your PyCaret training.
+    This ensures SHAP background data matches your model's training data exactly.
+    """
+    try:
+        # Make column names lowercase (matching your PyCaret setup)
+        df.columns = [col.lower() for col in df.columns]
+        
+        # Apply mixed-type column fixes (same as your PyCaret setup)
+        df_processed = fix_mixed_type_columns_simple(df)
+        
+        # Remove target and ignore columns (same as your PyCaret setup)
+        ignore_cols = [
+            'isbsg_project_id', 'external_eef_data_quality_rating', 'external_eef_data_quality_rating_b', 
+            'project_prf_normalised_work_effort_level_1', 'project_prf_normalised_level_1_pdr_ufp', 
+            'project_prf_normalised_pdr_ufp', 'project_prf_project_elapsed_time', 
+            'people_prf_ba_team_experience_less_than_1_yr', 'people_prf_ba_team_experience_1_to_3_yr', 
+            'people_prf_ba_team_experience_great_than_3_yr', 'people_prf_it_experience_less_than_1_yr', 
+            'people_prf_it_experience_1_to_3_yr', 'people_prf_it_experience_great_than_3_yr', 
+            'people_prf_it_experience_less_than_3_yr', 'people_prf_it_experience_3_to_9_yr', 
+            'people_prf_it_experience_great_than_9_yr', 'people_prf_project_manage_experience', 
+            'project_prf_total_project_cost', 'project_prf_cost_currency', 'project_prf_currency_multiple', 
+            'project_prf_speed_of_delivery', 'people_prf_project_manage_changes', 
+            'project_prf_defect_density', 'project_prf_manpower_delivery_rate'
+        ]
+        
+        # Convert to lowercase and remove target + ignore columns
+        ignore_cols = [col.lower() for col in ignore_cols]
+        target_col = 'project_prf_normalised_work_effort'
+        
+        # Remove target and ignore columns
+        cols_to_drop = [target_col] + [col for col in ignore_cols if col in df_processed.columns]
+        df_processed = df_processed.drop(columns=cols_to_drop, errors='ignore')
+        
+        logging.info(f"Removed {len(cols_to_drop)} columns (target + ignore)")
+        
+        # Handle missing values (same as your PyCaret setup)
+        numeric_cols = df_processed.select_dtypes(include=[np.number]).columns
+        categorical_cols = df_processed.select_dtypes(include=['object', 'category']).columns
+        
+        # Impute numeric columns with mean
+        for col in numeric_cols:
+            if df_processed[col].isnull().any():
+                df_processed[col] = df_processed[col].fillna(df_processed[col].mean())
+        
+        # Impute categorical columns with mode
+        for col in categorical_cols:
+            if df_processed[col].isnull().any():
+                mode_val = df_processed[col].mode()
+                if len(mode_val) > 0:
+                    df_processed[col] = df_processed[col].fillna(mode_val[0])
+                else:
+                    df_processed[col] = df_processed[col].fillna('missing')
+        
+        # Encode categorical variables (same as your PyCaret setup)
+        if len(categorical_cols) > 0:
+            df_processed = pd.get_dummies(df_processed, drop_first=True)
+            logging.info(f"Applied one-hot encoding to {len(categorical_cols)} categorical columns")
+        
+        # Apply normalization using saved scaler (if available)
+        try:
+            scaler_path = os.path.join(MODELS_FOLDER, 'standard_scaler.pkl')
+            if os.path.exists(scaler_path):
+                import joblib
+                scaler = joblib.load(scaler_path)
+                df_processed = pd.DataFrame(
+                    scaler.transform(df_processed),
+                    columns=df_processed.columns,
+                    index=df_processed.index
+                )
+                logging.info("Applied saved scaler normalization")
+            else:
+                logging.warning("No saved scaler found - data may not be normalized")
+        except Exception as e:
+            logging.warning(f"Could not apply saved scaler: {e}")
+        
+        logging.info(f"Final processed shape: {df_processed.shape}")
+        return df_processed
+        
+    except Exception as e:
+        logging.error(f"Error in preprocessing: {e}")
+        return df
+
+
+def fix_mixed_type_columns_simple(df):
+    """
+    Fix mixed type columns (same as your PyCaret setup)
+    """
+    df_copy = df.copy()
+    
+    mixed_type_cols = [
+        'external_eef_industry_sector',
+        'tech_tf_client_roles', 
+        'tech_tf_clientserver_description',
+        'tech_tf_development_platform_hand_held'
+    ]
+    
+    for col in mixed_type_cols:
+        if col in df_copy.columns:
+            if col == 'tech_tf_development_platform_hand_held':
+                df_copy[col] = df_copy[col].fillna(False).astype(bool)
+            else:
+                df_copy[col] = df_copy[col].astype(str)
+                df_copy[col] = df_copy[col].replace('nan', np.nan)
+    
+    return df_copy
+
+
+def validate_shap_sample_data(sample_data: np.ndarray) -> Dict[str, Any]:
+    """
+    Validate that the sample data is suitable for SHAP analysis
+    """
+    validation = {
+        'valid': True,
+        'warnings': [],
+        'errors': []
+    }
+    
+    try:
+        # Check basic properties
+        if sample_data is None:
+            validation['valid'] = False
+            validation['errors'].append("Sample data is None")
+            return validation
+        
+        if not isinstance(sample_data, np.ndarray):
+            validation['valid'] = False
+            validation['errors'].append("Sample data is not a numpy array")
+            return validation
+        
+        if sample_data.size == 0:
+            validation['valid'] = False
+            validation['errors'].append("Sample data is empty")
+            return validation
+        
+        # Check for problematic values
+        if np.isnan(sample_data).any():
+            validation['warnings'].append("Sample data contains NaN values")
+        
+        if np.isinf(sample_data).any():
+            validation['warnings'].append("Sample data contains infinite values")
+        
+        # Check dimensions
+        if len(sample_data.shape) != 2:
+            validation['warnings'].append(f"Unexpected data shape: {sample_data.shape}")
+        
+        # Check feature count
+        if len(sample_data.shape) == 2 and sample_data.shape[1] != 67:  # Adjust expected count
+            validation['warnings'].append(f"Feature count {sample_data.shape[1]} may not match model expectations")
+        
+        # Data quality checks
+        if sample_data.std() == 0:
+            validation['warnings'].append("Sample data has zero variance")
+        
+        validation['shape'] = sample_data.shape
+        validation['dtype'] = str(sample_data.dtype)
+        validation['value_range'] = [float(sample_data.min()), float(sample_data.max())]
+        
+    except Exception as e:
+        validation['valid'] = False
+        validation['errors'].append(f"Validation error: {e}")
+    
+    return validation
 
 def get_isbsg_dataset_info() -> Dict[str, Any]:
     """
@@ -1514,6 +1669,7 @@ def get_isbsg_dataset_info() -> Dict[str, Any]:
         
     except Exception as e:
         return {'available': False, 'error': str(e)}
+
 
 def set_training_data_path(file_path: str) -> bool:
     """
@@ -1666,5 +1822,5 @@ __all__ = [
     'prepare_sample_data',
     'prepare_sample_data_from_history',
     'validate_shap_compatibility',
-    'get_shap_feature_names'    
+    'get_shap_feature_names'
 ]

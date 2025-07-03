@@ -284,20 +284,20 @@ one_hot_features:
       "Application Generator": tech_tf_language_type_application_generator
       "Other": tech_tf_language_type_other
   primary_language:
-    input_key: tech_tf_primary_language
+    input_key: tech_tf_primary_programming_language
     mapping:
-      "ABAP": tech_tf_primary_language_abap
-      "Agile platform": tech_tf_primary_language_agile_platform
-      "JAVA": tech_tf_primary_language_java
-      "Javascript": tech_tf_primary_language_javascript
-      "C": tech_tf_primary_language_c
-      "C++": tech_tf_primary_language_cplusplus
-      "PL/i": tech_tf_primary_language_pli
-      "Natural": tech_tf_primary_language_natural
-      "Cobol": tech_tf_primary_language_cobol
-      "Oracle": tech_tf_primary_language_oracle
-      "Proprietary Agile Platform": tech_tf_primary_language_proprietary_agile_platform
-      "Other": tech_tf_primary_language_other
+      "ABAP": tech_tf_primary_programming_language_abap
+      "Agile platform": tech_tf_primary_programming_language_agile_platform
+      "JAVA": tech_tf_primary_programming_language_java
+      "Javascript": tech_tf_primary_programming_language_javascript
+      "C": tech_tf_primary_programming_language_c
+      "C++": tech_tf_primary_programming_language_cplusplus
+      "PL/i": tech_tf_primary_programming_language_pli
+      "Natural": tech_tf_primary_programming_language_natural
+      "Cobol": tech_tf_primary_programming_language_cobol
+      "Oracle": tech_tf_primary_programming_language_oracle
+      "Proprietary Agile Platform": tech_tf_primary_programming_language_proprietary_agile_platform
+      "Other": tech_tf_primary_programming_language_other
   project_prf_relative_size:
     input_key: project_prf_relative_size
     mapping:
@@ -368,3 +368,25 @@ special_cases:
       "91-100": project_prf_team_size_group_91_100
       "101+": project_prf_team_size_group_101plus
       "Missing": project_prf_team_size_group_missing
+
+binary_features:
+  prototyping:
+    input_key: process_pmf_prototyping_used
+    mapping:
+      "Yes": process_pmf_prototyping_used_yes
+      "No": process_pmf_prototyping_used_no
+  case_tool:
+    input_key: project_prf_case_tool_used
+    mapping:
+      "Yes": project_prf_case_tool_used_yes
+      "No": project_prf_case_tool_used_no
+  web_development:
+    input_key: tech_tf_web_development
+    mapping:
+      "Yes": tech_tf_web_development_yes
+      "No": tech_tf_web_development_no
+  dbms_used:
+    input_key: tech_tf_dbms_used
+    mapping:
+      "Yes": tech_tf_dbms_used_yes
+      "No": tech_tf_dbms_used_no
