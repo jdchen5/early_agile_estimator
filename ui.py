@@ -29,6 +29,43 @@ from shap_analysis import (
     get_parameter_index
 )
 
+# ---------------- CONFIG & HISTORY HELPERS ----------------
+
+def make_current_config_json(user_inputs, config_name, selected_model, prediction):
+    """
+    Return a JSON string for downloading the current configuration (inputs, model, prediction, metadata).
+    """
+    config = user_inputs.copy()
+    exclude_keys = {'submit', 'selected_models', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
+    for key in exclude_keys:
+        config.pop(key, None)
+    config['picked_model'] = selected_model
+    config['predicted_effort_hours'] = prediction
+    config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    config['_metadata'] = {
+        'config_name': config_name,
+        'saved_date': config['saved_date'],
+        'app_version': '1.0',
+        'description': f'ML Project Effort Estimator configuration: {config_name}'
+    }
+    return json.dumps(config, indent=2, default=str)
+
+def make_history_json():
+    """
+    Return a JSON string of the full prediction history with export metadata.
+    """
+    history = st.session_state.get('prediction_history', [])
+    export = {
+        "_metadata": {
+            "exported_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "record_count": len(history),
+            "app_version": "1.0"
+        },
+        "prediction_history": history
+    }
+    return json.dumps(export, indent=2, default=str)
+
+# -------------- MODEL IMPORTS AND FALLBACKS ----------------
 
 try:
     from models import (
@@ -61,21 +98,35 @@ except ImportError as e:
     def prepare_input_data(inputs):
         return None
 
-# Load merged configuration - will be called after load_yaml_config is defined
-UI_INFO_CONFIG = {}
-FIELDS = {}
-TAB_ORG = {}
-UI_BEHAVIOR = {}
-FEATURE_IMPORTANCE_DISPLAY = {}
-PREDICTION_THRESHOLDS = {}
-DISPLAY_CONFIG = {}
+# --------------------- CONFIG LOADING ---------------------
+
+def load_yaml_config(path):
+    """Load YAML configuration file with error handling"""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except Exception as e:
+        st.error(f"Error loading YAML file {path}: {e}")
+        return {}
+
+UI_INFO_CONFIG = load_yaml_config("config/ui_info.yaml")
+FIELDS = UI_INFO_CONFIG.get('fields', {})
+TAB_ORG = UI_INFO_CONFIG.get('tab_organization', {})
+UI_BEHAVIOR = UI_INFO_CONFIG.get('ui_behavior', {})
+FEATURE_IMPORTANCE_DISPLAY = UI_INFO_CONFIG.get('feature_importance_display', {})
+PREDICTION_THRESHOLDS = UI_INFO_CONFIG.get('prediction_thresholds', {})
+DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
+
+FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
+CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
+
 IMPORTANT_TABS = "Important Features"
 NICE_TABS = "Nice Features"
 CONFIG_FOLDER = "config"
 SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.md"
 
-# Minimal CSS for sidebar width only
 def set_sidebar_width():
+    """Minimal CSS for sidebar width only"""
     st.markdown("""
     <style>
     section[data-testid="stSidebar"] {
@@ -103,32 +154,8 @@ def initialize_session_state():
         if key not in st.session_state:
             st.session_state[key] = default
 
-
-
-# --- Configuration Loading ---
-def load_yaml_config(path):
-    """Load YAML configuration file with error handling"""
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except Exception as e:
-        st.error(f"Error loading YAML file {path}: {e}")
-        return {}
-
-# Load merged configuration after function is defined
-UI_INFO_CONFIG = load_yaml_config("config/ui_info.yaml")
-FIELDS = UI_INFO_CONFIG.get('fields', {})
-TAB_ORG = UI_INFO_CONFIG.get('tab_organization', {})
-UI_BEHAVIOR = UI_INFO_CONFIG.get('ui_behavior', {})
-FEATURE_IMPORTANCE_DISPLAY = UI_INFO_CONFIG.get('feature_importance_display', {})
-PREDICTION_THRESHOLDS = UI_INFO_CONFIG.get('prediction_thresholds', {})
-DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
-
-FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
-CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
-
-
-# Fixed UI SHAP display functions - Replace the SHAP-related functions in ui.py
+# ---------------- FIELD & UI HELPERS  ----------------
+# E.g. get_field_label, get_field_options, get_tab_organization, render_field, etc.
 
 def display_instance_specific_shap(user_inputs, model_name):
     """Display instance-specific SHAP analysis with proper error handling."""
@@ -976,7 +1003,8 @@ def render_field(field_name, config, is_required=False):
         field_value = st.text_input(label, value=str(value) if value else "", help=help_text, key=field_name)
     return field_value
 
-# --- Main Sidebar Function ---
+# ------------------- MAIN SIDEBAR FUNCTION ----------------------
+
 def sidebar_inputs():
     """Create sidebar inputs"""
     with st.sidebar:
@@ -987,7 +1015,6 @@ def sidebar_inputs():
 
         # Get tab organization dynamically
         tab_org = get_tab_organization()
-        
         tabs = st.tabs(list(tab_org.keys()))
         for idx, (tab_name, field_list) in enumerate(tab_org.items()):
             with tabs[idx]:
@@ -996,44 +1023,31 @@ def sidebar_inputs():
                     if not config:
                         st.warning(f"⚠️ Field '{field_name}' not configured.")
                         continue
-                    
-                    # Dynamically set required based on YAML, default False
                     is_required = config.get("mandatory", False)
-
-                    # 👉 Dynamic default for function_size:
                     if field_name == "project_prf_functional_size":
-                        # Get the selected relative size code (which must already be chosen in this session)
-                        rel_code = user_inputs.get("project_prf_relative_size")  # or st.session_state.get("project_prf_relative_size")
+                        rel_code = user_inputs.get("project_prf_relative_size")
                         if rel_code and rel_code in st.session_state.prf_size_code2mid:
                             config["default"] = st.session_state.prf_size_code2mid[rel_code]
                         else:
-                            config["default"] = config.get("default", 5)  # fallback if none
-
+                            config["default"] = config.get("default", 5)
                     field_value = render_field(field_name, config, is_required)
                     user_inputs[field_name] = field_value
 
         st.divider()
-        # Model selection
         st.subheader("🤖 Model Selection")
         selected_model = None
         selected_models = []
-        
         try:
             model_status = check_required_models()
             if model_status.get("models_available", False):
                 available_models = list_available_models()
                 if available_models:
                     model_options = {m['display_name']: m['technical_name'] for m in available_models}
-                    #st.write("DEBUG: Model mapping", model_options)
-                    #st.write("DEBUG: available_models", available_models)
-                    
-                    # Support both single and multi-model selection
                     selection_mode = st.radio(
                         "Selection Mode",
                         ["Single Model", "Multiple Models"],
                         help="Choose single model for detailed analysis or multiple models for comparison"
                     )
-                    
                     if selection_mode == "Single Model":
                         selected_display_name = st.selectbox(
                             "Choose ML Model",
@@ -1050,7 +1064,6 @@ def sidebar_inputs():
                         )
                         selected_models = [model_options[name] for name in selected_display_names]
                         selected_model = selected_models[0] if selected_models else None
-                    
                     if st.session_state.prediction_history:
                         st.info(f"📊 {len(st.session_state.prediction_history)} predictions made so far")
                 else:
@@ -1062,8 +1075,6 @@ def sidebar_inputs():
             selected_model = None
             selected_models = []
 
-        # Required field check using dynamic tab organization
-        # Dynamically set required based on YAML, default False
         required_fields = [fname for fname, fdef in FIELDS.items() if fdef.get("mandatory", False)]
         missing_fields = []
         for field in required_fields:
@@ -1084,7 +1095,6 @@ def sidebar_inputs():
         if predict_button:
             st.session_state['form_attempted'] = True
 
-        # Prediction history management
         st.subheader("📈 Prediction History")
         col1, col2 = st.columns(2)
         with col1:
@@ -1100,140 +1110,139 @@ def sidebar_inputs():
                 help="Show detailed prediction history"
             )
 
-        # Save config
-        st.subheader("💾 Save Configuration")
+        # --- SAVE & LOAD SECTION ---
+        st.divider()
+        st.subheader("💾 Download or Load Configurations")
         config_name = st.text_input("Configuration Name", placeholder="e.g., Banking_Project_Template")
+        prediction = st.session_state.get('latest_prediction', None)
+        history = st.session_state.get('prediction_history', [])
+        #st.write("DEBUG: prediction_history count:", len(st.session_state['prediction_history']))
+        #st.write(st.session_state['prediction_history'])
+
+
         col1, col2 = st.columns(2)
         with col1:
-            # Create download button when config name is provided
             if config_name.strip():
-                # Create configuration data for download
-                config_for_download = user_inputs.copy()
-                # Remove UI-specific keys that shouldn't be saved
-                exclude_keys = {'submit', 'selected_models', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
-                for key in exclude_keys:
-                    config_for_download.pop(key, None)
-                
-                # Add metadata
-                config_for_download['_metadata'] = {
-                    'config_name': config_name.strip(),
-                    'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'app_version': '1.0',
-                    'description': f'ML Project Effort Estimator configuration: {config_name.strip()}'
-                }
-                
-                # Convert to JSON string
-                config_json = json.dumps(config_for_download, indent=2, default=str)
-                
-                # Download button
+                if prediction is not None:
+                    config_json = make_current_config_json(user_inputs, config_name, selected_model, prediction)
+                    st.download_button(
+                        label="💾 Export Config",
+                        data=config_json,
+                        file_name=f"{config_name.strip().replace(' ', '_')}_config.json",
+                        mime="application/json",
+                        help="Download the current configuration and its prediction",
+                        use_container_width=True
+                    )
+                else:
+                    st.warning("Please make a prediction before saving the configuration.")
+            else:
+                st.button("💾 Export Config", disabled=True, use_container_width=True,
+                          help="Enter a configuration name first")
+
+        with col2:
+            if history:
+                history_json = make_history_json()
                 st.download_button(
-                    label="💾 Download Config",
-                    data=config_json,
-                    file_name=f"{config_name.strip().replace(' ', '_')}_config.json",
+                    label="📥 Export History",
+                    data=history_json,
+                    file_name="prediction_history.json",
                     mime="application/json",
-                    help=f"Download '{config_name.strip()}' configuration to your computer",
+                    help="Download all historical predictions",
                     use_container_width=True
                 )
             else:
-                st.button("💾 Download Config", disabled=True, use_container_width=True, 
-                         help="Enter a configuration name first")
-                
-        with col2:
-                st.info("👇 Upload a configuration file below")
+                st.button("📥 Export History", disabled=True, use_container_width=True,
+                          help="No prediction history to download yet.")
 
-        # File uploader for loading configurations
-        uploaded_config = st.file_uploader(
-            "📂 Upload Configuration File",
-            type=['json'],
-            help="Upload a previously saved configuration JSON file"
-        )
+        st.divider()
+        st.markdown("### 📂 Upload Configuration or History")
+        col1, col2 = st.columns(2)
 
-        if uploaded_config is not None:
-            try:
+        with col1:
+            uploaded_config = st.file_uploader(
+                "Upload Config",
+                type=['json'],
+                key="config_upload",
+                help="Upload a previously saved single configuration file"
+            )
+            if uploaded_config is not None:
                 config_data = json.load(uploaded_config)
-                # Remove metadata before loading
-                metadata = config_data.pop('_metadata', {})
-                config_name_loaded = metadata.get('config_name', uploaded_config.name)
-                
-                # Apply the loaded configuration to session state
-                for field_name, field_value in config_data.items():
-                    if field_name in FIELDS:  # Only load valid fields
-                        st.session_state[field_name] = field_value
-                
-                st.success(f"✅ Configuration '{config_name_loaded}' loaded successfully!")
-                st.rerun()  # Refresh to show loaded values
-                
-            except Exception as e:
-                st.error(f"❌ Error loading configuration: {e}")
+                metadata = config_data.get('_metadata', {})
+                config_fields = [k for k in config_data if not k.startswith('_')]
+                st.info(
+                    f"Config name: {metadata.get('config_name', 'N/A')}, "
+                    f"Saved: {metadata.get('saved_date', 'N/A')}, "
+                    f"Fields: {len(config_fields)}"
+                )
+                with st.expander("Preview uploaded config"):
+                    st.json({k: config_data[k] for k in config_fields[:5]})
 
+                col_apply, col_cancel = st.columns(2)
+                apply_clicked = col_apply.button("Apply Config", key="apply_config")
+                cancel_clicked = col_cancel.button("Cancel", key="cancel_config")
 
+                if apply_clicked:
+                    # Backup relevant current config fields
+                    st.session_state['_backup_config'] = {
+                        k: st.session_state.get(k)
+                        for k in config_fields if k in st.session_state
+                    }
+                    # Apply new config values
+                    for field_name in config_fields:
+                        if field_name in FIELDS:
+                            st.session_state[field_name] = config_data[field_name]
+                    st.success("Configuration applied! You can restore the previous config below.")
+                    st.rerun()
+                elif cancel_clicked:
+                    st.info("Config upload cancelled.")
+
+        # Show restore if backup exists
+        if st.session_state.get('_backup_config'):
+            if st.button("Restore Previous Config", key="restore_backup_config"):
+                for k, v in st.session_state['_backup_config'].items():
+                    st.session_state[k] = v
+                st.success("Previous config restored!")
+                del st.session_state['_backup_config']
+                st.rerun()
+
+        with col2:
+            uploaded_history = st.file_uploader(
+                "Upload History",
+                type=['json'],
+                key="history_upload",
+                help="Upload a previously downloaded prediction history file"
+            )
+            if uploaded_history is not None:
+                history_data = json.load(uploaded_history)
+                prediction_history = history_data.get('prediction_history', [])
+                st.warning(
+                    f"Uploading will REPLACE your current history "
+                    f"({len(st.session_state.get('prediction_history', []))} records) "
+                    f"with {len(prediction_history)} uploaded records."
+                )
+                st.write("Preview of uploaded history (first 3 records):")
+                st.json(prediction_history[:3])
+                if st.button("Replace History"):
+                    st.session_state['prediction_history'] = prediction_history
+                    st.success("Prediction history replaced!")
+                    st.rerun()
+
+        # Clear results button
         if clear_results:
             st.session_state.prediction_history = []
             st.session_state.comparison_results = []
 
+        
         user_inputs["selected_model"] = selected_model
         user_inputs["selected_models"] = selected_models
         user_inputs["submit"] = predict_button
         user_inputs["clear_results"] = clear_results
         user_inputs["show_history"] = show_history
 
-
         return user_inputs
 
-# --- Configuration Management ---
-def save_current_configuration(user_inputs, config_name):
-    """Save current configuration to file"""
-    config = user_inputs.copy()
-    config.pop('submit', None)
-    config.pop('selected_models', None)
-    config.pop('clear_results', None)
-    config.pop('comparison_mode', None)
-    config['saved_date'] = datetime.now().strftime("%Y-%m-%d %H:%M")
-    
-    configs_dir = "saved_configs"
-    os.makedirs(configs_dir, exist_ok=True)
-    
-    config_file = f'{configs_dir}/{config_name}.json'
-    with open(config_file, 'w') as f:
-        json.dump(config, f, indent=2, default=str)
-    
-    st.success(f"✅ Configuration '{config_name}' saved!")
-
-def create_config_download(user_inputs, config_name):
-    """Create a downloadable configuration file"""
-    try:
-        # Create configuration data
-        config = user_inputs.copy()
-        
-        # Remove UI-specific keys that shouldn't be saved
-        exclude_keys = {'submit', 'selected_models', 'clear_results', 'comparison_mode', 'selected_model', 'show_history'}
-        for key in exclude_keys:
-            config.pop(key, None)
-        
-        # Add metadata
-        config['_metadata'] = {
-            'config_name': config_name,
-            'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            'app_version': '1.0',
-            'description': f'ML Project Effort Estimator configuration: {config_name}'
-        }
-        
-        # Convert to JSON string
-        config_json = json.dumps(config, indent=2, default=str)
-        
-        # Create download button
-        st.download_button(
-            label="⬇️ Download Configuration File",
-            data=config_json,
-            file_name=f"{config_name.replace(' ', '_')}_config.json",
-            mime="application/json",
-            help=f"Download '{config_name}' configuration to your computer"
-        )
-        
-        st.success(f"✅ Configuration '{config_name}' ready for download!")
-        
-    except Exception as e:
-        st.error(f"❌ Error creating configuration file: {e}")
+# --------------------- REMAINDER OF UI AND ANALYSIS FUNCTIONS --------------------
+# SHAP, feature, prediction, and visualization functions here.
 
 def load_configuration_from_data(config_data):
     """Load configuration data into session state"""
@@ -1799,6 +1808,7 @@ def run_predictions(user_inputs, selected_models):
             # Add to session state for this run
             #team_size = user_inputs.get('project_prf_max_team_size', 5)
             add_prediction_to_history(user_inputs, model, prediction)
+            st.rerun()
             
         except Exception as e:
             st.error(f"Error predicting with {model}: {str(e)}")
@@ -1925,6 +1935,7 @@ def display_visualizations_and_analysis():
         "🔗 Feature Interactions"
     ])
     
+    """"
     with analysis_tabs[0]:
         display_instance_specific_shap(user_inputs, model_name)
     
@@ -1936,6 +1947,7 @@ def display_visualizations_and_analysis():
     
     with analysis_tabs[3]:
         display_feature_interactions(user_inputs, model_name)
+    """    
 
 def display_model_comparison():
     """Display model comparison analysis"""
@@ -2138,6 +2150,7 @@ def main():
                             if len(selected_models) <= 1:
                                 # Single model workflow
                                 prediction = predict_man_hours(user_inputs, selected_model)
+                                st.session_state['latest_prediction'] = prediction
                                 #team_size = user_inputs.get('project_prf_max_team_size', 5)
                                 
                                 # Show current prediction
@@ -2145,6 +2158,7 @@ def main():
                                 
                                 # Add to history
                                 add_prediction_to_history(user_inputs, selected_model, prediction)
+                                st.rerun()
                                 
                             else:
                                 # Multi-model workflow

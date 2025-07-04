@@ -40709,3 +40709,546 @@ This will raise in a future version.
 2025-07-03 20:05:23,129:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
   warnings.warn(
 
+2025-07-04 11:42:00,240:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:42:00,240:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:42:00,240:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:42:00,240:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:42:27,758:INFO:Initializing load_model()
+2025-07-04 11:42:27,759:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:42:29,118:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 11:42:29,747:INFO:Initializing predict_model()
+2025-07-04 11:42:29,747:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002AFAA4B8290>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002AFA9901760>)
+2025-07-04 11:42:29,747:INFO:Checking exceptions
+2025-07-04 11:42:29,747:INFO:Preloading libraries
+2025-07-04 11:42:29,747:INFO:Set up data.
+2025-07-04 11:42:29,750:INFO:Set up index.
+2025-07-04 11:42:29,983:INFO:Initializing load_model()
+2025-07-04 11:42:29,983:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:42:30,846:INFO:Initializing load_model()
+2025-07-04 11:42:30,846:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:42:42,093:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:42:42,098:INFO:Initializing load_model()
+2025-07-04 11:42:42,098:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:42:50,233:INFO:Initializing load_model()
+2025-07-04 11:42:50,233:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:42:56,299:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:43:05,176:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:43:05,183:INFO:Initializing load_model()
+2025-07-04 11:43:05,183:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:43:16,698:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:43:16,701:INFO:Initializing load_model()
+2025-07-04 11:43:16,702:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:43:27,646:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:43:27,651:INFO:Initializing load_model()
+2025-07-04 11:43:27,651:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:43:38,946:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:54:12,731:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:54:12,731:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:54:12,731:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:54:12,731:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 11:54:51,061:INFO:Initializing load_model()
+2025-07-04 11:54:51,061:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:54:51,662:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 11:54:52,002:INFO:Initializing predict_model()
+2025-07-04 11:54:52,002:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000020A31704DD0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000020A318E3100>)
+2025-07-04 11:54:52,002:INFO:Checking exceptions
+2025-07-04 11:54:52,002:INFO:Preloading libraries
+2025-07-04 11:54:52,002:INFO:Set up data.
+2025-07-04 11:54:52,025:INFO:Set up index.
+2025-07-04 11:54:52,195:INFO:Initializing load_model()
+2025-07-04 11:54:52,195:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:54:52,635:INFO:Initializing load_model()
+2025-07-04 11:54:52,635:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:03,218:INFO:Initializing load_model()
+2025-07-04 11:55:03,219:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:04,848:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:55:08,816:INFO:Initializing load_model()
+2025-07-04 11:55:08,817:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:15,427:INFO:Initializing load_model()
+2025-07-04 11:55:15,427:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:20,302:INFO:Initializing load_model()
+2025-07-04 11:55:20,303:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:25,122:INFO:Initializing load_model()
+2025-07-04 11:55:25,122:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:25,221:INFO:Initializing predict_model()
+2025-07-04 11:55:25,221:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000020A316BAF10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000020A343D9BC0>)
+2025-07-04 11:55:25,221:INFO:Checking exceptions
+2025-07-04 11:55:25,221:INFO:Preloading libraries
+2025-07-04 11:55:25,221:INFO:Set up data.
+2025-07-04 11:55:25,245:INFO:Set up index.
+2025-07-04 11:55:25,604:INFO:Initializing load_model()
+2025-07-04 11:55:25,607:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:25,697:INFO:Initializing load_model()
+2025-07-04 11:55:25,697:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:29,471:INFO:Initializing load_model()
+2025-07-04 11:55:29,471:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 11:55:37,226:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:55:59,695:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:56:16,342:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:56:20,884:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 11:56:23,137:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but Lasso was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:08:56,540:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:08:56,540:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:08:56,540:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:08:56,540:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:09:11,968:INFO:Initializing load_model()
+2025-07-04 12:09:11,968:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:12,569:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 12:09:12,935:INFO:Initializing predict_model()
+2025-07-04 12:09:12,935:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000002679963E4D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000267995CAA20>)
+2025-07-04 12:09:12,935:INFO:Checking exceptions
+2025-07-04 12:09:12,935:INFO:Preloading libraries
+2025-07-04 12:09:12,935:INFO:Set up data.
+2025-07-04 12:09:12,950:INFO:Set up index.
+2025-07-04 12:09:13,118:INFO:Initializing load_model()
+2025-07-04 12:09:13,118:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:13,553:INFO:Initializing load_model()
+2025-07-04 12:09:13,555:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:22,157:INFO:Initializing load_model()
+2025-07-04 12:09:22,158:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:25,503:INFO:Initializing load_model()
+2025-07-04 12:09:25,503:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:25,569:INFO:Initializing predict_model()
+2025-07-04 12:09:25,569:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x00000267993BB710>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002679C0E4B80>)
+2025-07-04 12:09:25,569:INFO:Checking exceptions
+2025-07-04 12:09:25,569:INFO:Preloading libraries
+2025-07-04 12:09:25,570:INFO:Set up data.
+2025-07-04 12:09:25,589:INFO:Set up index.
+2025-07-04 12:09:25,874:INFO:Initializing load_model()
+2025-07-04 12:09:25,875:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:26,072:INFO:Initializing load_model()
+2025-07-04 12:09:26,072:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:29,677:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:09:47,845:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but BayesianRidge was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:09:49,391:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but Lasso was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:09:49,399:INFO:Initializing load_model()
+2025-07-04 12:09:49,400:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:09:59,199:INFO:Initializing load_model()
+2025-07-04 12:09:59,200:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:10:04,672:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but Lasso was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:10:15,761:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but Lasso was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:10:15,764:INFO:Initializing load_model()
+2025-07-04 12:10:15,764:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:10:26,073:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but Lasso was fitted with feature names
+  warnings.warn(
+
+2025-07-04 12:15:50,406:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:15:50,406:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:15:50,406:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:15:50,406:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:16:14,239:INFO:Initializing load_model()
+2025-07-04 12:16:14,239:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:16:14,830:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 12:16:15,162:INFO:Initializing predict_model()
+2025-07-04 12:16:15,162:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001E0D8559D90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001E0D8534540>)
+2025-07-04 12:16:15,162:INFO:Checking exceptions
+2025-07-04 12:16:15,162:INFO:Preloading libraries
+2025-07-04 12:16:15,162:INFO:Set up data.
+2025-07-04 12:16:15,182:INFO:Set up index.
+2025-07-04 12:16:15,354:INFO:Initializing load_model()
+2025-07-04 12:16:15,354:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:16:31,133:INFO:Initializing load_model()
+2025-07-04 12:16:31,134:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:16:31,205:INFO:Initializing predict_model()
+2025-07-04 12:16:31,205:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001E0D853EB90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001E0DB1BAC00>)
+2025-07-04 12:16:31,206:INFO:Checking exceptions
+2025-07-04 12:16:31,206:INFO:Preloading libraries
+2025-07-04 12:16:31,206:INFO:Set up data.
+2025-07-04 12:16:31,221:INFO:Set up index.
+2025-07-04 12:16:31,391:INFO:Initializing load_model()
+2025-07-04 12:16:31,391:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:18:21,473:INFO:Initializing load_model()
+2025-07-04 12:18:21,474:INFO:load_model(model_name=models\top3_LassoLars_R2-0.379_MAE-3046.27_RMSE-4623.88_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:18:21,536:INFO:Initializing predict_model()
+2025-07-04 12:18:21,536:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001E0DB466350>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', LassoLars(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001E0DB4CDA80>)
+2025-07-04 12:18:21,536:INFO:Checking exceptions
+2025-07-04 12:18:21,536:INFO:Preloading libraries
+2025-07-04 12:18:21,551:INFO:Set up data.
+2025-07-04 12:18:21,569:INFO:Set up index.
+2025-07-04 12:18:21,755:INFO:Initializing load_model()
+2025-07-04 12:18:21,755:INFO:load_model(model_name=models\top3_LassoLars_R2-0.379_MAE-3046.27_RMSE-4623.88_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:25:00,259:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:25:00,259:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:25:00,259:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:25:00,259:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:25:17,534:INFO:Initializing load_model()
+2025-07-04 12:25:17,535:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:25:18,124:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 12:25:18,461:INFO:Initializing predict_model()
+2025-07-04 12:25:18,461:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001A6B0396910>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001A6B007F600>)
+2025-07-04 12:25:18,461:INFO:Checking exceptions
+2025-07-04 12:25:18,461:INFO:Preloading libraries
+2025-07-04 12:25:18,461:INFO:Set up data.
+2025-07-04 12:25:18,468:INFO:Set up index.
+2025-07-04 12:26:08,353:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:08,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:08,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:08,354:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:53,526:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:53,526:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:53,526:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:26:53,526:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:27:07,974:INFO:Initializing load_model()
+2025-07-04 12:27:07,974:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:27:08,560:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 12:27:08,924:INFO:Initializing predict_model()
+2025-07-04 12:27:08,924:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021064ECCC90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000002106534BD80>)
+2025-07-04 12:27:08,924:INFO:Checking exceptions
+2025-07-04 12:27:08,924:INFO:Preloading libraries
+2025-07-04 12:27:08,924:INFO:Set up data.
+2025-07-04 12:27:08,938:INFO:Set up index.
+2025-07-04 12:27:23,471:INFO:Initializing load_model()
+2025-07-04 12:27:23,471:INFO:load_model(model_name=models\top2_Lasso_R2-0.379_MAE-3039.99_RMSE-4621.15_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:27:23,535:INFO:Initializing predict_model()
+2025-07-04 12:27:23,535:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000021065141F90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000021065F3D300>)
+2025-07-04 12:27:23,535:INFO:Checking exceptions
+2025-07-04 12:27:23,535:INFO:Preloading libraries
+2025-07-04 12:27:23,535:INFO:Set up data.
+2025-07-04 12:27:23,546:INFO:Set up index.
+2025-07-04 12:53:46,135:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:53:46,136:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:53:46,136:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:53:46,136:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-04 12:54:04,516:INFO:Initializing load_model()
+2025-07-04 12:54:04,517:INFO:load_model(model_name=models\top1_BayesianRidge_R2-0.379_MAE-3045.40_RMSE-4623.52_20250624, platform=None, authentication=None, verbose=True)
+2025-07-04 12:54:05,119:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-04 12:54:05,480:INFO:Initializing predict_model()
+2025-07-04 12:54:05,482:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x000001FC1D635C90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=['external_eef_industry_sector',
+                                             'external_eef_o...
+                                                              use_cat_names=True))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x000001FC72D10EA0>)
+2025-07-04 12:54:05,482:INFO:Checking exceptions
+2025-07-04 12:54:05,482:INFO:Preloading libraries
+2025-07-04 12:54:05,482:INFO:Set up data.
+2025-07-04 12:54:05,519:INFO:Set up index.
