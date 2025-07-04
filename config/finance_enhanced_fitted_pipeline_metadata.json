@@ -1,0 +1,30 @@
+{
+  "numeric_columns": [
+    "isbsg_project_id",
+    "project_prf_year_of_project",
+    "project_prf_functional_size",
+    "project_prf_normalised_work_effort_level_1",
+    "project_prf_normalised_level_1_pdr_ufp",
+    "project_prf_normalised_pdr_ufp",
+    "project_prf_speed_of_delivery",
+    "project_prf_project_elapsed_time",
+    "process_pmf_docs",
+    "tech_tf_tools_used",
+    "project_prf_max_team_size"
+  ],
+  "categorical_columns": [
+    "external_eef_industry_sector",
+    "external_eef_organisation_type",
+    "project_prf_application_type",
+    "tech_tf_primary_programming_language"
+  ],
+  "target_column": "project_prf_normalised_work_effort",
+  "enhanced_dataset_shape": [
+    941,
+    62
+  ],
+  "fitted_output_shape": [
+    941,
+    61
+  ]
+}

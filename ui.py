@@ -1232,7 +1232,7 @@ def sidebar_inputs():
             st.session_state.prediction_history = []
             st.session_state.comparison_results = []
 
-        
+
         user_inputs["selected_model"] = selected_model
         user_inputs["selected_models"] = selected_models
         user_inputs["submit"] = predict_button
@@ -1935,7 +1935,6 @@ def display_visualizations_and_analysis():
         "🔗 Feature Interactions"
     ])
     
-    """"
     with analysis_tabs[0]:
         display_instance_specific_shap(user_inputs, model_name)
     
@@ -1947,7 +1946,6 @@ def display_visualizations_and_analysis():
     
     with analysis_tabs[3]:
         display_feature_interactions(user_inputs, model_name)
-    """    
 
 def display_model_comparison():
     """Display model comparison analysis"""

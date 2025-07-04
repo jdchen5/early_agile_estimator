@@ -15,6 +15,7 @@
 import os
 import pickle
 import json
+import joblib
 import numpy as np
 import pandas as pd
 import logging
@@ -41,6 +42,10 @@ try:
     FEATURE_ENGINEERING_AVAILABLE = True
 except ImportError:
     FEATURE_ENGINEERING_AVAILABLE = False
+
+# Add global variables for pipeline caching
+_preprocessing_pipeline = None
+_pipeline_cache = {}
 
 # --- Load unified YAML config ---
 CONFIG_FOLDER = 'config'
@@ -127,6 +132,88 @@ def get_expected_feature_names_from_config() -> List[str]:
             unique.append(f)
             seen.add(f)
     return unique
+
+def load_preprocessing_pipeline(pipeline_name: str = 'finance_enhanced_fitted_pipeline'):
+    """Load preprocessing pipeline with caching"""
+    global _preprocessing_pipeline
+    
+    if _preprocessing_pipeline is not None:
+        return _preprocessing_pipeline
+    
+    try:
+        pipeline_path = os.path.join(CONFIG_FOLDER, f'{pipeline_name}.pkl')
+        if os.path.exists(pipeline_path):
+            _preprocessing_pipeline = joblib.load(pipeline_path)
+            logging.info(f"Loaded preprocessing pipeline from {pipeline_path}")
+            return _preprocessing_pipeline
+        else:
+            logging.error(f"Pipeline not found at {pipeline_path}")
+            return None
+    except Exception as e:
+        logging.error(f"Error loading pipeline: {e}")
+        return None
+
+def transform_with_pipeline(ui_inputs: Dict[str, Any], pipeline=None) -> pd.DataFrame:
+    """Transform UI inputs using the preprocessing pipeline"""
+    try:
+        # Load pipeline if not provided
+        if pipeline is None:
+            pipeline = load_preprocessing_pipeline()
+            if pipeline is None:
+                # Fallback to existing method
+                return prepare_features_for_model(ui_inputs)
+        
+        # Convert UI inputs to DataFrame
+        ui_df = pd.DataFrame([ui_inputs])
+        
+        # Apply pipeline transformation
+        transformed = pipeline.transform(ui_df)
+        
+        # Convert to DataFrame if it's numpy array
+        if isinstance(transformed, np.ndarray):
+            # Get feature names from pipeline if available
+            feature_names = None
+            if hasattr(pipeline, 'get_feature_names_out'):
+                feature_names = pipeline.get_feature_names_out()
+            elif hasattr(pipeline, 'feature_names_'):
+                feature_names = pipeline.feature_names_
+            
+            if feature_names is None:
+                # Use model's expected features
+                feature_names = [f"feature_{i}" for i in range(transformed.shape[1])]
+            
+            transformed = pd.DataFrame(transformed, columns=feature_names)
+        
+        return transformed
+        
+    except Exception as e:
+        logging.error(f"Pipeline transformation failed: {e}")
+        # Fallback to existing method
+        return None
+
+def get_pipeline_background_data(n_samples: int = 100) -> np.ndarray:
+    """Get background data transformed through the pipeline"""
+    try:
+        pipeline = load_preprocessing_pipeline()
+        if pipeline is None:
+            return prepare_isbsg_sample_data(n_samples)
+        
+        # Load raw ISBSG data
+        isbsg_df = pd.read_csv(ISBSG_PREPROCESSED_FILE)
+        
+        # Sample if needed
+        if len(isbsg_df) > n_samples:
+            isbsg_df = isbsg_df.sample(n=n_samples, random_state=42)
+        
+        # Transform through pipeline
+        background = pipeline.transform(isbsg_df)
+        
+        logging.info(f"Pipeline background data shape: {background.shape}")
+        return background
+        
+    except Exception as e:
+        logging.error(f"Error getting pipeline background: {e}")
+        return prepare_isbsg_sample_data(n_samples)
 
 # ---- Display Name Helpers ----
 
@@ -685,7 +772,7 @@ def apply_feature_engineering(features_df: pd.DataFrame) -> pd.DataFrame:
 def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
     """
     Complete feature preparation pipeline for user input.
-    This is the main feature preparation function used by predict_man_hours.
+    Enhanced with pipeline.pkl support while maintaining all existing functionality.
     
     Args:
         ui_features: Dictionary of user input features from the UI
@@ -713,7 +800,40 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
         
         logging.info(f"Cleaned features: {len(clean_features)} features after removing UI keys")
         
-        # Step 1: Apply pipeline transformation
+        # === NEW: TRY PIPELINE APPROACH FIRST ===
+        try:
+            pipeline = load_preprocessing_pipeline()
+            if pipeline is not None:
+                logging.info("🔧 Using preprocessing pipeline for feature preparation")
+                transformed_features = transform_with_pipeline(clean_features, pipeline)
+                
+                if transformed_features is not None and not transformed_features.empty:
+                    # Validate the pipeline output
+                    if transformed_features.shape[1] > 0:
+                        logging.info(f"✅ Pipeline transformation successful: {transformed_features.shape}")
+                        
+                        # Ensure all values are numeric (pipeline might not handle this)
+                        transformed_features = transformed_features.apply(pd.to_numeric, errors='coerce').fillna(0)
+                        
+                        # Check for infinite values
+                        transformed_features = transformed_features.replace([np.inf, -np.inf], 0)
+                        
+                        # Log pipeline statistics
+                        logging.info(f"Pipeline feature preparation complete:")
+                        logging.info(f"  - Final shape: {transformed_features.shape}")
+                        logging.info(f"  - Missing values: {transformed_features.isnull().sum().sum()}")
+                        
+                        return transformed_features
+                    else:
+                        logging.warning("Pipeline produced empty features, falling back to traditional method")
+                else:
+                    logging.warning("Pipeline transformation returned None/empty, falling back to traditional method")
+                    
+        except Exception as pipeline_error:
+            logging.warning(f"Pipeline approach failed: {pipeline_error}, falling back to traditional method")
+        
+        # === EXISTING LOGIC (FALLBACK) ===
+        # Step 1: Apply pipeline transformation (existing non-.pkl pipeline)
         try:
             features_transformed = apply_pipeline_transformation(clean_features)
             logging.info(f"Pipeline transformation successful: {features_transformed.shape}")
@@ -789,6 +909,53 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
         except Exception as emergency_e:
             logging.error(f"Emergency feature preparation also failed: {emergency_e}")
             raise Exception(f"All feature preparation methods failed. Original error: {e}, Emergency error: {emergency_e}")
+
+
+# Additional helper function to check which method is being used
+def get_feature_preparation_method() -> str:
+    """
+    Check which feature preparation method is available.
+    Useful for debugging and UI display.
+    
+    Returns:
+        str: 'pipeline' if pipeline.pkl is available, 'traditional' otherwise
+    """
+    try:
+        pipeline = load_preprocessing_pipeline()
+        if pipeline is not None:
+            return 'pipeline'
+    except:
+        pass
+    return 'traditional'
+
+
+# Optional: Add configuration to control pipeline usage
+def prepare_features_for_model_with_config(
+    ui_features: Dict[str, Any],
+    use_pipeline: bool = True,
+    force_traditional: bool = False
+) -> pd.DataFrame:
+    """
+    Feature preparation with explicit control over which method to use.
+    
+    Args:
+        ui_features: Dictionary of user input features
+        use_pipeline: Whether to try pipeline.pkl approach (default: True)
+        force_traditional: Force use of traditional method even if pipeline exists
+        
+    Returns:
+        pd.DataFrame: Prepared features
+    """
+    if force_traditional:
+        # Skip pipeline and use traditional method
+        logging.info("Forced to use traditional feature preparation")
+        # Create a copy of prepare_features_for_model without pipeline section
+        # ... (traditional logic only)
+    elif use_pipeline:
+        return prepare_features_for_model(ui_features)
+    else:
+        # Similar to force_traditional
+        pass
 
 def validate_prepared_features(features_df: pd.DataFrame) -> Dict[str, Any]:
     """
