@@ -54,6 +54,7 @@ DATA_FOLDER = 'data'
 UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match merged config
 MODEL_DISPLAY_NAME = 'model_display_names.json'
 ISBSG_PREPROCESSED_FILE = os.path.join(DATA_FOLDER, 'synthetic_isbsg2016r1_1_finance_sdv_generated_fixed_columns_data.csv')
+PIPELINE_MODLE_FILE = 'synthetic_isbsg2016r1_1_finance_sdv_generated_pipeline.pkl'
 
 def load_yaml_config(path: str) -> Dict:
     try:
@@ -133,7 +134,7 @@ def get_expected_feature_names_from_config() -> List[str]:
             seen.add(f)
     return unique
 
-def load_preprocessing_pipeline(pipeline_name: str = 'finance_enhanced_fitted_pipeline'):
+def load_preprocessing_pipeline(pipeline_name: str = PIPELINE_MODLE_FILE):
     """Load preprocessing pipeline with caching"""
     global _preprocessing_pipeline
     
@@ -804,13 +805,13 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
         try:
             pipeline = load_preprocessing_pipeline()
             if pipeline is not None:
-                logging.info("🔧 Using preprocessing pipeline for feature preparation")
+                logging.info("Pipeline Using preprocessing pipeline for feature preparation")
                 transformed_features = transform_with_pipeline(clean_features, pipeline)
                 
                 if transformed_features is not None and not transformed_features.empty:
                     # Validate the pipeline output
                     if transformed_features.shape[1] > 0:
-                        logging.info(f"✅ Pipeline transformation successful: {transformed_features.shape}")
+                        logging.info(f"Pipeline transformation successful: {transformed_features.shape}")
                         
                         # Ensure all values are numeric (pipeline might not handle this)
                         transformed_features = transformed_features.apply(pd.to_numeric, errors='coerce').fillna(0)
