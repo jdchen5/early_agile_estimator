@@ -37,6 +37,7 @@ try:
         align_df_to_model,
         get_isbsg_dataset_info,
         load_model,  # Add this import
+        load_preprocessing_pipeline,
         FIELDS  
     )
     MODELS_AVAILABLE = True
@@ -236,7 +237,10 @@ def get_shap_explainer(
             print("🔧 Using pipeline-based SHAP approach")
             
             # Get background data through pipeline
-            background_data = get_pipeline_background_data(sample_size)
+            background_data_raw = get_best_sample_data(sample_size, model_name)
+            pipeline = load_preprocessing_pipeline()
+            background_data = pipeline.transform(background_data_raw)
+
             
             # Load model
             if get_trained_model_func:
@@ -399,6 +403,11 @@ def get_shap_values_for_input(
             
             # Try pipeline transformation first
             input_data = transform_with_pipeline(user_inputs)
+
+            # --- PLACE DEBUG PRINTS HERE ---
+            print("User input keys:", user_inputs.keys())
+            print("Transformed input shape:", input_data.shape)  # should be (1, 67)
+            # --------------------------------
             
             if input_data is None:
                 # Fallback to existing method

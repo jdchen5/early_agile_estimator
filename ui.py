@@ -77,7 +77,8 @@ try:
         get_model_display_name_from_config,
         get_trained_model,  # Add this function to get the actual model object
         prepare_input_data,  # Add this function to prepare data for SHAP
-        prepare_features_for_model
+        prepare_features_for_model,
+        load_preprocessing_pipeline  # Add this function to load the preprocessing pipeline
     )
     MODELS_AVAILABLE = True
 except ImportError as e:
@@ -202,9 +203,16 @@ def display_instance_specific_shap(user_inputs, model_name):
         print(f"DEBUG: features_df shape: {features_df.shape}")
         print(f"DEBUG: features_df columns: {features_df.columns.tolist()}")
 
+        pipeline = load_preprocessing_pipeline()
+        if pipeline is not None:
+            features_transformed = pipeline.transform(features_df)
+        else:
+            features_transformed = features_df  # fallback, will likely error
+
         # Calculate SHAP values
         with st.spinner("Calculating SHAP values..."):
-            shap_values = get_shap_values_for_input(explainer, user_inputs, model)
+            # Use the transformed features!
+            shap_values = explainer.shap_values(features_transformed)
 
         if shap_values is None:
             st.error("Could not generate SHAP values for your input.")
@@ -414,7 +422,15 @@ def display_what_if_shap_analysis(user_inputs, model_name):
                     predictions.append(pred if pred is not None else 0)
                     
                     # Get SHAP values
-                    shap_vals = get_shap_values_for_input(explainer, temp_inputs)
+                    features_df = prepare_features_for_model(temp_inputs)
+                    pipeline = load_preprocessing_pipeline()
+                    if pipeline is not None:
+                        features_transformed = pipeline.transform(features_df)
+                    else:
+                        features_transformed = features_df
+
+                    shap_vals = explainer.shap_values(features_transformed)
+
                     if shap_vals is not None:
                         # Find the parameter's feature index
                         features_df = prepare_features_for_model(temp_inputs)
@@ -603,7 +619,14 @@ def display_scenario_comparison(user_inputs, model_name):
                 prediction = predict_man_hours(full_inputs, model_name)
                 
                 # Get SHAP values
-                shap_values = get_shap_values_for_input(explainer, full_inputs)
+                features_df = prepare_features_for_model(full_inputs)
+                pipeline = load_preprocessing_pipeline()
+                if pipeline is not None:
+                    features_transformed = pipeline.transform(features_df)
+                else:
+                    features_transformed = features_df
+
+                shap_values = explainer.shap_values(features_transformed)
                 
                 scenario_results[scenario_name] = {
                     'prediction': prediction,
@@ -739,7 +762,14 @@ def display_feature_interactions(user_inputs, model_name):
         # Get interaction values
         with st.spinner("Calculating feature interactions... This may take a moment."):
             try:
-                interaction_values = get_feature_interaction_values(explainer, user_inputs)
+                features_df = prepare_features_for_model(user_inputs)
+                pipeline = load_preprocessing_pipeline()
+                if pipeline is not None:
+                    features_transformed = pipeline.transform(features_df)
+                else:
+                    features_transformed = features_df
+
+                interaction_values = explainer.shap_interaction_values(features_transformed)
                 
                 if interaction_values is None:
                     st.warning("Could not calculate interaction values for this model.")
