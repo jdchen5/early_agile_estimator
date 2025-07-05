@@ -67,6 +67,7 @@ def make_history_json():
 
 # -------------- MODEL IMPORTS AND FALLBACKS ----------------
 
+
 try:
     from models import (
         predict_man_hours,
@@ -84,7 +85,8 @@ try:
 except ImportError as e:
     print(f"Warning: Could not import from models.py: {e}")
     MODELS_AVAILABLE = False
-    
+
+ 
     # Define stub functions so UI doesn't crash
     def predict_with_training_features_optimized(inputs, model):
         return None
@@ -99,6 +101,9 @@ except ImportError as e:
     def prepare_input_data(inputs):
         return None
 
+print("🔍 DEBUG: ui.py execution started")
+print("🔍 DEBUG: About to load configurations...")
+
 # --------------------- CONFIG LOADING ---------------------
 
 def load_yaml_config(path):
@@ -111,8 +116,14 @@ def load_yaml_config(path):
         return {}
 
 UI_INFO_CONFIG = load_yaml_config("config/ui_info.yaml")
+print("🔍 DEBUG: UI_INFO_CONFIG loaded successfully")
+
 FIELDS = UI_INFO_CONFIG.get('fields', {})
+print("🔍 DEBUG: FIELDS loaded successfully")
+
 TAB_ORG = UI_INFO_CONFIG.get('tab_organization', {})
+print("🔍 DEBUG: TAB_ORG loaded successfully")
+
 UI_BEHAVIOR = UI_INFO_CONFIG.get('ui_behavior', {})
 FEATURE_IMPORTANCE_DISPLAY = UI_INFO_CONFIG.get('feature_importance_display', {})
 PREDICTION_THRESHOLDS = UI_INFO_CONFIG.get('prediction_thresholds', {})
@@ -125,6 +136,8 @@ IMPORTANT_TABS = "Important Features"
 NICE_TABS = "Nice Features"
 CONFIG_FOLDER = "config"
 SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.md"
+
+print("🔍 DEBUG: About to define functions...")
 
 def set_sidebar_width():
     """Minimal CSS for sidebar width only"""
@@ -1067,6 +1080,8 @@ def sidebar_inputs():
         st.subheader("🤖 Model Selection")
         selected_model = None
         selected_models = []
+
+        
         try:
             model_status = check_required_models()
             if model_status.get("models_available", False):
@@ -1104,6 +1119,12 @@ def sidebar_inputs():
             st.error(f"Model loading error: {e}")
             selected_model = None
             selected_models = []
+        
+
+        # Add this instead temporarily:
+        #t.warning("⚠️ Model selection temporarily disabled for testing")
+        #selected_model = "test_model"
+        #selected_models = ["test_model"]
 
         required_fields = [fname for fname, fdef in FIELDS.items() if fdef.get("mandatory", False)]
         missing_fields = []
@@ -2143,6 +2164,7 @@ def main():
     
     # Initialize session state
     initialize_session_state()
+
     
     # Main header
     st.title("🔮 ML Agile Software Project Effort Estimator")
@@ -2153,6 +2175,8 @@ def main():
     try:
         # Get user inputs from sidebar
         user_inputs = sidebar_inputs()
+
+
         
         # Handle clear results
         if user_inputs.get('clear_results', False):

@@ -1,4 +1,5 @@
 {
+    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1",
     "columns": {
         "isbsg_project_id": {
             "sdtype": "id"
@@ -46,15 +47,6 @@
             "sdtype": "numerical"
         },
         "project_prf_max_team_size": {
-            "sdtype": "categorical"
-        },
-        "external_eef_data_quality_rating_B": {
-            "sdtype": "categorical"
-        },
-        "external_eef_data_quality_rating_C": {
-            "sdtype": "categorical"
-        },
-        "external_eef_data_quality_rating_D": {
             "sdtype": "categorical"
         },
         "project_prf_application_group_Infrastructure_Software": {
@@ -186,6 +178,5 @@
         "project_prf_team_size_group_Missing": {
             "sdtype": "categorical"
         }
-    },
-    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1"
+    }
 }

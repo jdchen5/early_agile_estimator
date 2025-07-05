@@ -1,5 +1,0 @@
-outs:
-- md5: 4f776df7083988c88a8c44c34af78515
-  size: 77076
-  hash: md5
-  path: top_model_1_BayesianRidge.pkl

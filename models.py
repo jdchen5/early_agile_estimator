@@ -43,10 +43,6 @@ try:
 except ImportError:
     FEATURE_ENGINEERING_AVAILABLE = False
 
-# Add global variables for pipeline caching
-_preprocessing_pipeline = None
-_pipeline_cache = {}
-
 # --- Load unified YAML config ---
 CONFIG_FOLDER = 'config'
 MODELS_FOLDER = 'models'
@@ -54,7 +50,7 @@ DATA_FOLDER = 'data'
 UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match merged config
 MODEL_DISPLAY_NAME = 'model_display_names.json'
 ISBSG_PREPROCESSED_FILE = os.path.join(DATA_FOLDER, 'synthetic_isbsg2016r1_1_finance_sdv_generated_fixed_columns_data.csv')
-PIPELINE_MODLE_FILE = 'synthetic_isbsg2016r1_1_finance_sdv_generated_pipeline.pkl'
+PIPELINE_MODEL_FILE = 'synthetic_isbsg2016r1_1_finance_sdv_generated_pipeline.pkl'
 
 def load_yaml_config(path: str) -> Dict:
     try:
@@ -134,62 +130,60 @@ def get_expected_feature_names_from_config() -> List[str]:
             seen.add(f)
     return unique
 
-def load_preprocessing_pipeline(pipeline_name: str = PIPELINE_MODLE_FILE):
-    """Load preprocessing pipeline with caching"""
-    global _preprocessing_pipeline
-    
-    if _preprocessing_pipeline is not None:
-        return _preprocessing_pipeline
-    
+def load_preprocessing_pipeline(pipeline_name: str = PIPELINE_MODEL_FILE) -> Optional[Any]:
+    """Load preprocessing pipeline WITHOUT global caching to avoid import-time recursion"""
     try:
-        pipeline_path = os.path.join(CONFIG_FOLDER, f'{pipeline_name}.pkl')
-        if os.path.exists(pipeline_path):
-            _preprocessing_pipeline = joblib.load(pipeline_path)
-            logging.info(f"Loaded preprocessing pipeline from {pipeline_path}")
-            return _preprocessing_pipeline
-        else:
-            logging.error(f"Pipeline not found at {pipeline_path}")
+        # FIX: Don't add extra .pkl - the filename already includes it
+        pipeline_path = os.path.join(CONFIG_FOLDER, pipeline_name)
+        
+        logging.info(f"Attempting to load pipeline from: {pipeline_path}")
+        
+        if not os.path.exists(pipeline_path):
+            logging.warning(f"Pipeline file not found: {pipeline_path}")
             return None
+        
+        # Load the PyCaret pipeline
+        pipeline = joblib.load(pipeline_path)
+        logging.info(f"Pipeline loaded successfully from {pipeline_path}")
+        logging.info(f"Pipeline type: {type(pipeline).__name__}")
+        
+        # Basic validation for PyCaret pipeline
+        if hasattr(pipeline, 'steps'):
+            logging.info(f"Pipeline has {len(pipeline.steps)} steps")
+        
+        if hasattr(pipeline, 'feature_names_in_'):
+            logging.info(f"Pipeline expects {len(pipeline.feature_names_in_)} input features")
+        
+        return pipeline
+        
     except Exception as e:
         logging.error(f"Error loading pipeline: {e}")
-        return None
+        return None    
 
-def transform_with_pipeline(ui_inputs: Dict[str, Any], pipeline=None) -> pd.DataFrame:
-    """Transform UI inputs using the preprocessing pipeline"""
+def transform_with_pipeline(ui_inputs: Dict[str, Any], pipeline=None) -> Optional[pd.DataFrame]:
+    """
+    Transform UI inputs using the sequential pipeline approach
+    """
     try:
         # Load pipeline if not provided
         if pipeline is None:
             pipeline = load_preprocessing_pipeline()
             if pipeline is None:
-                # Fallback to existing method
-                return prepare_features_for_model(ui_inputs)
+                logging.warning("Pipeline not available, returning None")
+                return None
         
-        # Convert UI inputs to DataFrame
-        ui_df = pd.DataFrame([ui_inputs])
+        # Use the sequential approach
+        result = prepare_features_for_model(ui_inputs)
         
-        # Apply pipeline transformation
-        transformed = pipeline.transform(ui_df)
-        
-        # Convert to DataFrame if it's numpy array
-        if isinstance(transformed, np.ndarray):
-            # Get feature names from pipeline if available
-            feature_names = None
-            if hasattr(pipeline, 'get_feature_names_out'):
-                feature_names = pipeline.get_feature_names_out()
-            elif hasattr(pipeline, 'feature_names_'):
-                feature_names = pipeline.feature_names_
-            
-            if feature_names is None:
-                # Use model's expected features
-                feature_names = [f"feature_{i}" for i in range(transformed.shape[1])]
-            
-            transformed = pd.DataFrame(transformed, columns=feature_names)
-        
-        return transformed
+        if result is not None:
+            logging.info(f"Sequential pipeline transformation successful: {result.shape}")
+            return result
+        else:
+            logging.warning("Sequential pipeline transformation returned None")
+            return None
         
     except Exception as e:
         logging.error(f"Pipeline transformation failed: {e}")
-        # Fallback to existing method
         return None
 
 def get_pipeline_background_data(n_samples: int = 100) -> np.ndarray:
@@ -270,30 +264,77 @@ def get_all_model_display_names() -> Dict[str, str]:
 
 def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
     """
-    Enhanced version with normalization fallback and fuzzy matching.
-    Try to match by 2nd split part (model type), then by filename, then fallbacks.
+    FIXED VERSION - Enhanced with recursion prevention and better fallbacks
     """
     if display_names_map is None:
         display_names_map = load_model_display_names()
 
-    # Split by underscore
+    # Split by underscore to get model type
     parts = model_filename.split('_')
     if len(parts) > 1:
-        model_type = parts[1]  # 2nd part is the model type
+        model_type = parts[-1]  # Last part is the model type (bayesianridge)
 
-        # Try direct match with 2nd part (case-insensitive)
+        # Try direct match with model type (case-insensitive)
         for key, value in display_names_map.items():
             if key.lower() == model_type.lower():
                 return value
 
-        # Try partial/inclusion match with 2nd part
+        # Try partial/inclusion match with  model type
         for key, value in display_names_map.items():
             if model_type.lower() in key.lower():
                 return value
 
-    # Fallback to dynamic generation
-    return get_model_display_name(model_filename)
+    # Safe fallback - no recursion
+    return model_filename.replace('_', ' ').title()
 
+def generate_display_name_from_filename(model_filename: str) -> str:
+    """
+    NEW FUNCTION: Generate a display name from filename without recursion
+    """
+    try:
+        # Remove common prefixes
+        name = model_filename
+        if name.startswith('top_model_'):
+            # Extract number and model type: "top_model_1_rf" -> "RF Model #1"
+            parts = name.split('_')
+            if len(parts) >= 3:
+                number = parts[2] if parts[2].isdigit() else parts[1]
+                model_type = parts[3] if len(parts) > 3 else parts[2]
+                
+                # Map common model abbreviations
+                type_mapping = {
+                    'rf': 'Random Forest',
+                    'xgb': 'XGBoost', 
+                    'lgb': 'LightGBM',
+                    'lr': 'Linear Regression',
+                    'svm': 'Support Vector Machine',
+                    'dt': 'Decision Tree',
+                    'nb': 'Naive Bayes',
+                    'knn': 'K-Nearest Neighbors',
+                    'ada': 'AdaBoost',
+                    'gb': 'Gradient Boosting',
+                    'et': 'Extra Trees'
+                }
+                
+                display_type = type_mapping.get(model_type.lower(), model_type.upper())
+                return f"{display_type} Model #{number}"
+        
+        # For other naming patterns, clean up the name
+        clean_name = name.replace('_', ' ').title()
+        
+        # Remove common suffixes
+        clean_name = clean_name.replace(' Model', '').replace(' Pkl', '')
+        
+        # Limit length
+        if len(clean_name) > 30:
+            clean_name = clean_name[:27] + "..."
+            
+        return clean_name + " Model"
+        
+    except Exception as e:
+        logging.error(f"Error generating display name: {e}")
+        # Ultimate fallback
+        return model_filename.replace('_', ' ').title()
 
 def load_model_display_names() -> Dict[str, str]:
     """Load model display names from JSON configuration file."""
@@ -314,10 +355,9 @@ def load_model_display_names() -> Dict[str, str]:
 def get_model_display_name(model_filename: str) -> str:
     """
     Convert model filename to human-readable display name.
-    
+    FIXED version - no more recursion
     """
     display_names_map = load_model_display_names()
-        
     return get_model_display_name_from_config(model_filename, display_names_map)
 
 
@@ -419,7 +459,7 @@ def list_available_models() -> list:
     for f in os.listdir(MODELS_FOLDER):
         if f.endswith('.pkl') and not ('scaler' in f.lower()) and not ('pipeline' in f.lower()):
             technical_name = os.path.splitext(f)[0]
-            # Use configured display name if available, otherwise generate dynamically
+            # Use the FIXED display name function
             display_name = get_model_display_name_from_config(technical_name, display_names_map)
             model_files.append({
                 'technical_name': technical_name,
@@ -476,7 +516,7 @@ def check_required_models() -> dict:
     found_models = []
     for f in model_files:
         technical_name = os.path.splitext(f)[0]
-        # Use configured display name if available, otherwise generate dynamically
+        # Use the FIXED display name function
         display_name = get_model_display_name_from_config(technical_name, display_names_map)
         found_models.append({
             'technical_name': technical_name,
@@ -772,9 +812,11 @@ def apply_feature_engineering(features_df: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
     """
-    Complete feature preparation pipeline for user input.
-    Enhanced with pipeline.pkl support while maintaining all existing functionality.
+    Enhanced feature preparation using sequential pipeline approach:
+    1. UI features (22) → Custom pipeline.py → Processed features
+    2. Processed features → PyCaret pipeline → Model-ready features (54-67)
     
+    Fallback: If PyCaret pipeline fails, use only custom pipeline output
     Args:
         ui_features: Dictionary of user input features from the UI
         
@@ -786,7 +828,7 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
     """
     
     try:
-        logging.info(f"Starting feature preparation for {len(ui_features)} input features")
+        logging.info(f"Starting sequential feature preparation for {len(ui_features)} input features")
         
         # Validate input
         if not ui_features:
@@ -801,107 +843,127 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
         
         logging.info(f"Cleaned features: {len(clean_features)} features after removing UI keys")
         
-        # === NEW: TRY PIPELINE APPROACH FIRST ===
+        # === STEP 1: CUSTOM PIPELINE TRANSFORMATION ===
         try:
-            pipeline = load_preprocessing_pipeline()
-            if pipeline is not None:
-                logging.info("Pipeline Using preprocessing pipeline for feature preparation")
-                transformed_features = transform_with_pipeline(clean_features, pipeline)
-                
-                if transformed_features is not None and not transformed_features.empty:
-                    # Validate the pipeline output
-                    if transformed_features.shape[1] > 0:
-                        logging.info(f"Pipeline transformation successful: {transformed_features.shape}")
-                        
-                        # Ensure all values are numeric (pipeline might not handle this)
-                        transformed_features = transformed_features.apply(pd.to_numeric, errors='coerce').fillna(0)
-                        
-                        # Check for infinite values
-                        transformed_features = transformed_features.replace([np.inf, -np.inf], 0)
-                        
-                        # Log pipeline statistics
-                        logging.info(f"Pipeline feature preparation complete:")
-                        logging.info(f"  - Final shape: {transformed_features.shape}")
-                        logging.info(f"  - Missing values: {transformed_features.isnull().sum().sum()}")
-                        
-                        return transformed_features
-                    else:
-                        logging.warning("Pipeline produced empty features, falling back to traditional method")
-                else:
-                    logging.warning("Pipeline transformation returned None/empty, falling back to traditional method")
-                    
-        except Exception as pipeline_error:
-            logging.warning(f"Pipeline approach failed: {pipeline_error}, falling back to traditional method")
-        
-        # === EXISTING LOGIC (FALLBACK) ===
-        # Step 1: Apply pipeline transformation (existing non-.pkl pipeline)
-        try:
-            features_transformed = apply_pipeline_transformation(clean_features)
-            logging.info(f"Pipeline transformation successful: {features_transformed.shape}")
-        except Exception as e:
-            logging.warning(f"Pipeline transformation failed: {e}")
-            # Fallback to manual preparation
-            features_transformed = prepare_features_manually_from_config(clean_features)
-            if features_transformed is None:
-                raise Exception("Both pipeline and manual feature preparation failed")
-        
-        # Step 2: Apply feature engineering
-        try:
-            features_engineered = apply_feature_engineering(features_transformed)
-            logging.info(f"Feature engineering successful: {features_engineered.shape}")
-        except Exception as e:
-            logging.warning(f"Feature engineering failed: {e}")
-            # Continue with transformed features if engineering fails
-            features_engineered = features_transformed
-        
-        # Step 3: Handle missing features and validate
-        try:
-            features_final = estimate_missing_features(features_engineered)
-            logging.info(f"Missing feature handling successful: {features_final.shape}")
-        except Exception as e:
-            logging.warning(f"Missing feature estimation failed: {e}")
-            # Simple fallback: fill with zeros
-            features_final = features_engineered.fillna(0)
-        
-        # Step 4: Final validation and cleanup
-        try:
-            # Ensure all values are numeric
-            features_final = features_final.apply(pd.to_numeric, errors='coerce').fillna(0)
+            from pipeline import process_features_for_prediction
             
-            # Remove any remaining target/label columns
-            target_keywords = ['target', 'effort', 'label', 'prediction', 'actual', 'ground_truth']
-            cols_to_drop = [col for col in features_final.columns 
+            logging.info("STEP 1: Applying custom pipeline transformation...")
+            custom_processed_features = process_features_for_prediction(clean_features)
+            
+            if custom_processed_features is not None and not custom_processed_features.empty:
+                logging.info(f"Custom pipeline successful: {custom_processed_features.shape}")
+                logging.info(f"Custom pipeline features: {list(custom_processed_features.columns)[:10]}...")  # Show first 10
+            else:
+                raise Exception("Custom pipeline returned None or empty DataFrame")
+                
+        except Exception as e:
+            logging.error(f"Custom pipeline failed: {e}")
+            logging.info("Falling back to traditional feature preparation...")
+            
+            # Fallback to traditional method
+            return prepare_features_manually_from_config(clean_features)
+        
+        # === STEP 2: PYCARET PIPELINE TRANSFORMATION ===
+        try:
+            logging.info("STEP 2: Attempting PyCaret pipeline transformation...")
+            
+            # Load PyCaret pipeline
+            pycaret_pipeline = load_preprocessing_pipeline()
+            
+            if pycaret_pipeline is not None:
+                logging.info(f"PyCaret pipeline loaded successfully")
+                logging.info(f"Pipeline expects {len(pycaret_pipeline.feature_names_in_)} input features")
+                
+                # Apply PyCaret pipeline transformation
+                pycaret_processed_features = pycaret_pipeline.transform(custom_processed_features)
+                
+                # Convert to DataFrame if it's numpy array
+                if isinstance(pycaret_processed_features, np.ndarray):
+                    # Get feature names from pipeline if available
+                    feature_names = None
+                    if hasattr(pycaret_pipeline, 'get_feature_names_out'):
+                        try:
+                            feature_names = pycaret_pipeline.get_feature_names_out()
+                        except:
+                            pass
+                    elif hasattr(pycaret_pipeline, 'feature_names_'):
+                        feature_names = pycaret_pipeline.feature_names_
+                    
+                    if feature_names is None:
+                        # Use generic names
+                        feature_names = [f"feature_{i}" for i in range(pycaret_processed_features.shape[1])]
+                    
+                    pycaret_processed_features = pd.DataFrame(
+                        pycaret_processed_features, 
+                        columns=feature_names
+                    )
+                
+                logging.info(f"PyCaret pipeline successful: {pycaret_processed_features.shape}")
+                
+                # Final cleanup
+                final_features = pycaret_processed_features.copy()
+                
+                # Ensure all values are numeric
+                final_features = final_features.apply(pd.to_numeric, errors='coerce').fillna(0)
+                
+                # Remove any target/label columns
+                target_keywords = ['target', 'effort', 'label', 'prediction', 'actual', 'ground_truth']
+                cols_to_drop = [col for col in final_features.columns 
+                               if any(keyword in col.lower() for keyword in target_keywords)]
+                if cols_to_drop:
+                    final_features = final_features.drop(columns=cols_to_drop, errors='ignore')
+                    logging.info(f"Removed target columns: {cols_to_drop}")
+                
+                # Final validation
+                if final_features.empty or final_features.shape[1] == 0:
+                    raise ValueError("No features remaining after PyCaret pipeline processing")
+                
+                # Check for infinite or extremely large values
+                final_features = final_features.replace([np.inf, -np.inf], 0)
+                
+                logging.info(f"Sequential pipeline complete:")
+                logging.info(f"   - UI features: {len(clean_features)}")
+                logging.info(f"   - Custom pipeline: {custom_processed_features.shape}")
+                logging.info(f"   - PyCaret pipeline: {final_features.shape}")
+                logging.info(f"   - Final features: {list(final_features.columns)[:5]}...")  # Show first 5
+                
+                return final_features
+                
+            else:
+                logging.warning("PyCaret pipeline not available")
+                raise Exception("PyCaret pipeline could not be loaded")
+                
+        except Exception as e:
+            logging.warning(f"PyCaret pipeline failed: {e}")
+            logging.info("Using custom pipeline output as fallback...")
+            
+            # === FALLBACK: USE CUSTOM PIPELINE OUTPUT ===
+            fallback_features = custom_processed_features.copy()
+            
+            # Basic cleanup for fallback
+            fallback_features = fallback_features.apply(pd.to_numeric, errors='coerce').fillna(0)
+            fallback_features = fallback_features.replace([np.inf, -np.inf], 0)
+            
+            # Remove target columns if any
+            target_keywords = ['target', 'effort', 'label', 'prediction']
+            cols_to_drop = [col for col in fallback_features.columns 
                            if any(keyword in col.lower() for keyword in target_keywords)]
             if cols_to_drop:
-                features_final = features_final.drop(columns=cols_to_drop, errors='ignore')
-                logging.info(f"Removed potential target columns: {cols_to_drop}")
+                fallback_features = fallback_features.drop(columns=cols_to_drop, errors='ignore')
+                logging.info(f"Removed target columns from fallback: {cols_to_drop}")
             
-            # Ensure we have at least some features
-            if features_final.empty or features_final.shape[1] == 0:
-                raise ValueError("No features remaining after preparation")
+            logging.info(f"Fallback pipeline complete:")
+            logging.info(f"   - Final shape: {fallback_features.shape}")
+            logging.info(f"   - Features: {list(fallback_features.columns)[:5]}...")
             
-            # Check for infinite or extremely large values
-            features_final = features_final.replace([np.inf, -np.inf], 0)
-            
-            # Log final statistics
-            logging.info(f"Feature preparation complete:")
-            logging.info(f"  - Final shape: {features_final.shape}")
-            logging.info(f"  - Feature columns: {list(features_final.columns)}")
-            logging.info(f"  - Missing values: {features_final.isnull().sum().sum()}")
-            logging.info(f"  - Data types: {features_final.dtypes.value_counts().to_dict()}")
-            
-            return features_final
-            
-        except Exception as e:
-            logging.error(f"Final validation failed: {e}")
-            raise Exception(f"Feature preparation failed at final validation: {e}")
+            return fallback_features
     
     except Exception as e:
-        logging.error(f"Complete feature preparation failed: {e}")
+        logging.error(f"Complete sequential pipeline failed: {e}")
         
-        # Last resort: try basic DataFrame creation
+        # Last resort: manual feature preparation
         try:
-            logging.warning("Attempting emergency feature preparation")
+            logging.warning("Attempting emergency feature preparation...")
             expected_features = get_expected_feature_names_from_config()
             feature_vector = create_feature_vector_from_dict(clean_features, expected_features)
             emergency_df = pd.DataFrame([feature_vector], columns=expected_features)
@@ -909,7 +971,9 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
             return emergency_df
         except Exception as emergency_e:
             logging.error(f"Emergency feature preparation also failed: {emergency_e}")
-            raise Exception(f"All feature preparation methods failed. Original error: {e}, Emergency error: {emergency_e}")
+            raise Exception(f"All feature preparation methods failed. Sequential error: {e}, Emergency error: {emergency_e}")
+
+
 
 
 # Additional helper function to check which method is being used
@@ -1961,6 +2025,50 @@ def get_shap_feature_names(model_name: str, user_inputs: Dict[str, Any]) -> List
         logging.error(f"Error getting SHAP feature names: {e}")
         return get_expected_feature_names_from_config()
 
+# NEW FUNCTION for testing: Test the sequential pipeline
+def test_sequential_pipeline(ui_features: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Test function to validate the sequential pipeline approach
+    """
+    test_result = {
+        'success': False,
+        'custom_pipeline': {'success': False, 'shape': None, 'error': None},
+        'pycaret_pipeline': {'success': False, 'shape': None, 'error': None},
+        'final_result': {'shape': None, 'features': None}
+    }
+    
+    try:
+        # Test custom pipeline
+        try:
+            from pipeline import process_features_for_prediction
+            custom_result = process_features_for_prediction(ui_features)
+            test_result['custom_pipeline']['success'] = True
+            test_result['custom_pipeline']['shape'] = custom_result.shape
+        except Exception as e:
+            test_result['custom_pipeline']['error'] = str(e)
+        
+        # Test PyCaret pipeline
+        try:
+            if test_result['custom_pipeline']['success']:
+                pycaret_pipeline = load_preprocessing_pipeline()
+                if pycaret_pipeline:
+                    pycaret_result = pycaret_pipeline.transform(custom_result)
+                    test_result['pycaret_pipeline']['success'] = True
+                    test_result['pycaret_pipeline']['shape'] = pycaret_result.shape
+        except Exception as e:
+            test_result['pycaret_pipeline']['error'] = str(e)
+        
+        # Test full sequential pipeline
+        final_result = prepare_features_for_model(ui_features)
+        if final_result is not None:
+            test_result['success'] = True
+            test_result['final_result']['shape'] = final_result.shape
+            test_result['final_result']['features'] = list(final_result.columns)[:10]  # First 10 features
+    
+    except Exception as e:
+        test_result['error'] = str(e)
+    
+    return test_result
 
 # Exports for Streamlit UI
 __all__ = [
