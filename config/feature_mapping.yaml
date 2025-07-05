@@ -260,6 +260,24 @@ categorical_features:
     options: ["", "1", "2", "3-4", "5-8", "9-14", "15-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100", "101+"]
 
 one_hot_features:
+  external_eef_industry_sector:
+    input_key: external_eef_industry_sector
+    mapping:
+      "Banking": external_eef_industry_sector_banking
+      "Financial": external_eef_industry_sector_financial
+  external_eef_organisation_type:
+    input_key: external_eef_organisation_type
+    mapping:
+      "Amusement/Game Center": external_eef_organisation_type_amusement_game_center
+      "Banking": external_eef_organisation_type_banking
+      "Banking/Insurance/Stock": external_eef_organisation_type_banking_insurance_stock
+      "Credit Card Processor": external_eef_organisation_type_credit_card_processor
+      "Financial": external_eef_organisation_type_financial
+      "Financial/Property and Business Services": external_eef_organisation_type_financial_property_and_business_services
+      "Insurance": external_eef_organisation_type_insurance
+      "Missing": external_eef_organisation_type_missing
+      "Revenue": external_eef_organisation_type_revenue
+      "Revenue Collection": external_eef_organisation_type_revenue_collection
   project_prf_application_group:
     input_key: project_prf_application_group
     mapping:

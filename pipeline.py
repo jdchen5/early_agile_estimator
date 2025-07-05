@@ -30,6 +30,7 @@ CONFIG_FOLDER = 'config'
 MODELS_FOLDER = 'models'
 PIPELINE_FILE = os.path.join(MODELS_FOLDER, 'preprocessing_pipeline.pkl')
 FEATURE_MAPPING_FILE = os.path.join(CONFIG_FOLDER, 'feature_mapping.yaml')
+DYNAMIC_FULL_MODEL_FEATURES = os.path.join(CONFIG_FOLDER, 'full_model_features.json')
 
 def load_yaml_config(path: str) -> Dict:
     """Load YAML configuration file with error handling"""
@@ -632,7 +633,8 @@ def create_preprocessing_pipeline(
         ('multi_value_encoder', MultiValueEncoder(max_cardinality=max_categorical_cardinality)),
         ('categorical_encoder', CategoricalEncoder(max_cardinality=max_categorical_cardinality)),
         ('column_fixer', ColumnNameFixer()),
-        ('final_validator', DataValidator(target_col))
+        ('final_validator', DataValidator(target_col)),
+        ('schema_aligner', SchemaAligner()) 
     ])
     
     return pipeline
@@ -993,6 +995,8 @@ def validate_pipeline_compatibility(pipeline: Pipeline, feature_dict: Dict) -> D
             'validation_passed': False
         }
 
+
+
 # === Main functions for external use ===
 def create_dynamic_pipeline_for_prediction(feature_dict: Dict) -> Pipeline:
     """
@@ -1044,6 +1048,48 @@ def process_features_for_prediction(feature_dict: Dict) -> pd.DataFrame:
         feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
         df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
         return df
+
+class SchemaAligner(BaseEstimator, TransformerMixin):
+    """
+    Align features to match training schema from full_model_features.json
+    Takes current pipeline output and expands it to complete feature set.
+    """
+    
+    def __init__(self, schema_file: str = DYNAMIC_FULL_MODEL_FEATURES):
+        self.schema_file = schema_file
+        self.expected_features = None
+        
+    def fit(self, X, y=None):
+        # Load expected features from training schema
+        try:
+            import json
+            with open(self.schema_file, 'r') as f:
+                self.expected_features = json.load(f)
+            logging.info(f"SchemaAligner: Loaded {len(self.expected_features)} expected features")
+        except Exception as e:
+            logging.error(f"SchemaAligner: Could not load schema file {self.schema_file}: {e}")
+            self.expected_features = []
+        return self
+    
+    def transform(self, X):
+        """Align current features to training schema"""
+        if not self.expected_features:
+            logging.warning("SchemaAligner: No expected features loaded, returning original data")
+            return X
+            
+        df = X.copy()
+        
+        # Add missing columns with 0 values
+        for feature in self.expected_features:
+            if feature not in df.columns:
+                df[feature] = 0
+        
+        # Reorder columns to match training schema and remove extras
+        df_aligned = df.reindex(columns=self.expected_features, fill_value=0)
+        
+        logging.info(f"SchemaAligner: {X.shape} → {df_aligned.shape}")
+        return df_aligned
+
 
 # === Export functions ===
 __all__ = [
