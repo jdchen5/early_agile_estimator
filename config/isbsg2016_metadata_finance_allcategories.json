@@ -7,12 +7,6 @@
         "project_prf_year_of_project": {
             "sdtype": "numerical"
         },
-        "external_eef_industry_sector": {
-            "sdtype": "categorical"
-        },
-        "external_eef_organisation_type": {
-            "sdtype": "categorical"
-        },
         "project_prf_application_type": {
             "sdtype": "categorical"
         },
@@ -49,6 +43,45 @@
         "project_prf_max_team_size": {
             "sdtype": "categorical"
         },
+        "external_eef_organisation_type_amusement_game_center": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_banking": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_banking_insurance_stock": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_credit_card_processor": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_financial": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_financial_property_and_business_services": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_insurance": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_missing": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_revenue": {
+            "sdtype": "categorical"
+        },
+        "external_eef_organisation_type_revenue_collection": {
+            "sdtype": "categorical"
+        },
+        "external_eef_industry_sector_Banking": {
+            "sdtype": "categorical"
+        },
+        "external_eef_industry_sector_Financial": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_Business_Application": {
+            "sdtype": "categorical"
+        },
         "project_prf_application_group_Infrastructure_Software": {
             "sdtype": "categorical"
         },
@@ -67,6 +100,9 @@
         "project_prf_application_group_missing": {
             "sdtype": "categorical"
         },
+        "project_prf_development_type_Enhancement": {
+            "sdtype": "categorical"
+        },
         "project_prf_development_type_New_Development": {
             "sdtype": "categorical"
         },
@@ -77,6 +113,9 @@
             "sdtype": "categorical"
         },
         "project_prf_development_type_Re_development": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_MF": {
             "sdtype": "categorical"
         },
         "tech_tf_development_platform_MR": {
@@ -94,6 +133,9 @@
         "tech_tf_development_platform_Proprietary": {
             "sdtype": "categorical"
         },
+        "tech_tf_language_type_2GL": {
+            "sdtype": "categorical"
+        },
         "tech_tf_language_type_3GL": {
             "sdtype": "categorical"
         },
@@ -107,6 +149,9 @@
             "sdtype": "categorical"
         },
         "tech_tf_language_type_Missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_L": {
             "sdtype": "categorical"
         },
         "project_prf_relative_size_M1": {
@@ -133,6 +178,9 @@
         "project_prf_relative_size_XXS": {
             "sdtype": "categorical"
         },
+        "project_prf_case_tool_used_Don_t_Know": {
+            "sdtype": "categorical"
+        },
         "project_prf_case_tool_used_Missing": {
             "sdtype": "categorical"
         },
@@ -140,6 +188,9 @@
             "sdtype": "categorical"
         },
         "project_prf_case_tool_used_Yes": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Client_server": {
             "sdtype": "categorical"
         },
         "tech_tf_architecture_Missing": {
@@ -157,6 +208,9 @@
         "tech_tf_architecture_Stand_alone": {
             "sdtype": "categorical"
         },
+        "tech_tf_client_server_Don_t_Know": {
+            "sdtype": "categorical"
+        },
         "tech_tf_client_server_Missing": {
             "sdtype": "categorical"
         },
@@ -169,13 +223,22 @@
         "tech_tf_client_server_Yes": {
             "sdtype": "categorical"
         },
+        "tech_tf_dbms_used_Missing": {
+            "sdtype": "categorical"
+        },
         "tech_tf_dbms_used_No": {
             "sdtype": "categorical"
         },
         "tech_tf_dbms_used_Yes": {
             "sdtype": "categorical"
         },
+        "project_prf_team_size_group_3_4": {
+            "sdtype": "categorical"
+        },
         "project_prf_team_size_group_Missing": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_missing": {
             "sdtype": "categorical"
         }
     }

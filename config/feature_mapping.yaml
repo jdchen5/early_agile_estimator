@@ -33,15 +33,19 @@ categorical_features:
     options:
       - 
       #- All industry organization types
+      - Amusement/Game Center
       #- Aerospace / Automotive
       - Banking
+      - Banking, Insurance, Stock
       #- Biotech
       #- Communications
       #- Community Services
       #- Consumer Foods
+      - Credit Card Processor
       #- Education Institution
       #- Electricity, Gas, Water
       #- Energy
+      - Financial
       - Financial, Property & Business Services
       #- Food Processing
       #- Government
@@ -49,9 +53,12 @@ categorical_features:
       #- IEEE
       #- Information Technology
       #- Institutions eg. Kindergartens
+      - Insurance
       #- Medical & Healthcare
       #- Public Administration
       #- Public Sector
+      - Revenue
+      - Revenue Collection
       #- Surveillance Security
       #- Transport Storage
       #- Wholesale & Retail Trade

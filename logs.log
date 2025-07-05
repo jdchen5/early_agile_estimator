@@ -41549,3 +41549,35 @@ This will raise in a future version.
 
   warnings.warn(msg, FutureWarning)
 
+2025-07-05 17:49:14,656:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:49:14,656:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:49:14,656:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:49:14,656:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:49:15,559:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
+2025-07-05 17:51:29,247:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:51:29,247:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:51:29,247:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:51:29,247:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-05 17:51:30,112:WARNING:C:\Users\jdche\.conda\envs\pycaret311\Lib\site-packages\dask\dataframe\__init__.py:49: FutureWarning: 
+Dask dataframe query planning is disabled because dask-expr is not installed.
+
+You can install it with `pip install dask[dataframe]` or `conda install dask`.
+This will raise in a future version.
+
+  warnings.warn(msg, FutureWarning)
+
