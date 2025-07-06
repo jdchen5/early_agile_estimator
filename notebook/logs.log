@@ -127638,3 +127638,167 @@ This will raise in a future version.
 2025-07-05 17:44:21,378:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31684\3713906125.py:219: DtypeWarning: Columns (15) have mixed types. Specify dtype option on import or set low_memory=False.
   df = pd.read_csv(file_path)
 
+2025-07-06 14:39:57,695:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-06 14:39:57,695:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-06 14:39:57,695:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-06 14:39:57,695:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2025-07-06 14:39:58,127:INFO:Initializing load_model()
+2025-07-06 14:39:58,127:INFO:load_model(model_name=../models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-07-06 14:39:59,399:INFO:Initializing load_model()
+2025-07-06 14:39:59,400:INFO:load_model(model_name=../models\top_model_2_LassoLars, platform=None, authentication=None, verbose=True)
+2025-07-06 14:39:59,405:INFO:Initializing load_model()
+2025-07-06 14:39:59,405:INFO:load_model(model_name=../models\top_model_3_Lasso, platform=None, authentication=None, verbose=True)
+2025-07-06 14:39:59,660:INFO:Initializing predict_model()
+2025-07-06 14:39:59,660:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023C82BB0C90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C82C98A40>)
+2025-07-06 14:39:59,660:INFO:Checking exceptions
+2025-07-06 14:39:59,660:INFO:Preloading libraries
+2025-07-06 14:39:59,673:INFO:Set up data.
+2025-07-06 14:39:59,676:INFO:Set up index.
+2025-07-06 14:39:59,803:INFO:Initializing predict_model()
+2025-07-06 14:39:59,803:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023CFF150450>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', LassoLars(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C82868AE0>)
+2025-07-06 14:39:59,803:INFO:Checking exceptions
+2025-07-06 14:39:59,803:INFO:Preloading libraries
+2025-07-06 14:39:59,803:INFO:Set up data.
+2025-07-06 14:39:59,819:INFO:Set up index.
+2025-07-06 14:39:59,930:INFO:Initializing predict_model()
+2025-07-06 14:39:59,930:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023C8113A590>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C82868C20>)
+2025-07-06 14:39:59,946:INFO:Checking exceptions
+2025-07-06 14:39:59,946:INFO:Preloading libraries
+2025-07-06 14:39:59,946:INFO:Set up data.
+2025-07-06 14:39:59,950:INFO:Set up index.
+2025-07-06 14:40:00,086:INFO:Initializing load_model()
+2025-07-06 14:40:00,088:INFO:load_model(model_name=../models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,094:INFO:Initializing load_model()
+2025-07-06 14:40:00,094:INFO:load_model(model_name=../models\top_model_2_LassoLars, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,099:INFO:Initializing load_model()
+2025-07-06 14:40:00,099:INFO:load_model(model_name=../models\top_model_3_Lasso, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,105:INFO:Initializing load_model()
+2025-07-06 14:40:00,106:INFO:load_model(model_name=../models\top_model_1_BayesianRidge, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,110:INFO:Initializing load_model()
+2025-07-06 14:40:00,110:INFO:load_model(model_name=../models\top_model_2_LassoLars, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,117:INFO:Initializing load_model()
+2025-07-06 14:40:00,117:INFO:load_model(model_name=../models\top_model_3_Lasso, platform=None, authentication=None, verbose=True)
+2025-07-06 14:40:00,136:INFO:Initializing predict_model()
+2025-07-06 14:40:00,136:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023C82BD9D50>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', BayesianRidge())]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C828E49A0>)
+2025-07-06 14:40:00,137:INFO:Checking exceptions
+2025-07-06 14:40:00,137:INFO:Preloading libraries
+2025-07-06 14:40:00,138:INFO:Set up data.
+2025-07-06 14:40:00,154:INFO:Set up index.
+2025-07-06 14:40:00,268:INFO:Initializing predict_model()
+2025-07-06 14:40:00,268:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023CDCCB06D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                ('rest_encoding',
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', LassoLars(random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C828E49A0>)
+2025-07-06 14:40:00,268:INFO:Checking exceptions
+2025-07-06 14:40:00,268:INFO:Preloading libraries
+2025-07-06 14:40:00,268:INFO:Set up data.
+2025-07-06 14:40:00,284:INFO:Set up index.
+2025-07-06 14:40:00,416:INFO:Initializing predict_model()
+2025-07-06 14:40:00,416:INFO:predict_model(self=<pycaret.regression.oop.RegressionExperiment object at 0x0000023CFEB0F210>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['project_prf_year_of_project',
+                                             'project_prf_functional_size',
+                                             'process_pmf_docs',
+                                             'tech_tf_tools_used',
+                                             'project_prf_max_team_size',
+                                             'external_eef_organisation_type_amusement_game_center',
+                                             'external_eef_organisation_type_banking',
+                                             'external_eef_organisation_type_...
+                 TransformerWrapper(include=['project_prf_application_type',
+                                             'tech_tf_primary_programming_language'],
+                                    transformer=TargetEncoder(cols=['project_prf_application_type',
+                                                                    'tech_tf_primary_programming_language'],
+                                                              handle_missing='return_nan'))),
+                ('normalize', TransformerWrapper(transformer=StandardScaler())),
+                ('trained_model', Lasso(alpha=8.84, random_state=123))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x0000023C828E4AE0>)
+2025-07-06 14:40:00,416:INFO:Checking exceptions
+2025-07-06 14:40:00,416:INFO:Preloading libraries
+2025-07-06 14:40:00,417:INFO:Set up data.
+2025-07-06 14:40:00,431:INFO:Set up index.

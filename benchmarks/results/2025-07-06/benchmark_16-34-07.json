@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-06T16:34:05.060946",
+  "benchmarks": {
+    "single_prediction": {
+      "duration_seconds": 1.6592650413513184,
+      "memory_before_mb": 245.5390625,
+      "memory_after_mb": 272.08203125,
+      "memory_delta_mb": 26.54296875,
+      "success": true,
+      "error": null,
+      "result_size": 18
+    }
+  },
+  "system_info": {
+    "cpu_count": 8,
+    "memory_total_gb": 15.893760681152344,
+    "python_version": "3.11",
+    "process_id": 27540
+  }
+}

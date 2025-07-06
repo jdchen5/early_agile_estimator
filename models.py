@@ -53,7 +53,7 @@ app_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.UI_INF
 APP_CONFIG = ConfigLoader.load_yaml_config(app_config_path)
 if APP_CONFIG is None:
     APP_CONFIG = {}
-    
+
 FIELDS = APP_CONFIG.get('fields', {})
 TAB_ORG = APP_CONFIG.get('tab_organization', {})
 
@@ -800,6 +800,12 @@ def prepare_features_for_model(ui_features: Dict[str, Any]) -> pd.DataFrame:
         # Last resort: manual feature preparation
         try:
             logging.warning("Attempting emergency feature preparation...")
+            ui_keys_to_remove = {
+                'selected_model', 'selected_models', 'submit', 'clear_results', 
+                'show_history', 'save_config', 'config_name', 'comparison_mode'
+            }
+            clean_features = {k: v for k, v in ui_features.items() if k not in ui_keys_to_remove}
+
             expected_features = get_expected_feature_names_from_config()
             feature_vector = create_feature_vector_from_dict(clean_features, expected_features)
             emergency_df = pd.DataFrame([feature_vector], columns=expected_features)
@@ -1519,7 +1525,7 @@ def prepare_isbsg_sample_data(n_samples: int = 100) -> Optional[np.ndarray]:
             logging.warning("Found infinite values - capping them")
             sample_array = np.nan_to_num(sample_array, posinf=1e10, neginf=-1e10)
         
-        logging.info(f"✅ ISBSG sample data prepared (as-is):")
+        logging.info(f"ISBSG sample data prepared (as-is):")
         logging.info(f"   - Shape: {sample_array.shape}")
         logging.info(f"   - Data type: {sample_array.dtype}")
         logging.info(f"   - Value range: [{sample_array.min():.2f}, {sample_array.max():.2f}]")

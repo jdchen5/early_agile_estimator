@@ -63,7 +63,7 @@ def clear_explainer_cache():
     """Clear the explainer cache to free memory."""
     global _explainer_cache
     _explainer_cache.clear()
-    print("🗑️ SHAP explainer cache cleared")
+    print("SHAP explainer cache cleared")
 
 def get_cache_info() -> Dict[str, Any]:
     """Get information about the current explainer cache."""
@@ -120,8 +120,8 @@ def get_best_sample_data(n_samples: int = 100, model_name: str = None) -> Option
         # Try ISBSG approach first
         return get_isbsg_mapped_data(n_samples)
     except Exception as e:
-        print(f"⚠️ ISBSG mapping failed: {e}")
-        print("🔄 Falling back to synthetic generation...")
+        print(f"ISBSG mapping failed: {e}")
+        print("Falling back to synthetic generation...")
         # Fallback to synthetic approach
         return get_synthetic_data_from_stats(n_samples)
 
@@ -281,7 +281,7 @@ def get_shap_explainer(
                 model = get_trained_model(model_name)
                 
             if model is None:
-                print(f"❌ Could not load model '{model_name}'")
+                print(f"Could not load model '{model_name}'")
                 return None
             
             # Extract actual estimator
@@ -295,24 +295,24 @@ def get_shap_explainer(
             if any(keyword in model_type for keyword in ['forest', 'tree', 'xgb', 'lgb', 'catboost']):
                 try:
                     explainer = shap.TreeExplainer(actual_model, background_data)
-                    print(f"✅ Created TreeExplainer with pipeline background")
+                    print(f"Created TreeExplainer with pipeline background")
                 except Exception as e:
-                    print(f"⚠️ TreeExplainer failed: {e}")
+                    print(f"TreeExplainer failed: {e}")
             
             elif any(keyword in model_type for keyword in ['linear', 'lasso', 'ridge', 'elastic']):
                 try:
                     explainer = shap.LinearExplainer(actual_model, background_data)
-                    print(f"✅ Created LinearExplainer with pipeline background")
+                    print(f"Created LinearExplainer with pipeline background")
                 except Exception as e:
-                    print(f"⚠️ LinearExplainer failed: {e}")
+                    print(f"LinearExplainer failed: {e}")
             
             # Fallback to general Explainer
             if explainer is None:
                 try:
                     explainer = shap.Explainer(actual_model, background_data[:PipelineConstants.KERNEL_EXPLAINER_SAMPLE_SIZE])  # Smaller sample
-                    print(f"✅ Created general Explainer with pipeline background")
+                    print(f"Created general Explainer with pipeline background")
                 except Exception as e:
-                    print(f"⚠️ General Explainer failed: {e}")
+                    print(f"General Explainer failed: {e}")
             
             if explainer is not None:
                 _explainer_cache[cache_key] = explainer
@@ -320,23 +320,23 @@ def get_shap_explainer(
         
         # === EXISTING LOGIC (FALLBACK) ===
         # This is your current implementation from the original get_shap_explainer
-        print("📊 Using traditional SHAP approach (no pipeline)")
+        print("Using traditional SHAP approach (no pipeline)")
         
         # Load the full PyCaret model
         if not MODELS_AVAILABLE:
-            print("❌ Models module not available")
+            print("Models module not available")
             return None
             
         # Load the complete model (with PyCaret wrapper)
         full_model = load_model(model_name)
         if full_model is None:
-            print(f"❌ Could not load model '{model_name}'")
+            print(f"Could not load model '{model_name}'")
             return None
         
         # Extract the actual estimator from PyCaret wrapper
         actual_model = extract_pycaret_estimator(full_model)
         if actual_model is None:
-            print(f"❌ Could not extract estimator from PyCaret model")
+            print(f"Could not extract estimator from PyCaret model")
             return None
         
         # Get background data using the traditional method
@@ -344,7 +344,7 @@ def get_shap_explainer(
         
         # Prepare background data through the same pipeline
         if background_data is not None and MODELS_AVAILABLE:
-            print("🔄 Processing background data through feature pipeline...")
+            print("Processing background data through feature pipeline...")
             # Create a function that applies the full prediction pipeline
             def model_predict_func(X):
                 try:
@@ -358,7 +358,7 @@ def get_shap_explainer(
                     predictions = full_model.predict(X_df)
                     return predictions
                 except Exception as e:
-                    print(f"⚠️ Prediction error in SHAP: {e}")
+                    print(f"Prediction error in SHAP: {e}")
                     # Fallback to direct prediction
                     return actual_model.predict(X)
         else:
@@ -380,18 +380,18 @@ def get_shap_explainer(
                     explainer = shap.TreeExplainer(actual_model, background_data)
                 else:
                     explainer = shap.TreeExplainer(actual_model)
-                print(f"✅ Created TreeExplainer for {model_name}")
+                print(f"Created TreeExplainer for {model_name}")
             except Exception as e:
-                print(f"⚠️ TreeExplainer failed: {e}")
+                print(f"TreeExplainer failed: {e}")
         
         # Try LinearExplainer for linear models
         elif any(keyword in model_type for keyword in ['linear', 'lasso', 'ridge', 'elastic', 'bayesianridge']):
             if background_data is not None:
                 try:
                     explainer = shap.LinearExplainer(actual_model, background_data)
-                    print(f"✅ Created LinearExplainer for {model_name}")
+                    print(f"Created LinearExplainer for {model_name}")
                 except Exception as e:
-                    print(f"⚠️ LinearExplainer failed: {e}")
+                    print(f"LinearExplainer failed: {e}")
         
         # Fallback to KernelExplainer
         if explainer is None and background_data is not None:
@@ -401,21 +401,21 @@ def get_shap_explainer(
                 
                 # Use the full model's predict function for KernelExplainer
                 explainer = shap.KernelExplainer(model_predict_func, kernel_sample)
-                print(f"✅ Created KernelExplainer for {model_name}")
+                print(f"Created KernelExplainer for {model_name}")
             except Exception as e:
-                print(f"⚠️ KernelExplainer failed: {e}")
+                print(f"KernelExplainer failed: {e}")
         
         # Cache successful explainer
         if explainer is not None:
             _explainer_cache[cache_key] = explainer
-            print(f"✅ SHAP explainer created and cached for {model_name}")
+            print(f"SHAP explainer created and cached for {model_name}")
         else:
-            print(f"❌ Failed to create any SHAP explainer for {model_name}")
+            print(f"Failed to create any SHAP explainer for {model_name}")
         
         return explainer
         
     except Exception as e:
-        print(f"❌ Error creating SHAP explainer: {e}")
+        print(f"Error creating SHAP explainer: {e}")
         import traceback
         traceback.print_exc()
         return None
@@ -468,7 +468,7 @@ def get_feature_interaction_values(
     """
     try:
         if explainer is None or not hasattr(explainer, 'shap_interaction_values'):
-            print("ℹ️ Interaction values not available for this explainer")
+            print("Interaction values not available for this explainer")
             return None
         
         # Prepare input data
@@ -487,7 +487,7 @@ def get_feature_interaction_values(
         if input_data.ndim == 1:
             input_data = input_data.reshape(1, -1)
         
-        print("🔄 Calculating SHAP interaction values...")
+        print("Calculating SHAP interaction values...")
         interaction_values = explainer.shap_interaction_values(input_data)
         
         # Extract first instance
@@ -496,11 +496,11 @@ def get_feature_interaction_values(
         else:
             result = interaction_values[0]
         
-        print(f"✅ Interaction values calculated: {result.shape}")
+        print(f"Interaction values calculated: {result.shape}")
         return result
             
     except Exception as e:
-        print(f"❌ Error calculating interaction values: {e}")
+        print(f"Error calculating interaction values: {e}")
         return None
 
 def get_feature_names_from_fields(fields: Dict) -> List[str]:
@@ -574,7 +574,7 @@ def create_shap_summary_data(
         return summary_data[:top_n]
         
     except Exception as e:
-        print(f"❌ Error creating summary: {e}")
+        print(f"Error creating summary: {e}")
         return []
 
 def get_sample_data_info() -> Dict[str, Any]:
@@ -605,25 +605,25 @@ def prepare_sample_data(n_samples, fields, get_field_options_func):
     try:
         return get_best_sample_data(n_samples)
     except Exception as e:
-        print(f"❌ Sample data preparation failed: {e}")
+        print(f"Sample data preparation failed: {e}")
         return None
 
 def prepare_input_data(user_inputs: Dict[str, Any]) -> Optional[np.ndarray]:
     """Wrapper function for UI compatibility."""
     try:
         if not MODELS_AVAILABLE:
-            print("❌ Models module not available")
+            print("Models module not available")
             return None
             
         features_df = prepare_features_for_model(user_inputs)
         if features_df is None or features_df.empty:
-            print("❌ Feature preparation failed")
+            print("Feature preparation failed")
             return None
         
         return features_df.values
         
     except Exception as e:
-        print(f"❌ Error in prepare_input_data: {e}")
+        print(f"Error in prepare_input_data: {e}")
         return None
 
 def get_parameter_index(param_name, feature_names):
