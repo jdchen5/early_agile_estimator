@@ -1952,29 +1952,40 @@ def display_previous_results_summary():
             st.metric("Range", f"{np.min(all_predictions):.0f} - {np.max(all_predictions):.0f}")
 
 # Use coordinator for complex analysis
+
 def display_advanced_shap_analysis(user_inputs, model_name):
     """New function using coordinator for better analysis"""
-    coordinator = SHAPAnalysisCoordinator()
+
+    try:
+        from shap_analysis import SHAPAnalysisCoordinator
+        coordinator = SHAPAnalysisCoordinator()
     
-    # Run complete analysis with structured results
-    result = coordinator.run_instance_analysis(
-        user_inputs, model_name, get_trained_model
-    )
+        # Run complete analysis with structured results
+        result = coordinator.run_instance_analysis(
+            user_inputs, model_name, get_trained_model
+        )
+        
+        if result.get("success"):
+            # Extract data from structured result
+            shap_values = result.get("shap_values")
+            feature_names = result.get("feature_names", [])
+            
+            # Use existing display logic (simplified)
+            st.write("**SHAP Analysis Results**")
+            st.write(f"Analysis completed for {len(feature_names)} features")
+            
+            # You can expand this to show actual SHAP visualization
+            if len(shap_values) > 0:
+                st.success("SHAP values calculated successfully")
+        else:
+            st.error(f"SHAP analysis failed: {result.get('error')}")
+            
+    except ImportError:
+        st.warning("Advanced SHAP analysis not available yet")
+        return
     
-    if result.get("success"):
-        # Extract data from structured result
-        shap_values = result.get("shap_values")
-        feature_names = result.get("feature_names", [])
-        
-        # Use existing display logic (simplified)
-        st.write("**SHAP Analysis Results**")
-        st.write(f"Analysis completed for {len(feature_names)} features")
-        
-        # You can expand this to show actual SHAP visualization
-        if len(shap_values) > 0:
-            st.success("✅ SHAP values calculated successfully")
-    else:
-        st.error(f"SHAP analysis failed: {result.get('error')}")
+    
+
 
 def display_static_shap_analysis():
     """Display static SHAP analysis from file"""
