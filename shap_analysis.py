@@ -21,6 +21,7 @@ from typing import Dict, List, Optional, Union, Callable, Any
 import logging
 import yaml
 import os
+from constants import PipelineConstants, ModelConstants, UIConstants
 
 # Suppress SHAP warnings for cleaner output
 warnings.filterwarnings('ignore', category=UserWarning, module='shap')
@@ -246,7 +247,7 @@ def get_shap_explainer(
     model_name: str, 
     get_trained_model_func: Callable = None,
     prepare_sample_data_func: Optional[Callable] = None,
-    sample_size: int = 100
+    sample_size: int = PipelineConstants.DEFAULT_SAMPLE_SIZE
 ) -> Optional[shap.Explainer]:
     """
     Get or create a SHAP explainer for the specified model.
@@ -308,7 +309,7 @@ def get_shap_explainer(
             # Fallback to general Explainer
             if explainer is None:
                 try:
-                    explainer = shap.Explainer(actual_model, background_data[:50])  # Smaller sample
+                    explainer = shap.Explainer(actual_model, background_data[:PipelineConstants.KERNEL_EXPLAINER_SAMPLE_SIZE])  # Smaller sample
                     print(f"✅ Created general Explainer with pipeline background")
                 except Exception as e:
                     print(f"⚠️ General Explainer failed: {e}")
@@ -541,7 +542,7 @@ def create_shap_summary_data(
     shap_values: np.ndarray,
     feature_names: List[str],
     user_inputs: Dict,
-    top_n: int = 10
+    top_n: int = PipelineConstants.TOP_N_FEATURES
 ) -> List[Dict]:
     """Create summary data for SHAP values display."""
     try:

@@ -11,13 +11,14 @@ st.set_page_config(
 import logging
 import sys
 import traceback
+from constants import LoggingConstants
 
 # Logging setup
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=getattr(logging, LoggingConstants.DEFAULT_LOG_LEVEL),
+    format=LoggingConstants.LOG_FORMAT,
     handlers=[
-        logging.FileHandler("app.log"),
+        logging.FileHandler(LoggingConstants.APP_LOG_FILE),
         logging.StreamHandler()
     ]
 )

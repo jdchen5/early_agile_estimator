@@ -18,15 +18,17 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import traceback
+from constants import FileConstants, UIConstants, PipelineConstants
+from config_loader import ConfigLoader
 
 from shap_analysis import (
+    # Existing backward compatibility imports
     get_shap_explainer,
     prepare_sample_data,
     get_shap_values_for_input,
-    get_feature_interaction_values,
-    get_feature_names_from_fields,
-    get_feature_names_from_inputs,
-    get_parameter_index
+    
+    # New coordinator for advanced features
+    SHAPAnalysisCoordinator
 )
 
 # ---------------- CONFIG & HISTORY HELPERS ----------------
@@ -79,6 +81,7 @@ try:
         get_trained_model,  # Add this function to get the actual model object
         prepare_input_data,  # Add this function to prepare data for SHAP
         prepare_features_for_model,
+        load_model_display_names,  # Add this function to load model display names
         load_preprocessing_pipeline  # Add this function to load the preprocessing pipeline
     )
     MODELS_AVAILABLE = True
@@ -106,16 +109,12 @@ print("🔍 DEBUG: About to load configurations...")
 
 # --------------------- CONFIG LOADING ---------------------
 
-def load_yaml_config(path):
-    """Load YAML configuration file with error handling"""
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except Exception as e:
-        st.error(f"Error loading YAML file {path}: {e}")
-        return {}
 
-UI_INFO_CONFIG = load_yaml_config("config/ui_info.yaml")
+ui_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.UI_INFO_FILE)
+UI_INFO_CONFIG = ConfigLoader.load_yaml_config(ui_config_path)
+if UI_INFO_CONFIG is None:
+    UI_INFO_CONFIG = {}
+    print(f"⚠️ Warning: Could not load UI configuration from {ui_config_path}. Using empty config.")
 print("🔍 DEBUG: UI_INFO_CONFIG loaded successfully")
 
 FIELDS = UI_INFO_CONFIG.get('fields', {})
@@ -129,13 +128,16 @@ FEATURE_IMPORTANCE_DISPLAY = UI_INFO_CONFIG.get('feature_importance_display', {}
 PREDICTION_THRESHOLDS = UI_INFO_CONFIG.get('prediction_thresholds', {})
 DISPLAY_CONFIG = UI_INFO_CONFIG.get('display_config', {})
 
-FEATURE_MAPPING = load_yaml_config("config/feature_mapping.yaml")
+feature_mapping_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+FEATURE_MAPPING = ConfigLoader.load_yaml_config(feature_mapping_path)
+if FEATURE_MAPPING is None:
+    FEATURE_MAPPING = {}
+    print(f"⚠️ Warning: Could not load feature mapping from {feature_mapping_path}. Using empty mapping.")
+
 CATEGORICAL_MAPPING = FEATURE_MAPPING.get('categorical_features', {})
 
 IMPORTANT_TABS = "Important Features"
 NICE_TABS = "Nice Features"
-CONFIG_FOLDER = "config"
-SHAP_ANALYSIS_FILE = f"{CONFIG_FOLDER}/shap_analysis.md"
 
 print("🔍 DEBUG: About to define functions...")
 
@@ -694,7 +696,7 @@ def display_scenario_comparison(user_inputs, model_name):
                         with col_a:
                             st.metric("Hours", f"{results['prediction']:.0f}")
                         with col_b:
-                            st.metric("Days", f"{results['prediction']/8:.1f}")
+                            st.metric("Days", f"{results['prediction']/UIConstants.HOURS_PER_DAY:.1f}")
                         
                         # Show key differentiating parameters
                         key_params = ['project_prf_functional_size', 'tech_tf_primary_programming_language', 'project_prf_max_team_size']
@@ -999,7 +1001,7 @@ def render_field(field_name, config, is_required=False):
     field_value = None
 
     if is_required:
-        label = f"{label} ⭐"
+        label = f"{label} {UIConstants.REQUIRED_FIELD_MARKER}"
 
     if field_type == "numeric":
         min_val = config.get("min", 0)
@@ -1394,11 +1396,11 @@ def show_prediction(prediction, model_name, user_inputs=None):
         st.metric("📊 Total Effort", f"{prediction:.0f} hours")
 
     with col2:
-        days = prediction / 8
+        days = prediction / UIConstants.HOURS_PER_DAY
         st.metric("📅 Working Days", f"{days:.1f} days")
 
     with col3:
-        weeks = days / 5
+        weeks = days / UIConstants.DAYS_PER_WEEK
         st.metric("📆 Working Weeks", f"{weeks:.1f} weeks")
 
     with col4:
@@ -1585,7 +1587,7 @@ def show_prediction_history():
                 'Timestamp': entry.get('timestamp', 'Unknown'),
                 'Model': model_display,
                 'Hours': f"{entry.get('prediction_hours', 0):.0f}",
-                'Days': f"{entry.get('prediction_hours', 0)/8:.1f}"
+                'Days': f"{entry.get('prediction_hours', 0)/UIConstants.HOURS_PER_DAY:.1f}"
             }
             history_data.append(history_entry)
         
@@ -1639,7 +1641,7 @@ def show_prediction_comparison_table():
         comparison_data = {
             'Model': models,
             'Hours': predictions,
-            'Days': [p/8 for p in predictions]
+            'Days': [p/UIConstants.HOURS_PER_DAY for p in predictions]
         }
         
         comparison_df = pd.DataFrame(comparison_data)
@@ -1682,13 +1684,13 @@ def show_multiple_predictions(new_predictions):
                 except Exception:
                     model_display_name = model_name
                 
-                days = prediction / 8
+                days = prediction / UIConstants.HOURS_PER_DAY
                 
                 comparison_data.append({
                     'Model': model_display_name,
                     'Hours': f"{prediction:.0f}",
                     'Days': f"{days:.1f}",
-                    'Weeks': f"{days/5:.1f}"
+                    'Weeks': f"{days/UIConstants.DAYS_PER_WEEK:.1f}"
                 })
                 predictions_list.append(prediction)
         
@@ -1935,7 +1937,7 @@ def display_previous_results_summary():
             with col1:
                 st.metric("Hours", f"{item['prediction_hours']:.0f}")
             with col2:
-                st.metric("Days", f"{item['prediction_hours']/8:.1f}")
+                st.metric("Days", f"{item['prediction_hours']/UIConstants.HOURS_PER_DAY:.1f}")
     
     # Summary statistics if multiple predictions
     if len(st.session_state.prediction_history) > 1:
@@ -1949,12 +1951,37 @@ def display_previous_results_summary():
         with col3:
             st.metric("Range", f"{np.min(all_predictions):.0f} - {np.max(all_predictions):.0f}")
 
+# Use coordinator for complex analysis
+def display_advanced_shap_analysis(user_inputs, model_name):
+    """New function using coordinator for better analysis"""
+    coordinator = SHAPAnalysisCoordinator()
+    
+    # Run complete analysis with structured results
+    result = coordinator.run_instance_analysis(
+        user_inputs, model_name, get_trained_model
+    )
+    
+    if result.get("success"):
+        # Extract data from structured result
+        shap_values = result.get("shap_values")
+        feature_names = result.get("feature_names", [])
+        
+        # Use existing display logic (simplified)
+        st.write("**SHAP Analysis Results**")
+        st.write(f"Analysis completed for {len(feature_names)} features")
+        
+        # You can expand this to show actual SHAP visualization
+        if len(shap_values) > 0:
+            st.success("✅ SHAP values calculated successfully")
+    else:
+        st.error(f"SHAP analysis failed: {result.get('error')}")
+
 def display_static_shap_analysis():
     """Display static SHAP analysis from file"""
     st.header("📈 Static SHAP Analysis - Model Feature Importance")
 
     try:
-        with open(SHAP_ANALYSIS_FILE, "r", encoding="utf-8") as f:
+        with open(FileConstants.SHAP_ANALYSIS_FILE, "r", encoding="utf-8") as f:
             shap_report_md = f.read()
         st.markdown(shap_report_md, unsafe_allow_html=True)
     except Exception as e:
@@ -2256,7 +2283,7 @@ def main():
                 st.markdown("""
                 ### Quick Start Guide
                 
-                1. **Fill Required Fields** - Complete all fields marked with ⭐ in the "Required Fields" tab
+                1. **Fill Required Fields** - Complete all fields marked with {UIConstants.REQUIRED_FIELD_MARKER} in the "Required Fields" tab
                 2. **Optional Parameters** - Add more details in the "Optional Fields" tab for better accuracy  
                 3. **Select Model** - Choose a model for prediction
                 4. **Get Prediction** - Click 'Predict Effort' to see your estimate
@@ -2292,7 +2319,7 @@ def main():
                 - Use what-if analysis to understand parameter sensitivity
                 
                 ### Troubleshooting
-                - Ensure all required fields (⭐) are completed
+                - Ensure all required fields ({UIConstants.REQUIRED_FIELD_MARKER}) are completed
                 - Check that models are available in the dropdown
                 - Make at least one prediction to enable analysis features
                 - Review field help text for guidance on values

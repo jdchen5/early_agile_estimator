@@ -21,28 +21,12 @@ from typing import Dict, List, Optional, Union, Tuple, Any
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MultiLabelBinarizer
+from constants import FileConstants, PipelineConstants, DataConstants
+from config_loader import ConfigLoader
 
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Paths
-CONFIG_FOLDER = 'config'
-MODELS_FOLDER = 'models'
-PIPELINE_FILE = os.path.join(MODELS_FOLDER, 'preprocessing_pipeline.pkl')
-FEATURE_MAPPING_FILE = os.path.join(CONFIG_FOLDER, 'feature_mapping.yaml')
-DYNAMIC_FULL_MODEL_FEATURES = os.path.join(CONFIG_FOLDER, 'full_model_features.json')
-
-def load_yaml_config(path: str) -> Dict:
-    """Load YAML configuration file with error handling"""
-    try:
-        with open(path, "r") as f:
-            return yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.warning(f"Configuration file not found: {path}")
-        return {}
-    except yaml.YAMLError as e:
-        logging.error(f"Error parsing YAML file {path}: {e}")
-        return {}
 
 # === 1. DataFrameValidator: Validate input DataFrame and check target column ===
 class DataFrameValidator(BaseEstimator, TransformerMixin):
@@ -657,7 +641,10 @@ def convert_feature_dict_to_dataframe(feature_dict: Dict, feature_config: Option
         DataFrame with original categorical structure suitable for preprocessing
     """
     if feature_config is None:
-        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+        feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+        if feature_config is None:
+            feature_config = {}
     
     # Create DataFrame from feature dict (exclude metadata)
     exclude_keys = {'selected_model', 'submit'}
@@ -752,14 +739,14 @@ def convert_feature_dict_to_dataframe(feature_dict: Dict, feature_config: Option
     return df
 
 # === Save and load pipeline ===
-def save_preprocessing_pipeline(pipeline: Pipeline, filepath: str = PIPELINE_FILE):
+def save_preprocessing_pipeline(pipeline: Pipeline, filepath: str = FileConstants.PIPELINE_FILE):
     """Save preprocessing pipeline to disk"""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, 'wb') as f:
         pickle.dump(pipeline, f)
     logging.info(f"Preprocessing pipeline saved to {filepath}")
 
-def load_preprocessing_pipeline(filepath: str = PIPELINE_FILE) -> Optional[Pipeline]:
+def load_preprocessing_pipeline(filepath: str = FileConstants.PIPELINE_FILE) -> Optional[Pipeline]:
     """Load preprocessing pipeline from disk"""
     if not os.path.exists(filepath):
         logging.warning(f"Preprocessing pipeline not found at {filepath}")
@@ -861,7 +848,10 @@ def preprocess_for_prediction(
     
     # Load feature config if not provided
     if feature_config is None:
-        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+        feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+        if feature_config is None:
+            feature_config = {}
     
     # Try to load saved pipeline first (optional)
     if pipeline is None:
@@ -933,7 +923,10 @@ def get_pipeline_feature_names(pipeline: Pipeline) -> List[str]:
         dummy_data = {}
         
         # Load feature config to create realistic dummy data
-        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+        feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+        if feature_config is None:
+            feature_config = {}
         
         # Add numeric features with default values
         for feature in feature_config.get("numeric_features", []):
@@ -1003,7 +996,10 @@ def create_dynamic_pipeline_for_prediction(feature_dict: Dict) -> Pipeline:
     Create a dynamic preprocessing pipeline specifically for prediction use.
     This is the main function to use when you don't have a saved pipeline.
     """
-    feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+    feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+    feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+    if feature_config is None:
+            feature_config = {}
     
     # Create pipeline optimized for prediction
     pipeline = create_preprocessing_pipeline(
@@ -1026,7 +1022,10 @@ def process_features_for_prediction(feature_dict: Dict) -> pd.DataFrame:
         pipeline = create_dynamic_pipeline_for_prediction(feature_dict)
         
         # Convert features to DataFrame
-        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+        feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+        if feature_config is None:
+            feature_config = {}
         df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
         
         # Process with pipeline
@@ -1045,7 +1044,10 @@ def process_features_for_prediction(feature_dict: Dict) -> pd.DataFrame:
     except Exception as e:
         logging.error(f"Error in process_features_for_prediction: {e}")
         # Fallback: basic DataFrame conversion
-        feature_config = load_yaml_config(FEATURE_MAPPING_FILE)
+        feature_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.FEATURE_MAPPING_FILE)
+        feature_config = ConfigLoader.load_yaml_config(feature_config_path)
+        if feature_config is None:
+            feature_config = {}
         df = convert_feature_dict_to_dataframe(feature_dict, feature_config)
         return df
 
@@ -1055,7 +1057,7 @@ class SchemaAligner(BaseEstimator, TransformerMixin):
     Takes current pipeline output and expands it to complete feature set.
     """
     
-    def __init__(self, schema_file: str = DYNAMIC_FULL_MODEL_FEATURES):
+    def __init__(self, schema_file: str = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.DYNAMIC_FULL_MODEL_FEATURES_FILE)):
         self.schema_file = schema_file
         self.expected_features = None
         

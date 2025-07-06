@@ -22,6 +22,9 @@ import logging
 import re
 import yaml
 from typing import Dict, List, Optional, Union, Any
+from constants import FileConstants, ModelConstants, DataConstants, PipelineConstants
+from config_loader import ConfigLoader
+from model_display_names import ModelDisplayNameManager
 
 # Import existing pipeline functions
 try:
@@ -43,30 +46,22 @@ try:
 except ImportError:
     FEATURE_ENGINEERING_AVAILABLE = False
 
-# --- Load unified YAML config ---
-CONFIG_FOLDER = 'config'
-MODELS_FOLDER = 'models'
-DATA_FOLDER = 'data'
-UI_INFO_FILE = os.path.join(CONFIG_FOLDER, 'ui_info.yaml')  # Updated to match merged config
-MODEL_DISPLAY_NAME = 'model_display_names.json'
-ISBSG_PREPROCESSED_FILE = os.path.join(DATA_FOLDER, 'synthetic_isbsg2016r1_1_finance_sdv_generated_fixed_columns_data.csv')
-PIPELINE_MODEL_FILE = 'synthetic_isbsg2016r1_1_finance_sdv_generated_pipeline.pkl'
 
-def load_yaml_config(path: str) -> Dict:
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.warning(f"Configuration file not found: {path}")
-        return {}
-    except yaml.YAMLError as e:
-        logging.error(f"Error parsing YAML file {path}: {e}")
-        return {}
 
 # Load merged configuration
-APP_CONFIG = load_yaml_config(UI_INFO_FILE)
+app_config_path = os.path.join(FileConstants.CONFIG_FOLDER, FileConstants.UI_INFO_FILE)
+APP_CONFIG = ConfigLoader.load_yaml_config(app_config_path)
+if APP_CONFIG is None:
+    APP_CONFIG = {}
+    
 FIELDS = APP_CONFIG.get('fields', {})
 TAB_ORG = APP_CONFIG.get('tab_organization', {})
+
+# Create global instance (or pass around as needed)
+_display_name_manager = ModelDisplayNameManager()
+
+# Add this debug line temporarily:
+print(f"DEBUG: ModelDisplayNameManager initialized with {len(_display_name_manager.display_names)} display names")
 
 # --- Display Name and Feature Name Helpers (GROUPED TOGETHER) ---
 
@@ -82,6 +77,32 @@ def get_categorical_features():
 def get_boolean_features():
     """Get list of boolean feature names from configuration"""
     return [f for f, meta in FIELDS.items() if meta.get('type') == 'boolean']
+
+def get_model_display_name(model_filename: str) -> str:
+    """Wrapper for backward compatibility with ui.py"""
+    return _display_name_manager.get_display_name(model_filename)
+
+def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
+    """Wrapper for backward compatibility"""
+    return _display_name_manager.get_display_name(model_filename)
+
+def get_all_model_display_names() -> Dict[str, str]:
+    """Wrapper for backward compatibility"""
+    # Get all available models first
+    available_models = list_available_models()
+    technical_names = [model['technical_name'] for model in available_models]
+    return _display_name_manager.get_all_display_names(technical_names)
+
+def load_model_display_names() -> Dict[str, str]:
+    """
+    Wrapper function for backward compatibility with ui.py
+    Uses the new ModelDisplayNameManager internally
+    """
+    return _display_name_manager.display_names
+
+def save_model_display_names(display_names: Dict[str, str]) -> bool:
+    """Wrapper for backward compatibility"""
+    return _display_name_manager.save_display_names(display_names)
 
 def get_model_expected_features(model) -> List[str]:
     """Get expected feature names from model, robustly."""
@@ -130,11 +151,13 @@ def get_expected_feature_names_from_config() -> List[str]:
             seen.add(f)
     return unique
 
-def load_preprocessing_pipeline(pipeline_name: str = PIPELINE_MODEL_FILE) -> Optional[Any]:
+
+
+def load_preprocessing_pipeline(pipeline_name: str = FileConstants.PIPELINE_MODEL_FILE) -> Optional[Any]:
     """Load preprocessing pipeline WITHOUT global caching to avoid import-time recursion"""
     try:
         # FIX: Don't add extra .pkl - the filename already includes it
-        pipeline_path = os.path.join(CONFIG_FOLDER, pipeline_name)
+        pipeline_path = os.path.join(FileConstants.CONFIG_FOLDER, pipeline_name)
         
         logging.info(f"Attempting to load pipeline from: {pipeline_path}")
         
@@ -194,7 +217,7 @@ def get_pipeline_background_data(n_samples: int = 100) -> np.ndarray:
             return prepare_isbsg_sample_data(n_samples)
         
         # Load raw ISBSG data
-        isbsg_df = pd.read_csv(ISBSG_PREPROCESSED_FILE)
+        isbsg_df = pd.read_csv(FileConstants.ISBSG_PREPROCESSED_FILE)
         
         # Sample if needed
         if len(isbsg_df) > n_samples:
@@ -212,181 +235,10 @@ def get_pipeline_background_data(n_samples: int = 100) -> np.ndarray:
 
 # ---- Display Name Helpers ----
 
-def normalize_model_key(key: str) -> str:
-    """
-    Normalize model key for consistent display name mapping.
-    Removes numbering/prefixes, lowercases, removes non-alphanumeric.
-    """
-    key = key.lower()
-    key = re.sub(r'^top_model_\d+_', '', key)  # Remove "top_model_X_" prefix
-    key = re.sub(r'[^a-z0-9]', '', key)        # Keep only alphanumeric
-    return key
-
-def extract_model_number(technical_name: str) -> int:
-    """
-    Extracts the number after 'top_model_' in the technical model name for sorting.
-    If no number is found, returns a high number to put it last.
-    """
-    # Remove extension if present
-    model_filename = os.path.splitext(technical_name)[0]
-    parts = model_filename.split('_')
-    if parts and parts[0].startswith('top'):
-        m = re.match(r'top(\d+)', parts[0])
-        if m:
-            return int(m.group(1))
-    return 999  # fallback if not found
-
-def get_all_model_display_names() -> Dict[str, str]:
-    """
-    Get display names for all available models.
-    Returns a mapping of technical_name -> display_name.
-    """
-    display_names_map = load_model_display_names()
-    all_display_names = {}
-    
-    try:
-        # Get all available models
-        available_models = list_available_models()
-        
-        for model_info in available_models:
-            technical_name = model_info['technical_name']
-            # Use configured name if available, otherwise generate dynamically
-            display_name = get_model_display_name_from_config(technical_name, display_names_map)
-            all_display_names[technical_name] = display_name
-        
-        logging.info(f"Generated display names for {len(all_display_names)} models")
-        
-    except Exception as e:
-        logging.error(f"Failed to get all model display names: {e}")
-    
-    return all_display_names
 
 
-def get_model_display_name_from_config(model_filename: str, display_names_map: Optional[Dict[str, str]] = None) -> str:
-    """
-    FIXED VERSION - Enhanced with recursion prevention and better fallbacks
-    """
-    if display_names_map is None:
-        display_names_map = load_model_display_names()
-
-    # Split by underscore to get model type
-    parts = model_filename.split('_')
-    if len(parts) > 1:
-        model_type = parts[-1]  # Last part is the model type (bayesianridge)
-
-        # Try direct match with model type (case-insensitive)
-        for key, value in display_names_map.items():
-            if key.lower() == model_type.lower():
-                return value
-
-        # Try partial/inclusion match with  model type
-        for key, value in display_names_map.items():
-            if model_type.lower() in key.lower():
-                return value
-
-    # Safe fallback - no recursion
-    return model_filename.replace('_', ' ').title()
-
-def generate_display_name_from_filename(model_filename: str) -> str:
-    """
-    NEW FUNCTION: Generate a display name from filename without recursion
-    """
-    try:
-        # Remove common prefixes
-        name = model_filename
-        if name.startswith('top_model_'):
-            # Extract number and model type: "top_model_1_rf" -> "RF Model #1"
-            parts = name.split('_')
-            if len(parts) >= 3:
-                number = parts[2] if parts[2].isdigit() else parts[1]
-                model_type = parts[3] if len(parts) > 3 else parts[2]
-                
-                # Map common model abbreviations
-                type_mapping = {
-                    'rf': 'Random Forest',
-                    'xgb': 'XGBoost', 
-                    'lgb': 'LightGBM',
-                    'lr': 'Linear Regression',
-                    'svm': 'Support Vector Machine',
-                    'dt': 'Decision Tree',
-                    'nb': 'Naive Bayes',
-                    'knn': 'K-Nearest Neighbors',
-                    'ada': 'AdaBoost',
-                    'gb': 'Gradient Boosting',
-                    'et': 'Extra Trees'
-                }
-                
-                display_type = type_mapping.get(model_type.lower(), model_type.upper())
-                return f"{display_type} Model #{number}"
-        
-        # For other naming patterns, clean up the name
-        clean_name = name.replace('_', ' ').title()
-        
-        # Remove common suffixes
-        clean_name = clean_name.replace(' Model', '').replace(' Pkl', '')
-        
-        # Limit length
-        if len(clean_name) > 30:
-            clean_name = clean_name[:27] + "..."
-            
-        return clean_name + " Model"
-        
-    except Exception as e:
-        logging.error(f"Error generating display name: {e}")
-        # Ultimate fallback
-        return model_filename.replace('_', ' ').title()
-
-def load_model_display_names() -> Dict[str, str]:
-    """Load model display names from JSON configuration file."""
-    try:
-        model_config_path = os.path.join(CONFIG_FOLDER, MODEL_DISPLAY_NAME)
-        if os.path.exists(model_config_path):
-            with open(model_config_path, 'r') as f:
-                display_names = json.load(f)
-            logging.info(f"Loaded {len(display_names)} model display names from JSON")
-            return display_names
-        else:
-            logging.warning(f"model_display_names.json not found at {model_config_path}")
-    except Exception as e:
-        logging.error(f"Failed to load model display names: {e}")
-    
-    return {}
-
-def get_model_display_name(model_filename: str) -> str:
-    """
-    Convert model filename to human-readable display name.
-    FIXED version - no more recursion
-    """
-    display_names_map = load_model_display_names()
-    return get_model_display_name_from_config(model_filename, display_names_map)
 
 
-def save_model_display_names(display_names: Dict[str, str]) -> bool:
-    """
-    Save model display names to configuration file.
-    """
-    try:
-        ensure_models_folder()  # Ensure config folder exists too
-        if not os.path.exists(CONFIG_FOLDER):
-            os.makedirs(CONFIG_FOLDER)
-        
-        config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.yaml')
-        
-        config_data = {
-            'model_display_names': display_names,
-            'last_updated': pd.Timestamp.now().isoformat(),
-            'description': 'Custom display names for ML models'
-        }
-        
-        with open(config_path, 'w') as f:
-            yaml.dump(config_data, f, default_flow_style=False, sort_keys=True)
-        
-        logging.info(f"Saved {len(display_names)} model display names to {config_path}")
-        return True
-        
-    except Exception as e:
-        logging.error(f"Failed to save model display names: {e}")
-        return False
 
 def validate_feature_dict_against_config(feature_dict: Dict) -> Dict[str, Any]:
     """
@@ -442,8 +294,8 @@ def align_df_to_model(df: pd.DataFrame, model_features: List[str]) -> pd.DataFra
 
 def ensure_models_folder():
     """Ensure the models folder directory exists."""
-    if not os.path.exists(MODELS_FOLDER):
-        os.makedirs(MODELS_FOLDER)
+    if not os.path.exists(FileConstants.MODELS_FOLDER):
+        os.makedirs(FileConstants.MODELS_FOLDER)
 
 def list_available_models() -> list:
     """
@@ -453,49 +305,36 @@ def list_available_models() -> list:
     ensure_models_folder()
     model_files = []
     
-    # Load display names configuration once
-    display_names_map = load_model_display_names()
+    # Add debug
+    print(f"DEBUG: Looking for models in: {FileConstants.MODELS_FOLDER}")
+    print(f"DEBUG: Folder exists: {os.path.exists(FileConstants.MODELS_FOLDER)}")
     
-    for f in os.listdir(MODELS_FOLDER):
-        if f.endswith('.pkl') and not ('scaler' in f.lower()) and not ('pipeline' in f.lower()):
-            technical_name = os.path.splitext(f)[0]
-            # Use the FIXED display name function
-            display_name = get_model_display_name_from_config(technical_name, display_names_map)
-            model_files.append({
-                'technical_name': technical_name,
-                'display_name': display_name
-            })
+    if os.path.exists(FileConstants.MODELS_FOLDER):
+        all_files = os.listdir(FileConstants.MODELS_FOLDER)
+        print(f"DEBUG: All files in models folder: {all_files}")
+        
+        for f in all_files:
+            if f.endswith('.pkl') and not ('scaler' in f.lower()) and not ('pipeline' in f.lower()):
+                technical_name = os.path.splitext(f)[0]
+                print(f"DEBUG: Processing model file: {f} -> {technical_name}")
+                
+                # Use the correct method that exists
+                display_name = _display_name_manager.get_display_name(technical_name)
+                
+                model_files.append({
+                    'technical_name': technical_name,
+                    'display_name': display_name
+                })
+                print(f"DEBUG: Added model: {technical_name} -> {display_name}")
     
-    model_files.sort(key=lambda x: extract_model_number(x['technical_name']))
+    # Use the correct method for sorting
+    model_files.sort(key=lambda x: _display_name_manager._extract_model_number(x['technical_name']))
+    
+    print(f"DEBUG: Final model list: {len(model_files)} models found")
     return model_files
 
 
-def save_model_display_names(display_names: Dict[str, str]) -> bool:
-    """
-    Save model display names to configuration file.
-    """
-    try:
-        ensure_models_folder()  # Ensure config folder exists too
-        if not os.path.exists(CONFIG_FOLDER):
-            os.makedirs(CONFIG_FOLDER)
-        
-        config_path = os.path.join(CONFIG_FOLDER, 'model_display_names.yaml')
-        
-        config_data = {
-            'model_display_names': display_names,
-            'last_updated': pd.Timestamp.now().isoformat(),
-            'description': 'Custom display names for ML models'
-        }
-        
-        with open(config_path, 'w') as f:
-            yaml.dump(config_data, f, default_flow_style=False, sort_keys=True)
-        
-        logging.info(f"Saved {len(display_names)} model display names to {config_path}")
-        return True
-        
-    except Exception as e:
-        logging.error(f"Failed to save model display names: {e}")
-        return False
+
 
 def check_required_models() -> dict:
     """
@@ -503,25 +342,22 @@ def check_required_models() -> dict:
     Returns a dictionary summarizing their availability and listing the models.
     """
     ensure_models_folder()
-    existing_files = os.listdir(MODELS_FOLDER)
+    existing_files = os.listdir(FileConstants.MODELS_FOLDER)
     existing_models = [f for f in existing_files if f.endswith('.pkl')]
     
     # Filter out scaler and pipeline files
     model_files = [f for f in existing_models if not ('scaler' in f.lower()) and not ('pipeline' in f.lower())]
     has_models = len(model_files) > 0
     
-    # Load display names configuration once
-    display_names_map = load_model_display_names()
-    
     found_models = []
     for f in model_files:
         technical_name = os.path.splitext(f)[0]
-        # Use the FIXED display name function
-        display_name = get_model_display_name_from_config(technical_name, display_names_map)
+        # Use the correct method
+        display_name = _display_name_manager.get_display_name(technical_name)
         found_models.append({
             'technical_name': technical_name,
             'display_name': display_name,
-            'file_path': os.path.join(MODELS_FOLDER, f)
+            'file_path': os.path.join(FileConstants.MODELS_FOLDER, f)
         })
     
     return {
@@ -535,7 +371,7 @@ def load_model(model_name: str) -> Optional[Any]:
     """
     Load a model using multiple fallback methods: PyCaret, joblib, pickle
     """
-    model_path = os.path.join(MODELS_FOLDER, model_name)
+    model_path = os.path.join(FileConstants.MODELS_FOLDER, model_name)
     
     # Try PyCaret first
     try:
@@ -1143,6 +979,9 @@ def predict_man_hours(
                 logging.error("Feature preparation failed")
                 return None
             
+            print(f"DEBUG: Prepared features shape: {features_df.shape}")
+            print(f"DEBUG: Feature sample values: {features_df.iloc[0].head(5).to_dict()}")
+            
             # Step 2: Load model
             model = load_model(model_name)
             if not model:
@@ -1158,21 +997,31 @@ def predict_man_hours(
                 logging.warning("Could not determine model expected features, using all prepared features")
                 features_aligned = features_df
             
+            print(f"DEBUG: Aligned features shape: {features_aligned.shape}")
+            print(f"DEBUG: Aligned feature sample: {features_aligned.iloc[0].head(5).to_dict()}")
+            
             # Step 4: Make prediction
             try:
                 # Try PyCaret prediction first
                 from pycaret.regression import predict_model
                 preds = predict_model(model, data=features_aligned)
                 
+                print(f"DEBUG: Raw PyCaret preds shape: {preds.shape}")
+                print(f"DEBUG: Raw PyCaret preds columns: {list(preds.columns)}")
+                
                 # Look for prediction column with common names
                 for col in ['prediction_label', 'Label', 'pred', 'prediction']:
                     if col in preds.columns:
-                        result = float(preds[col].iloc[0])
+                        raw_result = preds[col].iloc[0]
+                        result = float(raw_result)
+                        print(f"DEBUG: Found prediction in column '{col}': raw={raw_result}, float={result}")
                         logging.info(f"Prediction successful: {result}")
                         return result
                 
                 # Fallback to last column
-                result = float(preds.iloc[0, -1])
+                raw_result = preds.iloc[0, -1]
+                result = float(raw_result)
+                print(f"DEBUG: Using last column: raw={raw_result}, float={result}")
                 logging.info(f"Prediction successful (last column): {result}")
                 return result
                 
@@ -1182,7 +1031,9 @@ def predict_man_hours(
                 # Fallback to direct model prediction
                 if hasattr(model, 'predict'):
                     pred = model.predict(features_aligned)
+                    print(f"DEBUG: Direct model predict output: {pred}")
                     result = float(pred[0]) if hasattr(pred, '__len__') else float(pred)
+                    print(f"DEBUG: Direct prediction result: {result}")
                     logging.info(f"Direct prediction successful: {result}")
                     return result
                 
@@ -1193,7 +1044,8 @@ def predict_man_hours(
             
     except Exception as e:
         logging.error(f"Prediction failed: {e}")
-        
+        print(f"DEBUG: Exception in prediction: {e}")
+
     return None
 
 def get_feature_importance(model_name: str) -> Optional[np.ndarray]:
@@ -1635,7 +1487,7 @@ def prepare_isbsg_sample_data(n_samples: int = 100) -> Optional[np.ndarray]:
     No preprocessing - just take the data directly from the CSV.
     """
     try:
-        file_path = ISBSG_PREPROCESSED_FILE
+        file_path = FileConstants.ISBSG_PREPROCESSED_FILE
         
         if not os.path.exists(file_path):
             logging.error(f"ISBSG dataset not found at: {file_path}")
@@ -1741,7 +1593,7 @@ def apply_pycaret_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
         
         # Apply normalization using saved scaler (if available)
         try:
-            scaler_path = os.path.join(MODELS_FOLDER, 'standard_scaler.pkl')
+            scaler_path = os.path.join(FileConstants.MODELS_FOLDER, 'standard_scaler.pkl')
             if os.path.exists(scaler_path):
                 import joblib
                 scaler = joblib.load(scaler_path)
