@@ -41,10 +41,10 @@ try:
         FIELDS  
     )
     MODELS_AVAILABLE = True
-    print("✅ Models module loaded - ISBSG data available for SHAP")
+    print("Models module loaded - ISBSG data available for SHAP")
 except ImportError as e:
     MODELS_AVAILABLE = False
-    print(f"❌ Models module not available: {e}")
+    print(f"Models module not available: {e}")
     
     # Fallback function definitions
     def get_field_options(field_name: str) -> List:
@@ -80,7 +80,7 @@ def extract_pycaret_estimator(model):
         # Check if it's a PyCaret model
         if hasattr(model, '_final_estimator'):
             actual_model = model._final_estimator
-            print(f"✅ Extracted final estimator from PyCaret: {type(actual_model).__name__}")
+            print(f"Extracted final estimator from PyCaret: {type(actual_model).__name__}")
             return actual_model
             
         # Check if it's a pipeline
@@ -88,54 +88,82 @@ def extract_pycaret_estimator(model):
             # Look for the estimator in the pipeline
             for step_name, step in model.named_steps.items():
                 if hasattr(step, 'predict') and not step_name.startswith(('scaler', 'encoder', 'imputer')):
-                    print(f"✅ Extracted estimator from pipeline step '{step_name}': {type(step).__name__}")
+                    print(f"Extracted estimator from pipeline step '{step_name}': {type(step).__name__}")
                     return step
             
             # If no suitable step found, try the last step
             step_names = list(model.named_steps.keys())
             if step_names:
                 final_step = model.named_steps[step_names[-1]]
-                print(f"✅ Extracted final pipeline step: {type(final_step).__name__}")
+                print(f"Extracted final pipeline step: {type(final_step).__name__}")
                 return final_step
                 
         # Check for sklearn pipeline format
         elif hasattr(model, 'steps'):
             if len(model.steps) > 0:
                 final_step = model.steps[-1][1]
-                print(f"✅ Extracted from sklearn pipeline: {type(final_step).__name__}")
+                print(f"Extracted from sklearn pipeline: {type(final_step).__name__}")
                 return final_step
         
         # If it's already a raw estimator, return it
-        print(f"ℹ️ Model appears to be raw estimator: {type(model).__name__}")
+        print(f"Model appears to be raw estimator: {type(model).__name__}")
         return model
         
     except Exception as e:
-        print(f"⚠️ Error extracting estimator: {e}")
+        print(f"Error extracting estimator: {e}")
         return model
 
 def get_best_sample_data(n_samples: int = 100, model_name: str = None) -> Optional[np.ndarray]:
-    """
-    Get the best available sample data using your existing ISBSG function.
-    """
+    """Hybrid: Try ISBSG mapping first, fallback to synthetic"""
     try:
-        if MODELS_AVAILABLE:
-            # Use your existing ISBSG function
-            print("🔍 Loading ISBSG sample data for SHAP background...")
-            isbsg_data = prepare_isbsg_sample_data(n_samples)
-            if isbsg_data is not None:
-                print(f"✅ ISBSG sample data loaded: {isbsg_data.shape}")
-                # Ensure it's float32 for SHAP
-                return isbsg_data.astype(np.float32)
-            else:
-                print("⚠️ ISBSG data preparation failed")
-        
-        # Fallback: Generate synthetic data
-        print("⚠️ Using synthetic data fallback...")
-        return generate_synthetic_data_via_pipeline(n_samples)
-        
+        # Try ISBSG approach first
+        return get_isbsg_mapped_data(n_samples)
     except Exception as e:
-        print(f"❌ Error getting sample data: {e}")
-        return generate_synthetic_data_via_pipeline(n_samples)
+        print(f"⚠️ ISBSG mapping failed: {e}")
+        print("🔄 Falling back to synthetic generation...")
+        # Fallback to synthetic approach
+        return get_synthetic_data_from_stats(n_samples)
+
+def get_isbsg_mapped_data(n_samples: int) -> Optional[np.ndarray]:
+    """Simple ISBSG→UI mapping approach"""
+    # Get raw ISBSG data
+    raw_isbsg = prepare_isbsg_sample_data(n_samples)
+    if raw_isbsg is None:
+        raise Exception("ISBSG data not available")
+    
+    processed_samples = []
+    
+    for i in range(min(n_samples, len(raw_isbsg))):
+        # Simple mapping: extract basic features from ISBSG
+        ui_input = {
+            'project_prf_functional_size': raw_isbsg[i][3] if len(raw_isbsg[i]) > 3 else 100,
+            'project_prf_max_team_size': raw_isbsg[i][13] if len(raw_isbsg[i]) > 13 else 5,
+            # Add defaults for other required UI features
+            'external_eef_industry_sector': 'financial',
+            'tech_tf_primary_programming_language': 'Java',
+        }
+        
+        # Process through pipeline
+        processed = prepare_features_for_model(ui_input)
+        if processed is not None:
+            processed_samples.append(processed.values.flatten())
+    
+    return np.array(processed_samples, dtype=np.float32) if processed_samples else None
+
+def get_synthetic_data_from_stats(n_samples: int) -> Optional[np.ndarray]:
+    """Fallback: Generate synthetic UI inputs"""
+    processed_samples = []
+    
+    for i in range(n_samples):
+        # Generate realistic UI inputs
+        ui_input = create_realistic_ui_inputs()
+        
+        # Process through pipeline  
+        processed = prepare_features_for_model(ui_input)
+        if processed is not None:
+            processed_samples.append(processed.values.flatten())
+    
+    return np.array(processed_samples, dtype=np.float32) if processed_samples else None
 
 def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]:
     """
@@ -144,11 +172,11 @@ def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]
     """
     try:
         if not MODELS_AVAILABLE:
-            print("⚠️ No models available - generating random synthetic data")
+            print("No models available - generating random synthetic data")
             # Match your model's expected feature count
             return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
         
-        print(f"🔄 Generating {n_samples} synthetic samples via feature pipeline...")
+        print(f"Generating {n_samples} synthetic samples via feature pipeline...")
         
         synthetic_samples = []
         np.random.seed(42)  # For reproducibility
@@ -166,20 +194,20 @@ def generate_synthetic_data_via_pipeline(n_samples: int) -> Optional[np.ndarray]
                     synthetic_samples.append(feature_vector)
                     
             except Exception as e:
-                print(f"⚠️ Error processing sample {i}: {e}")
+                print(f"Error processing sample {i}: {e}")
                 continue
         
         if synthetic_samples:
             result = np.array(synthetic_samples, dtype=np.float32)
-            print(f"✅ Generated synthetic data: {result.shape}")
+            print(f"Generated synthetic data: {result.shape}")
             return result
         else:
-            print("❌ No synthetic samples could be generated")
+            print("No synthetic samples could be generated")
             # Return random data as last resort
             return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
             
     except Exception as e:
-        print(f"❌ Error in synthetic data generation: {e}")
+        print(f"Error in synthetic data generation: {e}")
         return np.random.normal(0, 1, (n_samples, 54)).astype(np.float32)
 
 def create_realistic_ui_inputs() -> Dict:
@@ -188,7 +216,7 @@ def create_realistic_ui_inputs() -> Dict:
     """
     return {
         'project_prf_year_of_project': np.random.randint(2020, 2025),
-        'external_eef_industry_sector': np.random.choice(['Financial', 'Healthcare', 'Retail']),
+        'external_eef_industry_sector': np.random.choice(['Financial', 'Banking',]),
         'tech_tf_primary_programming_language': np.random.choice(['Java', 'Python', 'C#', 'Agile platform']),
         'tech_tf_tools_used': np.random.randint(0, 5),
         'project_prf_relative_size': np.random.choice(['XXS', 'XS', 'S', 'M', 'L']),
@@ -196,7 +224,10 @@ def create_realistic_ui_inputs() -> Dict:
         'project_prf_development_type': '',
         'tech_tf_language_type': '',
         'project_prf_application_type': None,
-        'external_eef_organisation_type': None,
+        'external_eef_organisation_type': np.random.choice(['Amusement/Game Center', 'Banking', 
+                                                            'Banking, Insurance, Stock', 'Credit Card Processor', 
+                                                            'Financial', 'Financial, Property & Business Services', 
+                                                            'Insurance', 'Revenue', 'Revenue Collection']),
         'tech_tf_architecture': '',
         'tech_tf_development_platform': '',
         'project_prf_team_size_group': '',
@@ -253,7 +284,7 @@ def get_shap_explainer(
                 return None
             
             # Extract actual estimator
-            actual_model = extract_pycaret_estimator(model)
+            actual_model = model
             
             # Create explainer with pipeline-processed background
             model_type = type(actual_model).__name__.lower()

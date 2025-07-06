@@ -1086,6 +1086,9 @@ class SchemaAligner(BaseEstimator, TransformerMixin):
         
         # Reorder columns to match training schema and remove extras
         df_aligned = df.reindex(columns=self.expected_features, fill_value=0)
+        # Add target column with dummy value for prediction
+        if 'project_prf_normalised_work_effort' in self.expected_features:
+            df_aligned['project_prf_normalised_work_effort'] = 0
         
         logging.info(f"SchemaAligner: {X.shape} → {df_aligned.shape}")
         return df_aligned

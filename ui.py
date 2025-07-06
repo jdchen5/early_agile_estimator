@@ -1243,7 +1243,7 @@ def sidebar_inputs():
                         if field_name in FIELDS:
                             st.session_state[field_name] = config_data[field_name]
                     st.success("Configuration applied! You can restore the previous config below.")
-                    st.rerun()
+                    #st.rerun()
                 elif cancel_clicked:
                     st.info("Config upload cancelled.")
 
@@ -1254,7 +1254,7 @@ def sidebar_inputs():
                     st.session_state[k] = v
                 st.success("Previous config restored!")
                 del st.session_state['_backup_config']
-                st.rerun()
+                #st.rerun()
 
         with col2:
             uploaded_history = st.file_uploader(
@@ -1276,7 +1276,7 @@ def sidebar_inputs():
                 if st.button("Replace History"):
                     st.session_state['prediction_history'] = prediction_history
                     st.success("Prediction history replaced!")
-                    st.rerun()
+                    #st.rerun()
 
         # Clear results button
         if clear_results:
@@ -1859,7 +1859,7 @@ def run_predictions(user_inputs, selected_models):
             # Add to session state for this run
             #team_size = user_inputs.get('project_prf_max_team_size', 5)
             add_prediction_to_history(user_inputs, model, prediction)
-            st.rerun()
+            #st.rerun()
             
         except Exception as e:
             st.error(f"Error predicting with {model}: {str(e)}")
@@ -2181,7 +2181,7 @@ def main():
         # Handle clear results
         if user_inputs.get('clear_results', False):
             clear_prediction_results()
-            st.rerun()
+            #st.rerun()
 
         # --- Add tab navigation for main content ---
         main_tabs = st.tabs(["🔮 Estimator", "📊 Visualisations & Analysis", "🤖 Model Comparison", "📈 Static SHAP Analysis", "❓ Help"])
@@ -2210,7 +2210,7 @@ def main():
                                 
                                 # Add to history
                                 add_prediction_to_history(user_inputs, selected_model, prediction)
-                                st.rerun()
+                                #st.rerun()
                                 
                             else:
                                 # Multi-model workflow
@@ -2242,7 +2242,8 @@ def main():
                 display_previous_results_summary()
 
         with main_tabs[1]:  # Visualisations & Analysis tab
-            display_visualizations_and_analysis()
+            #display_visualizations_and_analysis()
+            st.info("🔧 SHAP analysis temporarily disabled for performance")
 
         with main_tabs[2]:  # Model Comparison tab
             display_model_comparison()
