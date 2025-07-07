@@ -127802,3 +127802,129 @@ This will raise in a future version.
 2025-07-06 14:40:00,416:INFO:Preloading libraries
 2025-07-06 14:40:00,417:INFO:Set up data.
 2025-07-06 14:40:00,431:INFO:Set up index.
+2025-07-07 11:19:13,180:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:124: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:18,267:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:160: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:19,625:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:19,723:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:19,814:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:19,888:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:189: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:20,532:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+
+2025-07-07 11:19:22,658:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:124: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:27,344:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:160: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:28,700:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:28,811:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:28,912:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:29,017:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:29,098:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:189: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:30,029:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+
+2025-07-07 11:19:32,428:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:124: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:37,051:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:160: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:38,172:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:38,259:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:38,332:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:189: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:38,763:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+
+2025-07-07 11:19:38,895:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:203: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(x=cat_col, y=target_numerical, data=df, ax=ax,
+
+2025-07-07 11:19:41,500:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:124: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:46,607:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:160: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+
+2025-07-07 11:19:47,895:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:47,996:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:182: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `y` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(x=plot_data.values, y=plot_data.index, ax=ax, palette='viridis')
+
+2025-07-07 11:19:48,070:WARNING:C:\Users\jdche\AppData\Local\Temp\ipykernel_31920\2383376891.py:189: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+

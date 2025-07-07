@@ -10,7 +10,7 @@
 # <span style="color: blue;">ISBSG Data Analysis & Regression</span>
 
 
-# In[2]:
+# In[1]:
 
 
 import sys
@@ -18,7 +18,7 @@ import sys
 print(sys.executable)
 
 
-# In[3]:
+# In[2]:
 
 
 # # ISBSG Data Analysis and Regression Modeling
@@ -31,7 +31,7 @@ print(sys.executable)
 #!pip install -r "../requirements.txt" --only-binary=all
 
 
-# In[4]:
+# In[7]:
 
 
 # Import basic libraries
@@ -45,21 +45,34 @@ import re
 import seaborn as sns
 import sklearn
 import shap
+import glob
+import os
 
 
-# In[5]:
+# In[4]:
 
 
 # Define the foler path
-models_folder = '../models'
-config_folder = '../config'
-skeleton_models_folder = '../skeleton_models'
-plots_folder = '../plots'
-temp_folder = '../temp'
-data_folder = '../data'
-logs_folder = '../logs'
+#models_folder = '../models'
+#config_folder = '../config'
+#skeleton_models_folder = '../skeleton_models'
+#plots_folder = '../plots'
+#temp_folder = '../temp'
+#data_folder = '../data'
+#logs_folder = '../logs'
 #sample_file = 'sample_clean_a_agile_only_cleaned_no_add.csv'
-data_file = 'synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+#data_file = 'synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+
+models_folder = '../seed'
+config_folder = '../seed'
+skeleton_models_folder = '../seed'
+plots_folder = '../seed'
+temp_folder = '../seed'
+data_folder = '../seed'
+logs_folder = '../seed'
+#sample_file = 'sample_clean_a_agile_only_cleaned_no_add.csv'
+#data_file = 'synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
+
 
 # Identify target column
 TARGET_COL = 'project_prf_normalised_work_effort'
@@ -84,7 +97,7 @@ print(f"\nTarget variable: '{TARGET_COL}'")
 # - [Part 9](#part9)- End
 # 
 
-# In[6]:
+# In[5]:
 
 
 # Configure timestamp callback for Jupyter cells
@@ -134,7 +147,7 @@ plt.rcParams['figure.figsize'] = (12, 8)
 # 
 # This section is dedicated to loading the dataset, performing initial data exploration such as viewing the first few rows, and summarizing the dataset's characteristics, including missing values and basic statistical measures.
 
-# In[7]:
+# In[10]:
 
 
 # Load the data
@@ -143,15 +156,32 @@ from pathlib import Path
 
 print("Loading data...")
 
-file_path = f"{data_folder}/{data_file}"  #should use data_file
-file_name_no_ext = Path(file_path).stem                
-print(file_name_no_ext)
+#file_path = f"{data_folder}/{data_file}"  #should use data_file
+#file_name_no_ext = Path(file_path).stem                
+#print(file_name_no_ext)
 
 
-df = pd.read_csv(file_path)
+#df = pd.read_csv(file_path)
+
+csv_files = glob.glob(f"../seed/*.csv")
+dataframes = {}
+
+for data_file_path in csv_files:
+    data_file = os.path.basename(data_file_path)
+    file_prefix = Path(data_file_path).stem
+    print(file_prefix)
+
+    # Store with prefix as key
+    dataframes[file_prefix] = pd.read_csv(data_file_path)
+    print(f"{file_prefix}: {dataframes[file_prefix].shape}")
+
+# Process each dataframe
+for file_prefix, df in dataframes.items():
+    print(f"Processing {file_prefix}...")
+    # Your processing code here
 
 
-# In[8]:
+# In[13]:
 
 
 def display_header(text):
@@ -366,10 +396,15 @@ def explore_data(df: pd.DataFrame) -> None:
                 plt.show()
 
 # Exploratory Data Analysis
-explore_data(df)
 
 
-# In[9]:
+# Process each dataframe
+for file_prefix, df in dataframes.items():
+    print(f"Processing {file_prefix}...")
+    explore_data(df)
+
+
+# In[14]:
 
 
 df_func_relative_size_midpoints = pd.DataFrame([
