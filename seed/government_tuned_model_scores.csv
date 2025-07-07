@@ -1,4 +1,0 @@
-Model,MAE,RMSE,R2
-KNeighborsRegressor,3326.4148,8674.5004,0.4523
-ElasticNet,4208.9205,8849.3037,0.4185
-RandomForestRegressor,3558.6888,8409.2994,0.4684

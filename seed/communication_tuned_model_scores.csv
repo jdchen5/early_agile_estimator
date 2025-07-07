@@ -1,4 +1,0 @@
-Model,MAE,RMSE,R2
-GradientBoostingRegressor,1618.8679,3201.4417,0.1854
-RandomForestRegressor,1494.2703,3354.1275,0.1995
-PassiveAggressiveRegressor,1572.8241,3280.5415,-0.1481
