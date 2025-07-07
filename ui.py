@@ -1979,7 +1979,7 @@ def display_advanced_shap_analysis(user_inputs, model_name):
                 st.success("SHAP values calculated successfully")
         else:
             st.error(f"SHAP analysis failed: {result.get('error')}")
-            
+
     except ImportError:
         st.warning("Advanced SHAP analysis not available yet")
         return
@@ -2025,7 +2025,8 @@ def display_visualizations_and_analysis():
     ])
     
     with analysis_tabs[0]:
-        display_instance_specific_shap(user_inputs, model_name)
+        from shap_analysis import display_optimized_shap_analysis
+        display_optimized_shap_analysis(user_inputs, model_name, get_trained_model)
     
     with analysis_tabs[1]:
         display_what_if_shap_analysis(user_inputs, model_name)

@@ -1,0 +1,4 @@
+Model,MAE,RMSE,R2
+GradientBoostingRegressor,2593.2345,4068.9029,0.5306
+LinearRegression,2572.4658,3806.7198,0.5894
+Lasso,2563.9522,3804.1628,0.5899
