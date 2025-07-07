@@ -1,0 +1,28 @@
+{
+  "default": {
+    "num_samples": 10000,
+    "categorical_cols": [],
+    "optimize_memory": true,
+    "save_metadata": true
+  },
+  "final_agile_seed": {
+    "num_samples": 15000,
+    "categorical_cols": [
+      "project_type",
+      "methodology",
+      "platform"
+    ],
+    "optimize_memory": true,
+    "save_metadata": true
+  },
+  "final_finance_seed": {
+    "num_samples": 12000,
+    "categorical_cols": [
+      "sector",
+      "region",
+      "currency"
+    ],
+    "optimize_memory": true,
+    "save_metadata": true
+  }
+}

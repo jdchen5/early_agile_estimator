@@ -1,0 +1,335 @@
+{
+    "columns": {
+        "isbsg_project_id": {
+            "sdtype": "id"
+        },
+        "project_prf_year_of_project": {
+            "sdtype": "numerical"
+        },
+        "external_eef_organisation_type": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_type": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_primary_programming_language": {
+            "sdtype": "categorical"
+        },
+        "project_prf_functional_size": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_work_effort_level_1": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_work_effort": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_level_1_pdr_ufp": {
+            "sdtype": "numerical"
+        },
+        "project_prf_normalised_pdr_ufp": {
+            "sdtype": "numerical"
+        },
+        "project_prf_defect_density": {
+            "sdtype": "numerical"
+        },
+        "project_prf_speed_of_delivery": {
+            "sdtype": "numerical"
+        },
+        "project_prf_manpower_delivery_rate": {
+            "sdtype": "numerical"
+        },
+        "project_prf_project_elapsed_time": {
+            "sdtype": "numerical"
+        },
+        "project_prf_max_team_size": {
+            "sdtype": "numerical"
+        },
+        "process_pmf_docs": {
+            "sdtype": "numerical"
+        },
+        "tech_tf_tools_used": {
+            "sdtype": "categorical"
+        },
+        "people_prf_ba_team_experience_less_than_1_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_ba_team_experience_1_to_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_ba_team_experience_great_than_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_less_than_3_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_3_to_9_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_it_experience_great_than_9_yr": {
+            "sdtype": "numerical"
+        },
+        "people_prf_project_manage_experience": {
+            "sdtype": "numerical"
+        },
+        "people_prf_project_manage_changes": {
+            "sdtype": "categorical"
+        },
+        "people_prf_personnel_changes": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_agile_development": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_iterative": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_missing": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_multifunctional_teams": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_scrum": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_spiral": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_unified_process": {
+            "sdtype": "categorical"
+        },
+        "process_pmf_development_methodologies_waterfall_incl_linear_processing_and_ssadm": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_business_logic_or_rule_processing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_data_entry_and_validation": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_data_retrieval_and_presentation": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_run_a_computer_human_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_security": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_web_public_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_roles_web_html_browser": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_database_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_file_print_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_ftp_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_html_web_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_mail_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_messaging_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_multi_user_legacy_application": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_object_component_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_server_roles_security_authentication": {
+            "sdtype": "categorical"
+        },
+        "external_eef_industry_sector_Service_Industry": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_Business_Application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_Mathematically_Intensive_Application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_Missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_Real_Time_Application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_business_application": {
+            "sdtype": "categorical"
+        },
+        "project_prf_application_group_missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_Enhancement": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_New_Development": {
+            "sdtype": "categorical"
+        },
+        "project_prf_development_type_Re_development": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_MF": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_MR": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_Missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_Multi": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_PC": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_development_platform_Proprietary": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_2GL": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_3GL": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_4GL": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_5GL": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_language_type_Missing": {
+            "sdtype": "categorical"
+        },
+        "functional_size_group_L_1000_2999": {
+            "sdtype": "categorical"
+        },
+        "functional_size_group_M_100_999": {
+            "sdtype": "categorical"
+        },
+        "functional_size_group_S_100": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_L": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_M1": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_M2": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_Missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_S": {
+            "sdtype": "categorical"
+        },
+        "project_prf_relative_size_XS": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_15_20": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_2": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_21_30": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_3_4": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_31_40": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_5_8": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_9_14": {
+            "sdtype": "categorical"
+        },
+        "project_prf_team_size_group_Missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_Missing": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_No": {
+            "sdtype": "categorical"
+        },
+        "project_prf_case_tool_used_Yes": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Client_server": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Multi_tier": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Multi_tier_with_web_public_interface": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Stand_alone": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_architecture_Stand_alone_1": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_Don_t_Know": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_Missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_No": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_Not_Applicable": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_client_server_Yes": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_Missing": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_No": {
+            "sdtype": "categorical"
+        },
+        "tech_tf_dbms_used_Yes": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_A": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_B": {
+            "sdtype": "categorical"
+        },
+        "external_eef_data_quality_rating_C": {
+            "sdtype": "categorical"
+        }
+    },
+    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1"
+}
