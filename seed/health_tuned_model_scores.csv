@@ -1,0 +1,4 @@
+Model,MAE,RMSE,R2
+PassiveAggressiveRegressor,2646.1505,5205.1931,0.5909
+ElasticNet,2841.8301,5273.9539,0.5883
+KNeighborsRegressor,2735.5983,5561.6964,0.5486

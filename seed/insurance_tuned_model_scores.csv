@@ -1,0 +1,4 @@
+Model,MAE,RMSE,R2
+GradientBoostingRegressor,1590.9724,3194.3864,0.4604
+ElasticNet,1465.6756,3020.8113,0.4958
+RandomForestRegressor,1483.4012,3027.2601,0.4988
