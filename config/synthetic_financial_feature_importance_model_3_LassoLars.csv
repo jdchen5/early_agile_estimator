@@ -1,0 +1,95 @@
+feature,importance,model,importance_type,rank
+project_prf_functional_size,3144.1481354721996,LassoLars,coef_ (absolute values),1
+project_prf_max_team_size,1693.5193601442563,LassoLars,coef_ (absolute values),2
+tech_tf_language_type_3gl,599.4275382012905,LassoLars,coef_ (absolute values),3
+project_prf_application_type_financial transaction process/accounting,467.5770506378279,LassoLars,coef_ (absolute values),4
+project_prf_relative_size_m2,376.8533501787143,LassoLars,coef_ (absolute values),5
+external_eef_industry_sector_banking,324.27339645870296,LassoLars,coef_ (absolute values),6
+tech_tf_tools_used,272.54208423139414,LassoLars,coef_ (absolute values),7
+project_prf_case_tool_used_missing,229.93453383223257,LassoLars,coef_ (absolute values),8
+external_eef_organisation_type_transport_and_storage,222.55808273230915,LassoLars,coef_ (absolute values),9
+tech_tf_client_server_don_t_know,205.49138352444146,LassoLars,coef_ (absolute values),10
+tech_tf_dbms_used_missing,200.94506103083972,LassoLars,coef_ (absolute values),11
+project_prf_team_size_group_missing,190.86823817994443,LassoLars,coef_ (absolute values),12
+project_prf_case_tool_used_no,190.1024273360087,LassoLars,coef_ (absolute values),13
+project_prf_relative_size_l,187.3411390250454,LassoLars,coef_ (absolute values),14
+external_eef_organisation_type_banking,184.07326814429874,LassoLars,coef_ (absolute values),15
+tech_tf_development_platform_pc,174.17978386808153,LassoLars,coef_ (absolute values),16
+external_eef_organisation_type_financial_property_and_business_services,173.87455577423538,LassoLars,coef_ (absolute values),17
+external_eef_industry_sector_financial,172.75897925706644,LassoLars,coef_ (absolute values),18
+tech_tf_development_platform_mf,160.02943469919046,LassoLars,coef_ (absolute values),19
+process_pmf_docs,156.80436088830626,LassoLars,coef_ (absolute values),20
+tech_tf_dbms_used_yes,154.73253788999548,LassoLars,coef_ (absolute values),21
+tech_tf_architecture_multi_tier,150.76753326997164,LassoLars,coef_ (absolute values),22
+external_eef_organisation_type_government,120.03628796585005,LassoLars,coef_ (absolute values),23
+tech_tf_language_type_missing,118.6786860223363,LassoLars,coef_ (absolute values),24
+tech_tf_architecture_client_server,110.23572701746559,LassoLars,coef_ (absolute values),25
+tech_tf_development_platform_proprietary,110.06240694490977,LassoLars,coef_ (absolute values),26
+functional_size_group_s_100,95.83575724484939,LassoLars,coef_ (absolute values),27
+project_prf_development_type_new_development,94.22157470484784,LassoLars,coef_ (absolute values),28
+external_eef_data_quality_rating_a,91.56237839670287,LassoLars,coef_ (absolute values),29
+project_prf_relative_size_s,88.60853512289896,LassoLars,coef_ (absolute values),30
+process_pmf_development_methodologies_unified_process,88.59895133623336,LassoLars,coef_ (absolute values),31
+project_prf_application_group_infrastructure_software,88.49859654059541,LassoLars,coef_ (absolute values),32
+process_pmf_development_methodologies_waterfall_incl_linear_processing_and_ssadm,88.11374811337815,LassoLars,coef_ (absolute values),33
+project_prf_relative_size_xs,85.63577617923461,LassoLars,coef_ (absolute values),34
+tech_tf_primary_programming_language,84.18992908036628,LassoLars,coef_ (absolute values),35
+tech_tf_architecture_multi_tier_client_server,79.8925955537306,LassoLars,coef_ (absolute values),36
+external_eef_organisation_type_medical_and_health_care,79.73501561789561,LassoLars,coef_ (absolute values),37
+project_prf_team_size_group_5_8,79.23728109291415,LassoLars,coef_ (absolute values),38
+project_prf_application_group_missing,78.0998415177267,LassoLars,coef_ (absolute values),39
+functional_size_group_l_1000_2999,74.88419159979603,LassoLars,coef_ (absolute values),40
+project_prf_team_size_group_3_4,72.33569670683362,LassoLars,coef_ (absolute values),41
+project_prf_development_type_enhancement,71.98078593126782,LassoLars,coef_ (absolute values),42
+process_pmf_development_methodologies_missing,69.84691084320083,LassoLars,coef_ (absolute values),43
+project_prf_relative_size_xxs,63.81791175078176,LassoLars,coef_ (absolute values),44
+external_eef_organisation_type_communications,62.311090759945216,LassoLars,coef_ (absolute values),45
+external_eef_organisation_type_banking_insurance_stock,62.21711987998137,LassoLars,coef_ (absolute values),46
+project_prf_application_type_business application,62.15877675212546,LassoLars,coef_ (absolute values),47
+tech_tf_development_platform_multi,60.515239456137486,LassoLars,coef_ (absolute values),48
+functional_size_group_xxl_9000_17999,59.19058885191604,LassoLars,coef_ (absolute values),49
+project_prf_relative_size_m1,58.92524534626633,LassoLars,coef_ (absolute values),50
+tech_tf_architecture_stand_alone,58.58708832903915,LassoLars,coef_ (absolute values),51
+project_prf_application_group_business_application,55.538368635854155,LassoLars,coef_ (absolute values),52
+project_prf_application_type_surveillance and security,54.41088288381825,LassoLars,coef_ (absolute values),53
+project_prf_team_size_group_15_20,52.27251374597464,LassoLars,coef_ (absolute values),54
+project_prf_team_size_group_2,52.030134790240744,LassoLars,coef_ (absolute values),55
+external_eef_organisation_type_financial_banking_insurance_stock,51.08654479877807,LassoLars,coef_ (absolute values),56
+project_prf_application_type_electronic data interchange,49.803998310821534,LassoLars,coef_ (absolute values),57
+tech_tf_language_type_5gl,47.696109171407194,LassoLars,coef_ (absolute values),58
+project_prf_application_type_financial transaction process/accounting; workflow support & management,44.42088264856732,LassoLars,coef_ (absolute values),59
+project_prf_development_type_re_development,38.760405550231106,LassoLars,coef_ (absolute values),60
+project_prf_relative_size_xxl,37.49690373319333,LassoLars,coef_ (absolute values),61
+tech_tf_development_platform_mr,29.90738329952178,LassoLars,coef_ (absolute values),62
+project_prf_relative_size_missing,29.508999614569472,LassoLars,coef_ (absolute values),63
+functional_size_group_xl_3000_8999,28.659937651438103,LassoLars,coef_ (absolute values),64
+project_prf_application_type_cards and payments,27.552923268635865,LassoLars,coef_ (absolute values),65
+process_pmf_development_methodologies_lean,27.46662676595208,LassoLars,coef_ (absolute values),66
+tech_tf_architecture_missing,27.268631810422043,LassoLars,coef_ (absolute values),67
+process_pmf_development_methodologies_agile_development,24.953904999338135,LassoLars,coef_ (absolute values),68
+project_prf_application_group_real_time_application,24.146846596547277,LassoLars,coef_ (absolute values),69
+project_prf_application_type_management or performance reporting; online analysis and reporting,23.24920406110972,LassoLars,coef_ (absolute values),70
+project_prf_relative_size_xl,18.788093213539334,LassoLars,coef_ (absolute values),71
+project_prf_team_size_group_9_14,18.154903574945827,LassoLars,coef_ (absolute values),72
+project_prf_application_type_mobile application,16.89560621957282,LassoLars,coef_ (absolute values),73
+external_eef_organisation_type_education_institution,16.450786156826133,LassoLars,coef_ (absolute values),74
+functional_size_group_m_100_999,16.241096617402107,LassoLars,coef_ (absolute values),75
+project_prf_team_size_group_21_30,15.151777108043833,LassoLars,coef_ (absolute values),76
+project_prf_application_type_management or performance reporting,14.69594601910942,LassoLars,coef_ (absolute values),77
+project_prf_application_type_operating system or software utility,14.191587711517553,LassoLars,coef_ (absolute values),78
+external_eef_organisation_type_wholesale_and_retail_trade,11.88514456321388,LassoLars,coef_ (absolute values),79
+project_prf_application_type_auditing management,11.57698741507329,LassoLars,coef_ (absolute values),80
+project_prf_case_tool_used_yes,10.687202754127162,LassoLars,coef_ (absolute values),81
+project_prf_application_type_online analysis and reporting,10.68127836402177,LassoLars,coef_ (absolute values),82
+project_prf_application_type_missing,8.470436337941358,LassoLars,coef_ (absolute values),83
+tech_tf_client_server_yes,7.176687481143886,LassoLars,coef_ (absolute values),84
+project_prf_application_type_workflow support & management,7.038979997941778,LassoLars,coef_ (absolute values),85
+tech_tf_language_type_4gl,7.011670182806203,LassoLars,coef_ (absolute values),86
+tech_tf_client_server_missing,6.975899609197548,LassoLars,coef_ (absolute values),87
+tech_tf_architecture_multi_tier_with_web_public_interface,6.065664636233408,LassoLars,coef_ (absolute values),88
+project_prf_team_size_group_31_40,6.058792153054544,LassoLars,coef_ (absolute values),89
+project_prf_team_size_group_1,2.72752709836799,LassoLars,coef_ (absolute values),90
+tech_tf_development_platform_missing,2.449906191432852,LassoLars,coef_ (absolute values),91
+external_eef_data_quality_rating_d,1.168629400191747,LassoLars,coef_ (absolute values),92
+project_prf_application_type_customer billing/relationship management,0.0,LassoLars,coef_ (absolute values),93
+project_prf_year_of_project,0.0,LassoLars,coef_ (absolute values),94

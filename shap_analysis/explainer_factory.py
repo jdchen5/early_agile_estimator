@@ -18,11 +18,12 @@ Migrated from shap_analysis_backup.py with complete implementation and enhanced
 error handling and logging.
 """
 
+import shap
+import numpy as np
+import pandas as pd
 import logging
 import warnings
 from typing import Dict, Optional, Callable, Any, Union
-
-import shap
 
 from constants import PipelineConstants
 

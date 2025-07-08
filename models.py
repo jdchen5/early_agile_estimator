@@ -1488,53 +1488,40 @@ def get_training_data_info() -> Dict[str, Any]:
         return {'error': str(e)}
 
 def prepare_isbsg_sample_data(n_samples: int = 100) -> Optional[np.ndarray]:
-    """
-    Load ISBSG dataset as-is for SHAP analysis.
-    No preprocessing - just take the data directly from the CSV.
-    """
+    """Fixed ISBSG sample data preparation"""
     try:
-        file_path = FileConstants.ISBSG_PREPROCESSED_FILE
+        # FIXED: Use the correct file path from discovery
+        file_path = 'data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv'
         
         if not os.path.exists(file_path):
             logging.error(f"ISBSG dataset not found at: {file_path}")
             return None
         
-        logging.info(f"Loading ISBSG data as-is from: {file_path}")
-        
-        # Load the dataset directly
+        logging.info(f"Loading ISBSG data from: {file_path}")
         df = pd.read_csv(file_path)
-        logging.info(f"Loaded ISBSG dataset: {df.shape[0]} rows, {df.shape[1]} columns")
         
-        # Sample the data
+        # Remove target columns as identified in discovery
+        target_cols = [
+            'project_prf_normalised_work_effort_level_1', 
+            'project_prf_normalised_work_effort', 
+            'project_prf_speed_of_delivery'
+        ]
+        df = df.drop(columns=target_cols, errors='ignore')
+        
+        # Sample and convert to numpy
         if len(df) > n_samples:
             sample_df = df.sample(n=n_samples, random_state=42)
-            logging.info(f"Sampled {n_samples} rows from {len(df)} total rows")
         else:
             sample_df = df.copy()
-            logging.info(f"Using all {len(df)} rows")
         
-        # Convert to numpy array directly
-        sample_array = sample_df.values.astype(np.float32)
+        # Handle missing values and convert to numeric
+        sample_array = sample_df.fillna(0).select_dtypes(include=[np.number]).values.astype(np.float32)
         
-        # Handle any NaN or infinite values
-        if np.isnan(sample_array).any():
-            logging.warning("Found NaN values - filling with 0")
-            sample_array = np.nan_to_num(sample_array, nan=0.0)
-        
-        if np.isinf(sample_array).any():
-            logging.warning("Found infinite values - capping them")
-            sample_array = np.nan_to_num(sample_array, posinf=1e10, neginf=-1e10)
-        
-        logging.info(f"ISBSG sample data prepared (as-is):")
-        logging.info(f"   - Shape: {sample_array.shape}")
-        logging.info(f"   - Data type: {sample_array.dtype}")
-        logging.info(f"   - Value range: [{sample_array.min():.2f}, {sample_array.max():.2f}]")
-        logging.info(f"   - Clean data: {not np.isnan(sample_array).any() and not np.isinf(sample_array).any()}")
-        
+        logging.info(f"ISBSG sample prepared: {sample_array.shape}")
         return sample_array
         
     except Exception as e:
-        logging.error(f"Error loading ISBSG sample data: {e}")
+        logging.error(f"Error preparing ISBSG sample data: {e}")
         return None
 
 def apply_pycaret_preprocessing(df: pd.DataFrame) -> pd.DataFrame:

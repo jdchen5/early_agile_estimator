@@ -22,10 +22,9 @@ analysis capabilities.
 """
 
 import logging
-from typing import Dict, List, Optional, Any, Union, Tuple
-
-import numpy as np
 import shap
+import numpy as np
+from typing import Dict, List, Optional, Union, Callable, Any
 
 from constants import PipelineConstants
 

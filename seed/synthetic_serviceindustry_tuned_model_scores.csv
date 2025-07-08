@@ -1,0 +1,4 @@
+Model,MAE,RMSE,R2
+GradientBoostingRegressor,2941.0655,4639.4349,0.5945
+BayesianRidge,3251.7939,4734.569,0.5792
+Lasso,3250.6168,4732.6922,0.5795

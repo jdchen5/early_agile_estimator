@@ -1,0 +1,402 @@
+{
+  "csv_files": {
+    "config\\synthetic_financial_feature_importance_model_1_LGBMRegressor.csv": {
+      "shape": [
+        94,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_max_team_size",
+          "importance": 1060,
+          "model": "LGBMRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 1
+        },
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 1008,
+          "model": "LGBMRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 2
+        },
+        {
+          "feature": "tech_tf_primary_programming_language",
+          "importance": 377,
+          "model": "LGBMRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_1_LGBMRegressor"
+    },
+    "config\\synthetic_financial_feature_importance_model_2_GradientBoostingRegressor.csv": {
+      "shape": [
+        94,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 0.7157911819564517,
+          "model": "GradientBoostingRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 1
+        },
+        {
+          "feature": "project_prf_max_team_size",
+          "importance": 0.1648042111796294,
+          "model": "GradientBoostingRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 2
+        },
+        {
+          "feature": "project_prf_application_type_financial transaction process/accounting",
+          "importance": 0.0284263470355494,
+          "model": "GradientBoostingRegressor",
+          "importance_type": "feature_importances_",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_2_GradientBoostingRegressor"
+    },
+    "config\\synthetic_financial_feature_importance_model_3_LassoLars.csv": {
+      "shape": [
+        94,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 3144.1481354722,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 1
+        },
+        {
+          "feature": "project_prf_max_team_size",
+          "importance": 1693.5193601442563,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 2
+        },
+        {
+          "feature": "tech_tf_language_type_3gl",
+          "importance": 599.4275382012905,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_3_LassoLars"
+    },
+    "config\\synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_model_1_BayesianRidge.csv": {
+      "shape": [
+        71,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 3131.1096080389693,
+          "model": "BayesianRidge",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 1
+        },
+        {
+          "feature": "tech_tf_tools_used",
+          "importance": 546.674542315892,
+          "model": "BayesianRidge",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 2
+        },
+        {
+          "feature": "project_prf_application_type",
+          "importance": 489.2087133276818,
+          "model": "BayesianRidge",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_1_BayesianRidge"
+    },
+    "config\\synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_model_2_LassoLars.csv": {
+      "shape": [
+        71,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 3193.95352680263,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 1
+        },
+        {
+          "feature": "tech_tf_tools_used",
+          "importance": 566.2040853562095,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 2
+        },
+        {
+          "feature": "project_prf_application_type",
+          "importance": 498.5591279167797,
+          "model": "LassoLars",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_2_LassoLars"
+    },
+    "config\\synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_model_3_Lasso.csv": {
+      "shape": [
+        71,
+        5
+      ],
+      "columns": [
+        "feature",
+        "importance",
+        "model",
+        "importance_type",
+        "rank"
+      ],
+      "sample_data": [
+        {
+          "feature": "project_prf_functional_size",
+          "importance": 3187.781261926674,
+          "model": "Lasso",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 1
+        },
+        {
+          "feature": "tech_tf_tools_used",
+          "importance": 546.7537095183601,
+          "model": "Lasso",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 2
+        },
+        {
+          "feature": "project_prf_application_type",
+          "importance": 490.2946850576608,
+          "model": "Lasso",
+          "importance_type": "coef_ (absolute values)",
+          "rank": 3
+        }
+      ],
+      "model_name_guess": "model_3_Lasso"
+    }
+  },
+  "models": {
+    "models": [
+      {
+        "technical_name": "top_model_1_LGBMRegressor",
+        "display_name": "LightGBM Regressor"
+      },
+      {
+        "technical_name": "top_model_2_GradientBoostingRegressor",
+        "display_name": "Gradient Boosting Regressor"
+      },
+      {
+        "technical_name": "top_model_3_LassoLars",
+        "display_name": "Lasso Least Angle Regression"
+      }
+    ],
+    "status": {
+      "models_available": true,
+      "found_models": [
+        {
+          "technical_name": "top_model_1_LGBMRegressor",
+          "display_name": "LightGBM Regressor",
+          "file_path": "models\\top_model_1_LGBMRegressor.pkl"
+        },
+        {
+          "technical_name": "top_model_2_GradientBoostingRegressor",
+          "display_name": "Gradient Boosting Regressor",
+          "file_path": "models\\top_model_2_GradientBoostingRegressor.pkl"
+        },
+        {
+          "technical_name": "top_model_3_LassoLars",
+          "display_name": "Lasso Least Angle Regression",
+          "file_path": "models\\top_model_3_LassoLars.pkl"
+        }
+      ],
+      "technical_names": [
+        "top_model_1_LGBMRegressor",
+        "top_model_2_GradientBoostingRegressor",
+        "top_model_3_LassoLars"
+      ],
+      "model_count": 3
+    }
+  },
+  "isbsg": {
+    "info": {
+      "available": true,
+      "file_path": "data/synthetic_isbsg2016r1_1_finance_sdv_generated.csv",
+      "total_rows": 10000,
+      "total_columns": 80,
+      "feature_columns": 73,
+      "numeric_features": 15,
+      "boolean_features": 58,
+      "file_size_mb": 4.4,
+      "target_columns": [
+        "project_prf_normalised_work_effort_level_1",
+        "project_prf_normalised_work_effort",
+        "project_prf_speed_of_delivery"
+      ],
+      "sample_statistics": {
+        "functional_size_mean": 286.02197560599996,
+        "team_size_mean": NaN,
+        "missing_values": "100"
+      }
+    },
+    "sample_shape": null
+  },
+  "current_shap": {
+    "error": "cannot import name 'get_sample_data_info' from 'shap_analysis' (C:\\Users\\jdche\\Documents\\GitHub\\early_agile_estimator\\shap_analysis\\__init__.py)"
+  },
+  "new_system_imports": {
+    "shap_analysis.data_preparer": {
+      "status": "SUCCESS",
+      "classes": [
+        "Any",
+        "Dict",
+        "List",
+        "Optional",
+        "SHAPDataPreparer",
+        "logging",
+        "np",
+        "os",
+        "pd"
+      ]
+    },
+    "shap_analysis.explainer_factory": {
+      "status": "SUCCESS",
+      "classes": [
+        "Any",
+        "Callable",
+        "Dict",
+        "LINEAR_MODEL_KEYWORDS",
+        "Optional",
+        "PIPELINE_STEP_EXCLUSIONS",
+        "PipelineConstants",
+        "SHAPExplainerFactory",
+        "TREE_MODEL_KEYWORDS",
+        "Union",
+        "get_supported_explainer_types",
+        "logging",
+        "shap",
+        "validate_explainer_compatibility",
+        "warnings"
+      ]
+    },
+    "shap_analysis.value_calculator": {
+      "status": "SUCCESS",
+      "classes": [
+        "Any",
+        "DEFAULT_TOP_N_FEATURES",
+        "Dict",
+        "FEATURE_NAME_TRUNCATE_SUFFIX",
+        "IMPACT_THRESHOLDS",
+        "INTEGER_THRESHOLD",
+        "List",
+        "MAX_FEATURE_NAME_LENGTH",
+        "NUMERIC_PRECISION",
+        "Optional",
+        "PipelineConstants",
+        "SHAPValueCalculator",
+        "Tuple",
+        "Union",
+        "compare_shap_values",
+        "logging",
+        "np",
+        "shap",
+        "validate_shap_values"
+      ]
+    },
+    "shap_analysis.analysis_coordinator": {
+      "status": "SUCCESS",
+      "classes": [
+        "Any",
+        "Callable",
+        "Dict",
+        "List",
+        "Optional",
+        "SHAPAnalysisCoordinator",
+        "SHAPDataPreparer",
+        "SHAPExplainerFactory",
+        "SHAPValueCalculator",
+        "logging",
+        "np",
+        "pd"
+      ]
+    },
+    "shap_analysis.ui_integration": {
+      "status": "SUCCESS",
+      "classes": [
+        "Any",
+        "Callable",
+        "Dict",
+        "List",
+        "Optional",
+        "SHAPAnalysisCoordinator",
+        "SHAPUIIntegration",
+        "logging",
+        "st"
+      ]
+    }
+  },
+  "mapping": {
+    "top_model_1_LGBMRegressor": {
+      "display_name": "LightGBM Regressor",
+      "csv_matches": [],
+      "has_match": false
+    },
+    "top_model_2_GradientBoostingRegressor": {
+      "display_name": "Gradient Boosting Regressor",
+      "csv_matches": [],
+      "has_match": false
+    },
+    "top_model_3_LassoLars": {
+      "display_name": "Lasso Least Angle Regression",
+      "csv_matches": [],
+      "has_match": false
+    }
+  }
+}

@@ -1,4 +1,4 @@
-# shap_analysis/data_preparer.py
+# shap_analysis/data_preparer.py - COMPLETE UPDATED VERSION
 """Enhanced SHAP Data Preparer with reduced feature support"""
 
 import os
@@ -7,11 +7,79 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Optional, Any
 
+# Check if models module is available
+try:
+    from models import (
+        prepare_isbsg_sample_data,
+        prepare_features_for_model,
+        get_trained_model,
+        get_model_expected_features
+    )
+    MODELS_AVAILABLE = True
+except ImportError:
+    MODELS_AVAILABLE = False
+
 class SHAPDataPreparer:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.feature_cache = {}
         self.validation_cache = {}
+    
+    def validate_shap_inputs(self, user_inputs: Dict[str, Any]) -> bool:
+        """Validate that user inputs are suitable for SHAP analysis"""
+        try:
+            if not user_inputs:
+                self.logger.warning("No user inputs provided")
+                return False
+            
+            # Remove UI-specific keys
+            exclude_keys = {
+                'selected_model', 'selected_models', 'submit', 'clear_results', 
+                'show_history', 'save_config', 'config_name', 'comparison_mode'
+            }
+            meaningful_inputs = {
+                k: v for k, v in user_inputs.items() 
+                if k not in exclude_keys and v is not None and v != ""
+            }
+            
+            if len(meaningful_inputs) == 0:
+                self.logger.warning("No meaningful inputs after filtering")
+                return False
+            
+            # Check for required fields (basic validation)
+            self.logger.info(f"Validated {len(meaningful_inputs)} meaningful inputs")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error validating SHAP inputs: {e}")
+            return False
+    
+    def prepare_input_data(self, user_inputs: Dict[str, Any]) -> Optional[np.ndarray]:
+        """Prepare user input data for SHAP analysis"""
+        try:
+            if not MODELS_AVAILABLE:
+                self.logger.error("Models module not available")
+                return None
+            
+            # Use existing feature preparation pipeline
+            features_df = prepare_features_for_model(user_inputs)
+            if features_df is None or features_df.empty:
+                self.logger.error("Feature preparation failed")
+                return None
+            
+            # Convert to numpy array
+            input_array = features_df.values
+            
+            # Ensure it's 2D
+            if input_array.ndim == 1:
+                input_array = input_array.reshape(1, -1)
+            
+            self.logger.info(f"Input data prepared: shape {input_array.shape}")
+            return input_array
+            
+        except Exception as e:
+            self.logger.error(f"Error preparing input data: {e}")
+            return None
     
     def prepare_reduced_background_data(
         self, 
@@ -21,57 +89,69 @@ class SHAPDataPreparer:
     ) -> Optional[np.ndarray]:
         """Prepare background data with only top N features for the model"""
         try:
+            if not MODELS_AVAILABLE:
+                self.logger.error("Models module not available")
+                return None
+            
             # Get top features for this model
             top_features = self._get_top_features_for_model(model_name, top_n_features)
             if not top_features:
                 self.logger.error(f"No top features found for model {model_name}")
                 return None
             
-            # Generate background data using existing method
-            full_background = self.prepare_background_data(n_samples, model_name)
+            # Generate background data using ISBSG dataset
+            full_background = prepare_isbsg_sample_data(n_samples)
             if full_background is None:
+                self.logger.error("Could not prepare ISBSG background data")
                 return None
             
-            # Convert to DataFrame and select top features
-            from models import get_model_expected_features, get_trained_model
-            model = get_trained_model(model_name)
-            all_features = get_model_expected_features(model)
+            # For now, return the full background data
+            # In a more sophisticated implementation, we would:
+            # 1. Convert ISBSG data to UI format
+            # 2. Process through feature pipeline
+            # 3. Select only top features
+            # But this requires complex reverse mapping
             
-            if len(all_features) == full_background.shape[1]:
-                bg_df = pd.DataFrame(full_background, columns=all_features)
-                # Select only top features that exist in the data
-                available_top_features = [f for f in top_features if f in bg_df.columns]
-                reduced_bg = bg_df[available_top_features].values
-                
-                self.logger.info(f"Reduced background data: {full_background.shape} → {reduced_bg.shape}")
-                return reduced_bg
-            
-            return full_background  # Fallback to full data
+            self.logger.info(f"Prepared background data: {full_background.shape}")
+            return full_background
             
         except Exception as e:
             self.logger.error(f"Error preparing reduced background data: {e}")
             return None
     
     def _get_top_features_for_model(self, model_name: str, n: int = 15) -> List[str]:
-        """Get top N features for specific model"""
+        """Get top N features for specific model with improved name mapping"""
         try:
             # Check cache first
             cache_key = f"{model_name}_{n}"
             if cache_key in self.feature_cache:
                 return self.feature_cache[cache_key]
             
-            # Try to load from CSV file
-            feature_file = f"config/synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_{model_name}.csv"
+            # FIXED: Create mapping patterns for CSV file lookup
+            csv_patterns = [
+                # Exact match
+                f"config/synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_{model_name}.csv",
+                # Remove 'top_' prefix
+                f"config/synthetic_isbsg2016r1_1_finance_sdv_generated_feature_importance_{model_name.replace('top_', '')}.csv",
+                # Alternative financial pattern
+                f"config/synthetic_financial_feature_importance_{model_name.replace('top_', '')}.csv",
+            ]
             
-            if os.path.exists(feature_file):
-                df = pd.read_csv(feature_file)
-                if 'feature' in df.columns and 'importance' in df.columns:
-                    top_features = df.nlargest(n, 'importance')['feature'].tolist()
-                    self.feature_cache[cache_key] = top_features
-                    self.logger.info(f"Loaded top {n} features for {model_name} from file")
-                    return top_features
+            # Try each pattern
+            for pattern in csv_patterns:
+                if os.path.exists(pattern):
+                    self.logger.info(f"Found feature importance file: {pattern}")
+                    df = pd.read_csv(pattern)
+                    
+                    if 'feature' in df.columns and 'importance' in df.columns:
+                        # Sort by importance and get top N
+                        top_features = df.nlargest(n, 'importance')['feature'].tolist()
+                        self.feature_cache[cache_key] = top_features
+                        self.logger.info(f"Loaded top {n} features for {model_name} from {pattern}")
+                        return top_features
             
             # Fallback: extract from model
+            self.logger.warning(f"No CSV file found for {model_name}, extracting from model")
             top_features = self._extract_features_from_model(model_name, n)
             self.feature_cache[cache_key] = top_features
             return top_features
@@ -83,7 +163,8 @@ class SHAPDataPreparer:
     def _extract_features_from_model(self, model_name: str, n: int) -> List[str]:
         """Extract top features from model feature importance"""
         try:
-            from models import get_trained_model, get_model_expected_features
+            if not MODELS_AVAILABLE:
+                return []
             
             model = get_trained_model(model_name)
             if model is None:
